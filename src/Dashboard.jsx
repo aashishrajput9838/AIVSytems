@@ -181,18 +181,18 @@ export default function Dashboard() {
     return { validationScore, notes, externalVerificationRequired, validators };
   };
 
-  // Web search validation function
+  // Web search validation function with named-entity recognition
   const validateFactualAccuracy = async (userQuery, modelResponse) => {
     try {
-      // Extract search query from the question
-      const searchQuery = extractEntities(userQuery);
+      // Extract search query and entity information from the question
+      const entityInfo = extractEntities(userQuery);
       
-      if (!searchQuery || searchQuery === "General information") {
+      if (!entityInfo.query || entityInfo.query === "General information") {
         return 0.8; // Neutral score if no clear entities
       }
 
       // Search Wikipedia for factual information
-      const searchResults = await searchWeb(searchQuery);
+      const searchResults = await searchWeb(entityInfo.query);
       
       if (searchResults.includes("No specific information found") || searchResults.includes("Search failed")) {
         return 0.6; // Neutral score if search fails
@@ -201,12 +201,27 @@ export default function Dashboard() {
       // Compare AI response with Wikipedia results
       const similarity = calculateSimilarity(modelResponse.toLowerCase(), searchResults.toLowerCase());
       
-      // Convert similarity to score (0-1)
-      if (similarity > 0.8) return 0.9;      // Very similar
-      if (similarity > 0.6) return 0.7;      // Somewhat similar  
-      if (similarity > 0.4) return 0.5;      // Partially similar
-      if (similarity > 0.2) return 0.3;      // Low similarity
-      return 0.1;                             // Very different
+      // Apply entity-specific weighting for more accurate scoring
+      let weightedScore = similarity;
+      
+      // Boost score for high-confidence entities (capitals, political leaders, landmarks)
+      if (entityInfo.matchWeight > 0.8) {
+        weightedScore = Math.min(1.0, similarity * 1.2); // Boost by 20% for high-confidence entities
+        console.log(`High-confidence entity detected: ${entityInfo.entityType} - boosting score from ${similarity.toFixed(2)} to ${weightedScore.toFixed(2)}`);
+      }
+      
+      // Penalize low scores for high-confidence entities more severely
+      if (entityInfo.matchWeight > 0.8 && similarity < 0.3) {
+        weightedScore = similarity * 0.7; // Additional penalty for factual errors in high-confidence areas
+        console.log(`Factual error in high-confidence area: ${entityInfo.entityType} - applying penalty: ${weightedScore.toFixed(2)}`);
+      }
+      
+      // Convert weighted similarity to final score (0-1)
+      if (weightedScore > 0.8) return 0.9;      // Very similar
+      if (weightedScore > 0.6) return 0.7;      // Somewhat similar  
+      if (weightedScore > 0.4) return 0.5;      // Partially similar
+      if (weightedScore > 0.2) return 0.3;      // Low similarity
+      return 0.1;                                // Very different
       
     } catch (error) {
       console.error("Factual validation error:", error);
@@ -214,71 +229,134 @@ export default function Dashboard() {
     }
   };
 
-  // Extract key entities from question and create Wikipedia search query
+  // Extract key entities from question and create Wikipedia search query with named-entity recognition
   const extractEntities = (question) => {
     const lowerQuestion = question.toLowerCase();
     let searchQuery = "";
+    let entityType = "";
+    let matchWeight = 1.0; // Default weight
     
-    // Common factual question patterns
-    if (lowerQuestion.includes("who is") || lowerQuestion.includes("who was")) {
-      if (lowerQuestion.includes("prime minister") || lowerQuestion.includes("pm")) {
-        searchQuery = "Prime Minister of India";
-      } else if (lowerQuestion.includes("president")) {
-        if (lowerQuestion.includes("india")) {
-          searchQuery = "President of India";
-        } else if (lowerQuestion.includes("usa") || lowerQuestion.includes("united states")) {
-          searchQuery = "President of the United States";
-        } else {
-          searchQuery = "President";
-        }
-      } else {
-        // Extract the person/entity name
-        const whoMatch = lowerQuestion.match(/who is (.+?)(\?|$)/);
-        if (whoMatch) {
-          searchQuery = whoMatch[1].trim();
-        }
+    // Named-entity recognition patterns with weights
+    const entityPatterns = [
+      // Capital cities (highest weight - very specific factual information)
+      {
+        pattern: /capital.*(india|usa|united states|china|russia|uk|britain|france|germany|japan|canada|australia)/i,
+        entity: "Capital",
+        search: (match) => {
+          const country = match[1];
+          const capitals = {
+            "india": "New Delhi",
+            "usa": "Washington D.C.",
+            "united states": "Washington D.C.",
+            "china": "Beijing",
+            "russia": "Moscow",
+            "uk": "London",
+            "britain": "London",
+            "france": "Paris",
+            "germany": "Berlin",
+            "japan": "Tokyo",
+            "canada": "Ottawa",
+            "australia": "Canberra"
+          };
+          return capitals[country] || "Capital city";
+        },
+        weight: 1.0
+      },
+      
+      // Prime Ministers/Presidents (high weight - specific political figures)
+      {
+        pattern: /(prime minister|pm).*(india|usa|united states|uk|britain)/i,
+        entity: "Political Leader",
+        search: (match) => {
+          const role = match[1];
+          const country = match[2];
+          if (role.includes("prime minister") || role.includes("pm")) {
+            if (country === "india") return "Prime Minister of India";
+            if (country === "uk" || country === "britain") return "Prime Minister of the United Kingdom";
+          }
+          return `${role} ${country}`;
+        },
+        weight: 0.9
+      },
+      
+      // Presidents (high weight - specific political figures)
+      {
+        pattern: /president.*(india|usa|united states|china|russia|france|germany)/i,
+        entity: "Political Leader",
+        search: (match) => {
+          const country = match[1];
+          return `President of ${country}`;
+        },
+        weight: 0.9
+      },
+      
+      // Famous landmarks (high weight - specific locations)
+      {
+        pattern: /(taj mahal|mount everest|ganges|eiffel tower|great wall|statue of liberty|big ben)/i,
+        entity: "Landmark",
+        search: (match) => match[1],
+        weight: 0.9
+      },
+      
+      // Historical events (medium-high weight - specific dates/facts)
+      {
+        pattern: /(independence day|republic day|world war|revolution|freedom|liberation)/i,
+        entity: "Historical Event",
+        search: (match) => {
+          const event = match[1];
+          if (event.includes("independence") && lowerQuestion.includes("india")) {
+            return "Independence Day India";
+          }
+          if (event.includes("republic") && lowerQuestion.includes("india")) {
+            return "Republic Day India";
+          }
+          return event;
+        },
+        weight: 0.8
+      },
+      
+      // Countries (medium weight - general geographic entities)
+      {
+        pattern: /(india|usa|united states|china|russia|uk|britain|france|germany|japan|canada|australia)/i,
+        entity: "Country",
+        search: (match) => match[1],
+        weight: 0.7
+      },
+      
+      // Major cities (medium weight - specific urban areas)
+      {
+        pattern: /(delhi|mumbai|bangalore|new york|london|paris|tokyo|beijing|moscow)/i,
+        entity: "City",
+        search: (match) => match[1],
+        weight: 0.7
+      },
+      
+      // People/Personalities (medium weight - specific individuals)
+      {
+        pattern: /who (is|was) (.+?)(\?|$)/i,
+        entity: "Person",
+        search: (match) => match[2].trim(),
+        weight: 0.8
+      },
+      
+      // Scientific concepts (medium weight - technical terms)
+      {
+        pattern: /(quantum|gravity|evolution|dna|atoms|molecules|photosynthesis)/i,
+        entity: "Scientific Concept",
+        search: (match) => match[1],
+        weight: 0.7
       }
-    }
+    ];
     
-    if (lowerQuestion.includes("capital")) {
-      if (lowerQuestion.includes("india")) {
-        searchQuery = "New Delhi";
-      } else if (lowerQuestion.includes("usa") || lowerQuestion.includes("united states")) {
-        searchQuery = "Washington D.C.";
-      } else if (lowerQuestion.includes("china")) {
-        searchQuery = "Beijing";
-      } else if (lowerQuestion.includes("russia")) {
-        searchQuery = "Moscow";
-      } else if (lowerQuestion.includes("uk") || lowerQuestion.includes("britain")) {
-        searchQuery = "London";
-      } else if (lowerQuestion.includes("france")) {
-        searchQuery = "Paris";
-      } else if (lowerQuestion.includes("germany")) {
-        searchQuery = "Berlin";
-      } else {
-        searchQuery = "Capital city";
-      }
-    }
-    
-    if (lowerQuestion.includes("when") || lowerQuestion.includes("date")) {
-      if (lowerQuestion.includes("independence")) {
-        searchQuery = "Independence Day India";
-      } else if (lowerQuestion.includes("republic")) {
-        searchQuery = "Republic Day India";
-      } else {
-        searchQuery = "Historical event";
-      }
-    }
-    
-    if (lowerQuestion.includes("where")) {
-      if (lowerQuestion.includes("taj mahal")) {
-        searchQuery = "Taj Mahal";
-      } else if (lowerQuestion.includes("mount everest")) {
-        searchQuery = "Mount Everest";
-      } else if (lowerQuestion.includes("ganges")) {
-        searchQuery = "Ganges River";
-      } else {
-        searchQuery = "Geographic location";
+    // Try to match entity patterns
+    for (const pattern of entityPatterns) {
+      const match = lowerQuestion.match(pattern.pattern);
+      if (match) {
+        searchQuery = pattern.search(match);
+        entityType = pattern.entity;
+        matchWeight = pattern.weight;
+        console.log(`Named-entity match (${entityType} = "${searchQuery}" match weight ${matchWeight > 0.8 ? 'zyada' : 'normal'})`);
+        break;
       }
     }
     
@@ -294,10 +372,16 @@ export default function Dashboard() {
       
       if (keyTerms.length > 0) {
         searchQuery = keyTerms.join(" ");
+        entityType = "General Entity";
+        matchWeight = 0.6;
       }
     }
     
-    return searchQuery || "General information";
+    return {
+      query: searchQuery || "General information",
+      entityType: entityType || "General",
+      matchWeight: matchWeight
+    };
   };
 
   // Wikipedia API search function
@@ -419,6 +503,7 @@ export default function Dashboard() {
     try {
       // Validate the response
       const validation = await validateResponse(question, response);
+      const entityInfo = extractEntities(question); // Get entity info for the log entry
       
       // Create log entry with validation results
       const logEntry = {
@@ -431,7 +516,8 @@ export default function Dashboard() {
         status: "validated",
         created_by: user?.email || "unknown",
         timestamp: new Date().toISOString(),
-        source: "chatgpt_mode"
+        source: "chatgpt_mode",
+        entity_info: entityInfo // Store entity information for display
       };
 
       await addLog(logEntry);
@@ -483,7 +569,8 @@ export default function Dashboard() {
         validators: validation.validators,
         status: "validated",
         created_by: user?.email || "unknown",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        entity_info: extractEntities(newLog.user_query) // Store entity information for display
       };
 
       await addLog(logEntry);
@@ -705,6 +792,7 @@ export default function Dashboard() {
                 <TableHead>User Query</TableHead>
                 <TableHead>Model Response</TableHead>
                 <TableHead>Score</TableHead>
+                <TableHead>Entity Type</TableHead>
                 <TableHead>Verification</TableHead>
                 <TableHead>Notes</TableHead>
                 <TableHead>Actions</TableHead>
@@ -729,6 +817,7 @@ export default function Dashboard() {
                       {Number(log.validation_score || 0).toFixed(2)}
                     </span>
                   </TableCell>
+                  <TableCell>{log.entity_info?.entityType || "N/A"}</TableCell>
                   <TableCell>
                     {log.external_verification_required ? (
                       <span className="text-red-500 font-semibold">Required</span>
