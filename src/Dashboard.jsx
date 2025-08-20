@@ -185,6 +185,38 @@ export default function Dashboard() {
       }
     }
 
+    // Validator 3.6: Check for personal relationship validation questions (new validator)
+    const entityInfo = extractEntities(userQuery);
+    if (entityInfo.entityType === "Personal Relationship" && entityInfo.isPersonalValidation) {
+      console.log(`🔍 Personal Relationship Validation Detected: "${userQuery}"`);
+      
+      // For personal relationship validation, we can't verify the truth
+      // But we should flag these for manual review
+      validationScore = Math.min(validationScore, 0.3);
+      notes += " Personal relationship validation - cannot be automatically verified.";
+      externalVerificationRequired = true;
+      validators.push({
+        name: "personal_relationship_validation",
+        pass: false,
+        score: 0.3,
+        details: "Personal relationship validation requires manual verification"
+      });
+    } else if (entityInfo.entityType === "Personal Relationship") {
+      validators.push({
+        name: "personal_relationship_validation",
+        pass: true,
+        score: 0.7,
+        details: "Personal relationship question detected"
+      });
+    } else {
+      validators.push({
+        name: "personal_relationship_validation",
+        pass: true,
+        score: 0.9,
+        details: "No personal relationship validation detected"
+      });
+    }
+
     // Validator 4: Web Search Factual Validation
     try {
       const factualScore = await validateFactualAccuracy(userQuery, modelResponse);
@@ -218,6 +250,16 @@ export default function Dashboard() {
         }
       }
       
+      // Special handling for Personal Relationship entities - always require verification
+      if (entityInfo.entityType === "Personal Relationship") {
+        externalVerificationRequired = true;
+        notes += " Personal relationship requires manual verification.";
+        
+        if (entityInfo.isPersonalValidation) {
+          notes += " Personal relationship validation cannot be automatically verified.";
+        }
+      }
+      
     } catch (error) {
       validators.push({
         name: "factual_accuracy",
@@ -243,12 +285,34 @@ export default function Dashboard() {
       // Extract search query and entity information from the question
       const entityInfo = extractEntities(userQuery);
       
-      if (!entityInfo.query || entityInfo.query === "General information") {
-        return 0.8; // Neutral score if no clear entities
+      // Special handling for Personal Relationship validation questions
+      if (entityInfo.entityType === "Personal Relationship" && entityInfo.isPersonalValidation) {
+        console.log(`🔍 Personal Relationship Validation: "${entityInfo.query}"`);
+        
+        // Check if the response is affirmative or negative
+        const affirmativeKeywords = ["yes", "right", "correct", "true", "sahi", "theek", "haan", "bilkul"];
+        const negativeKeywords = ["no", "wrong", "incorrect", "false", "galat", "nahi", "nope"];
+        
+        const hasAffirmative = affirmativeKeywords.some(keyword => 
+          modelResponse.toLowerCase().includes(keyword)
+        );
+        const hasNegative = negativeKeywords.some(keyword => 
+          modelResponse.toLowerCase().includes(keyword)
+        );
+        
+        // For personal relationship validation, we can't verify the truth
+        // But we can check if the response is appropriate for the question type
+        if (hasAffirmative && !hasNegative) {
+          console.log(`✅ Affirmative response to personal validation question`);
+          return 0.3; // Low score because we can't verify personal relationships
+        } else if (hasNegative && !hasAffirmative) {
+          console.log(`❌ Negative response to personal validation question`);
+          return 0.3; // Low score because we can't verify personal relationships
+        } else {
+          console.log(`❓ Ambiguous response to personal validation question`);
+          return 0.2; // Very low score for unclear responses
+        }
       }
-
-      // Search Wikipedia for factual information
-      const searchResults = await searchWeb(entityInfo.query);
       
       // Special handling for Person entities (strict validation)
       if (entityInfo.entityType === "Person") {
@@ -283,6 +347,13 @@ export default function Dashboard() {
         
         return Math.min(0.9, similarity * 1.1); // Boost good matches slightly
       }
+      
+      if (!entityInfo.query || entityInfo.query === "General information") {
+        return 0.8; // Neutral score if no clear entities
+      }
+
+      // Search Wikipedia for factual information
+      const searchResults = await searchWeb(entityInfo.query);
       
       // For non-person entities, use standard validation
       if (searchResults.includes("No specific information found") || searchResults.includes("Search failed")) {
@@ -329,6 +400,28 @@ export default function Dashboard() {
     
     // Named-entity recognition patterns with weights
     const entityPatterns = [
+      // Personal relationship validation questions (highest priority - requires personal verification)
+      {
+        pattern: /(.+?) (meri|my) (friend|sister|brother|cousin|roommate|colleague|neighbor|classmate) (ki|is) (.+?) (hai|is)\.?\s*(is this|ye|is it) (right|correct|true|sahi|theek) (or not|ya nahi|ya galat)\??/i,
+        entity: "Personal Relationship",
+        search: (match) => `${match[1]} ${match[3]} ${match[5]}`,
+        weight: 0.98, // Very high weight for personal relationship validation
+        requiresVerification: true, // Always flag for manual review
+        strictValidation: true, // Apply strict validation rules
+        isPersonalValidation: true // Flag for personal validation logic
+      },
+      
+      // Personal relationship questions (high priority)
+      {
+        pattern: /(.+?) (meri|my) (friend|sister|brother|cousin|roommate|colleague|neighbor|classmate) (hai|is)\??/i,
+        entity: "Personal Relationship",
+        search: (match) => `${match[1]} ${match[3]}`,
+        weight: 0.95,
+        requiresVerification: true,
+        strictValidation: true,
+        isPersonalValidation: false
+      },
+      
       // Person/Personality questions (highest weight - requires strict validation)
       {
         pattern: /(kon hai|who is|who was|kaun hai|kaun tha) (.+?)(\?|$)/i,
@@ -464,7 +557,7 @@ export default function Dashboard() {
         searchQuery = pattern.search(match);
         entityType = pattern.entity;
         matchWeight = pattern.weight;
-        console.log(`Named-entity match (${entityType} = "${searchQuery}" match weight ${matchWeight > 0.8 ? 'zyada' : 'normal'}${pattern.requiresVerification ? ' - REQUIRES VERIFICATION' : ''})`);
+        console.log(`Named-entity match (${entityType} = "${searchQuery}" match weight ${matchWeight > 0.8 ? 'zyada' : 'normal'}${pattern.requiresVerification ? ' - REQUIRES VERIFICATION' : ''}${pattern.isPersonalValidation ? ' - PERSONAL VALIDATION' : ''})`);
         break;
       }
     }
@@ -490,8 +583,9 @@ export default function Dashboard() {
       query: searchQuery || "General information",
       entityType: entityType || "General",
       matchWeight: matchWeight,
-      requiresVerification: entityType === "Person" || false, // Always require verification for persons
-      strictValidation: entityType === "Person" || false // Apply strict validation for persons
+      requiresVerification: entityType === "Person" || entityType === "Personal Relationship" || false,
+      strictValidation: entityType === "Person" || entityType === "Personal Relationship" || false,
+      isPersonalValidation: entityType === "Personal Relationship" && lowerQuestion.includes("right") || lowerQuestion.includes("correct") || lowerQuestion.includes("true") || lowerQuestion.includes("sahi") || lowerQuestion.includes("theek")
     };
   };
 
