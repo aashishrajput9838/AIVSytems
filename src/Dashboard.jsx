@@ -733,44 +733,171 @@ export default function Dashboard() {
     }
   };
 
-  // Calculate similarity between two strings (stopword-aware + simple lemmatization)
+  // Advanced similarity calculation using TF-IDF, Cosine similarity, and fuzzy matching
   const calculateSimilarity = (str1, str2) => {
-    const stopwords = new Set([
-      'a','an','the','and','or','but','if','then','else','when','while','of','in','on','at','to','for','from','by','with','about','as','into','like','through','after','over','between','out','against','during','without','before','under','around','among',
-      'is','am','are','was','were','be','been','being','do','does','did','doing','have','has','had','having','it','its','this','that','these','those','i','you','he','she','they','we','them','his','her','their','our','your','yours','ours',
-      'not','no','yes','can','could','should','would','may','might','will','shall','also','too','very','just'
-    ])
-
-    const lemma = (w) => {
-      // basic lemmatization/stemming for common English endings
-      if (w.length <= 3) return w
-      // plurals
-      if (/ies$/.test(w)) return w.replace(/ies$/, 'y') // cities -> city
-      if (/ses$|xes$|zes$|ches$|shes$/.test(w)) return w.replace(/es$/, '') // classes -> class
-      if (/s$/.test(w) && !/ss$/.test(w)) return w.replace(/s$/, '') // languages -> language
-      // past/gerund
-      if (/ing$/.test(w) && w.length > 5) return w.replace(/ing$/, '') // running -> runn (approx)
-      if (/ed$/.test(w) && w.length > 4) return w.replace(/ed$/, '') // worked -> work
-      return w
-    }
-
-    const normalize = (text) =>
-      text
+    // Tokenize and normalize text
+    const tokenize = (text) => {
+      return text
         .toLowerCase()
         .replace(/[^a-z0-9\s]/g, ' ')
         .split(/\s+/)
         .map(t => t.trim())
-        .filter(w => w && !stopwords.has(w) && w.length > 2)
+        .filter(w => w && w.length > 2)
         .map(lemma)
+    };
 
-    const words1 = Array.from(new Set(normalize(str1)))
-    const words2 = Array.from(new Set(normalize(str2)))
+    // Lemmatization function (same as before)
+    const lemma = (w) => {
+      if (w.length <= 3) return w
+      if (/ies$/.test(w)) return w.replace(/ies$/, 'y')
+      if (/ses$|xes$|zes$|ches$|shes$/.test(w)) return w.replace(/es$/, '')
+      if (/s$/.test(w) && !/ss$/.test(w)) return w.replace(/s$/, '')
+      if (/ing$/.test(w) && w.length > 5) return w.replace(/ing$/, '')
+      if (/ed$/.test(w) && w.length > 4) return w.replace(/ed$/, '')
+      return w
+    };
 
-    if (words1.length === 0 || words2.length === 0) return 0
+    // Stopwords (same as before)
+    const stopwords = new Set([
+      'a','an','the','and','or','but','if','then','else','when','while','of','in','on','at','to','for','from','by','with','about','as','into','like','through','after','over','between','out','against','during','without','before','under','around','among',
+      'is','am','are','was','were','be','been','being','do','does','did','doing','have','has','had','having','it','its','this','that','these','those','i','you','he','she','they','we','them','his','her','their','our','your','yours','ours',
+      'not','no','yes','can','could','should','would','may','might','will','shall','also','too','very','just'
+    ]);
 
-    const common = words1.filter(w1 => words2.some(w2 => w1 === w2 || w1.includes(w2) || w2.includes(w1)))
-    const total = Math.max(words1.length, words2.length)
-    return common.length / total
+    // Filter out stopwords
+    const filterStopwords = (tokens) => {
+      return tokens.filter(token => !stopwords.has(token));
+    };
+
+    // Get tokens for both texts
+    const tokens1 = filterStopwords(tokenize(str1));
+    const tokens2 = filterStopwords(tokenize(str2));
+
+    if (tokens1.length === 0 || tokens2.length === 0) return 0;
+
+    // Method 1: TF-IDF with Cosine Similarity
+    const tfidfCosineSimilarity = () => {
+      // Create vocabulary (unique tokens from both texts)
+      const vocabulary = [...new Set([...tokens1, ...tokens2])];
+      
+      // Calculate TF (Term Frequency) for each document
+      const calculateTF = (tokens) => {
+        const tf = {};
+        tokens.forEach(token => {
+          tf[token] = (tf[token] || 0) + 1;
+        });
+        // Normalize by document length
+        Object.keys(tf).forEach(token => {
+          tf[token] = tf[token] / tokens.length;
+        });
+        return tf;
+      };
+
+      const tf1 = calculateTF(tokens1);
+      const tf2 = calculateTF(tokens2);
+
+      // Calculate IDF (Inverse Document Frequency)
+      const calculateIDF = () => {
+        const idf = {};
+        vocabulary.forEach(token => {
+          let docsWithToken = 0;
+          if (tf1[token]) docsWithToken++;
+          if (tf2[token]) docsWithToken++;
+          idf[token] = Math.log(2 / docsWithToken);
+        });
+        return idf;
+      };
+
+      const idf = calculateIDF();
+
+      // Calculate TF-IDF vectors
+      const tfidf1 = vocabulary.map(token => (tf1[token] || 0) * idf[token]);
+      const tfidf2 = vocabulary.map(token => (tf2[token] || 0) * idf[token]);
+
+      // Calculate Cosine Similarity
+      const dotProduct = tfidf1.reduce((sum, val, i) => sum + val * tfidf2[i], 0);
+      const magnitude1 = Math.sqrt(tfidf1.reduce((sum, val) => sum + val * val, 0));
+      const magnitude2 = Math.sqrt(tfidf2.reduce((sum, val) => sum + val * val, 0));
+      
+      if (magnitude1 === 0 || magnitude2 === 0) return 0;
+      return dotProduct / (magnitude1 * magnitude2);
+    };
+
+    // Method 2: Fuzzy Matching with Levenshtein Distance
+    const fuzzySimilarity = () => {
+      const levenshteinDistance = (str1, str2) => {
+        const matrix = [];
+        for (let i = 0; i <= str2.length; i++) {
+          matrix[i] = [i];
+        }
+        for (let j = 0; j <= str1.length; j++) {
+          matrix[0][j] = j;
+        }
+        for (let i = 1; i <= str2.length; i++) {
+          for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+              matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+              matrix[i][j] = Math.min(
+                matrix[i - 1][j - 1] + 1,
+                matrix[i][j - 1] + 1,
+                matrix[i - 1][j] + 1
+              );
+            }
+          }
+        }
+        return matrix[str2.length][str1.length];
+      };
+
+      // Calculate fuzzy similarity for each token pair
+      let totalSimilarity = 0;
+      let comparisons = 0;
+
+      tokens1.forEach(token1 => {
+        let bestMatch = 0;
+        tokens2.forEach(token2 => {
+          const distance = levenshteinDistance(token1, token2);
+          const maxLength = Math.max(token1.length, token2.length);
+          const similarity = maxLength > 0 ? (maxLength - distance) / maxLength : 0;
+          bestMatch = Math.max(bestMatch, similarity);
+        });
+        totalSimilarity += bestMatch;
+        comparisons++;
+      });
+
+      return comparisons > 0 ? totalSimilarity / comparisons : 0;
+    };
+
+    // Method 3: Enhanced Word Overlap (original method improved)
+    const wordOverlapSimilarity = () => {
+      const common = tokens1.filter(w1 => 
+        tokens2.some(w2 => w1 === w2 || w1.includes(w2) || w2.includes(w1))
+      );
+      const total = Math.max(tokens1.length, tokens2.length);
+      return total > 0 ? common.length / total : 0;
+    };
+
+    // Calculate all similarity scores
+    const tfidfScore = tfidfCosineSimilarity();
+    const fuzzyScore = fuzzySimilarity();
+    const overlapScore = wordOverlapSimilarity();
+
+    // Weighted combination of all methods
+    const weights = {
+      tfidf: 0.5,    // TF-IDF gets highest weight (most sophisticated)
+      fuzzy: 0.3,    // Fuzzy matching for typos/variations
+      overlap: 0.2   // Simple overlap for basic matching
+    };
+
+    const finalScore = (
+      tfidfScore * weights.tfidf +
+      fuzzyScore * weights.fuzzy +
+      overlapScore * weights.overlap
+    );
+
+    console.log(`🔍 Similarity Scores - TF-IDF: ${tfidfScore.toFixed(3)}, Fuzzy: ${fuzzyScore.toFixed(3)}, Overlap: ${overlapScore.toFixed(3)}, Final: ${finalScore.toFixed(3)}`);
+
+    return Math.min(1.0, Math.max(0.0, finalScore));
   };
 
   // ChatGPT Mode functions
