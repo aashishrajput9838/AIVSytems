@@ -45,16 +45,16 @@ export default function Login() {
   }
 
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-indigo-950 via-slate-950 to-slate-950">
-      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-indigo-500/30 to-fuchsia-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-fuchsia-500/20 to-indigo-500/20 blur-3xl" />
+    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-gray-900 via-gray-700 to-gray-100">
+      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-cyan-500/30 to-teal-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 blur-3xl" />
       
       <main className="mx-auto w-full max-w-md px-4 py-16">
         {/* Back to Home */}
         <div className="mb-8">
           <Link 
             to="/" 
-            className="inline-flex items-center gap-2 text-indigo-300 hover:text-indigo-200 transition-colors"
+            className="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Home
@@ -62,12 +62,12 @@ export default function Login() {
         </div>
 
         {/* Login Card */}
-        <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm">
-          <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+        <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm">
+          <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
           <CardContent className="p-8 space-y-6">
             {/* Header */}
             <div className="text-center space-y-2">
-              <div className="inline-flex items-center justify-center size-12 rounded-xl bg-indigo-500/10 text-indigo-500 mb-4">
+              <div className="inline-flex items-center justify-center size-12 rounded-xl bg-cyan-500/10 text-cyan-500 mb-4">
                 <Shield className="size-6" />
               </div>
               <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
@@ -94,7 +94,7 @@ export default function Login() {
                     placeholder="Enter your email" 
                     value={email} 
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-background/60 backdrop-blur border-indigo-500/30"
+                    className="pl-10 bg-gray-800/60 backdrop-blur border-cyan-500/30"
                   />
                 </div>
               </div>
@@ -108,7 +108,7 @@ export default function Login() {
                     placeholder="Enter your password" 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-background/60 backdrop-blur border-indigo-500/30"
+                    className="pl-10 bg-gray-800/60 backdrop-blur border-cyan-500/30"
                   />
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function Login() {
               <Button 
                 type="submit" 
                 disabled={loading}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                className="bg-cyan-600 hover:bg-cyan-700 text-white"
               >
                 {loading ? 'Signing in…' : 'Sign in'}
               </Button>
@@ -125,10 +125,10 @@ export default function Login() {
             {/* Divider */}
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-indigo-500/30" />
+                <span className="w-full border-t border-cyan-500/30" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background/60 px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-gray-800/60 px-2 text-gray-400">Or continue with</span>
               </div>
             </div>
 
@@ -137,7 +137,7 @@ export default function Login() {
               variant="outline" 
               onClick={handleGoogleLogin} 
               disabled={loading}
-              className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10"
+              className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10"
             >
               Continue with Google
             </Button>

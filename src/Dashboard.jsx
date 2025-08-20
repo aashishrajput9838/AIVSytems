@@ -1154,9 +1154,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-indigo-950 via-slate-950 to-slate-950">
-      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-indigo-500/30 to-fuchsia-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-fuchsia-500/20 to-indigo-500/20 blur-3xl" />
+    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-gray-900 via-gray-700 to-gray-100">
+      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-cyan-500/30 to-teal-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 blur-3xl" />
       
       <main className="mx-auto w-full max-w-7xl px-4 py-8">
         {/* Header */}
@@ -1170,7 +1170,7 @@ export default function Dashboard() {
                 Welcome back, {user?.email || 'User'} • Monitor and validate AI responses in real-time
               </p>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs text-indigo-300">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-300">
               Live Monitoring
             </div>
           </div>
@@ -1182,14 +1182,14 @@ export default function Dashboard() {
             <Button 
               onClick={() => setShowChatGPTMode(!showChatGPTMode)} 
               variant="outline"
-              className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10"
+              className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               {showChatGPTMode ? "Exit ChatGPT Mode" : "ChatGPT Mode"}
             </Button>
             <Button 
               onClick={() => setShowAddForm(!showAddForm)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="bg-cyan-600 hover:bg-cyan-700 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               {showAddForm ? "Cancel" : "Add Log"}
@@ -1200,8 +1200,8 @@ export default function Dashboard() {
         {/* ChatGPT Mode Interface */}
         {showChatGPTMode && (
           <section className="mb-8">
-            <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm">
-              <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+            <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm">
+              <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold text-white">ChatGPT Mode - Auto-Capture Conversations</h2>
@@ -1227,7 +1227,7 @@ export default function Dashboard() {
                       placeholder="Type your question here..."
                       value={currentQuestion}
                       onChange={(e) => setCurrentQuestion(e.target.value)}
-                      className="bg-background/60 backdrop-blur border-indigo-500/30"
+                      className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
                     />
                   </div>
                   <div>
@@ -1236,14 +1236,14 @@ export default function Dashboard() {
                       placeholder="Paste AI response here..."
                       value={currentResponse}
                       onChange={(e) => setCurrentResponse(e.target.value)}
-                      className="bg-background/60 backdrop-blur border-indigo-500/30"
+                      className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
                     />
                   </div>
                 </div>
                 <Button 
                   onClick={() => captureConversation(currentQuestion, currentResponse)}
                   disabled={!currentQuestion.trim() || !currentResponse.trim()}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700"
+                  className="w-full bg-cyan-600 hover:bg-cyan-700"
                 >
                   Capture & Validate Conversation
                 </Button>
@@ -1294,8 +1294,8 @@ export default function Dashboard() {
         {/* Add Log Form */}
         {showAddForm && (
           <section className="mb-8">
-            <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm">
-              <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+            <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm">
+              <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
               <CardContent className="p-6">
                 <h2 className="text-xl font-semibold text-white mb-4">Add New Log Entry</h2>
                 <form onSubmit={handleAddLog} className="space-y-4">
@@ -1307,7 +1307,7 @@ export default function Dashboard() {
                         value={newLog.user_query}
                         onChange={(e) => setNewLog({...newLog, user_query: e.target.value})}
                         required
-                        className="bg-background/60 backdrop-blur border-indigo-500/30"
+                        className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
                       />
                     </div>
                     <div>
@@ -1317,15 +1317,15 @@ export default function Dashboard() {
                         value={newLog.model_response}
                         onChange={(e) => setNewLog({...newLog, model_response: e.target.value})}
                         required
-                        className="bg-background/60 backdrop-blur border-indigo-500/30"
+                        className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
                       />
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button type="submit" disabled={isLoading} className="bg-indigo-600 hover:bg-indigo-700">
+                    <Button type="submit" disabled={isLoading} className="bg-cyan-600 hover:bg-cyan-700">
                       {isLoading ? "Adding..." : "Add & Validate"}
                     </Button>
-                    <Button type="button" variant="outline" onClick={() => setShowAddForm(false)} className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10">
+                    <Button type="button" variant="outline" onClick={() => setShowAddForm(false)} className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10">
                       Cancel
                     </Button>
                   </div>
@@ -1342,9 +1342,9 @@ export default function Dashboard() {
               placeholder="Search queries or responses..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-background/60 backdrop-blur border-indigo-500/30"
+              className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
             />
-            <Button variant="outline" className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10">
+            <Button variant="outline" className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10">
               <Search className="h-4 w-4" />
             </Button>
           </div>
@@ -1359,25 +1359,25 @@ export default function Dashboard() {
 
         {/* Logs Table */}
         <section className="space-y-6">
-          <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm">
-            <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+          <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm">
+            <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
             <CardContent className="p-6">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-indigo-500/30">
-                    <TableHead className="text-indigo-300">Timestamp</TableHead>
-                    <TableHead className="text-indigo-300">User Query</TableHead>
-                    <TableHead className="text-indigo-300">Model Response</TableHead>
-                    <TableHead className="text-indigo-300">Score</TableHead>
-                    <TableHead className="text-indigo-300">Entity Type</TableHead>
-                    <TableHead className="text-indigo-300">Verification</TableHead>
-                    <TableHead className="text-indigo-300">Notes</TableHead>
-                    <TableHead className="text-indigo-300">Actions</TableHead>
+                  <TableRow className="border-cyan-500/30">
+                    <TableHead className="text-cyan-300">Timestamp</TableHead>
+                    <TableHead className="text-cyan-300">User Query</TableHead>
+                    <TableHead className="text-cyan-300">Model Response</TableHead>
+                    <TableHead className="text-cyan-300">Score</TableHead>
+                    <TableHead className="text-cyan-300">Entity Type</TableHead>
+                    <TableHead className="text-cyan-300">Verification</TableHead>
+                    <TableHead className="text-cyan-300">Notes</TableHead>
+                    <TableHead className="text-cyan-300">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredLogs.map((log) => (
-                    <TableRow key={log.id} className="border-indigo-500/20 hover:bg-indigo-500/5">
+                    <TableRow key={log.id} className="border-cyan-500/20 hover:bg-cyan-500/5">
                       <TableCell className="text-muted-foreground">{formatTimestamp(log.timestamp)}</TableCell>
                       <TableCell className="text-white">{log.user_query}</TableCell>
                       <TableCell className="text-white">{log.model_response}</TableCell>

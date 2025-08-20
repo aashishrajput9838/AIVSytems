@@ -3,21 +3,21 @@ import { Brain, FileText, ShieldCheck, Activity, CheckCircle } from 'lucide-reac
 
 function StepCard({ icon: Icon, title, description, step }) {
   return (
-    <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
-      <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+    <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+      <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
       <CardContent className="p-6">
         <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition-colors group-hover:bg-indigo-500/20">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-500 transition-colors group-hover:bg-cyan-500/20">
             <Icon className="size-5" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center justify-center size-6 rounded-full bg-indigo-500 text-white text-xs font-medium">
+            <span className="inline-flex items-center justify-center size-6 rounded-full bg-cyan-500 text-white text-xs font-medium">
               {step}
             </span>
             <h3 className="text-lg font-semibold text-white">{title}</h3>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <p className="text-sm text-gray-300">{description}</p>
       </CardContent>
     </Card>
   )
@@ -25,16 +25,16 @@ function StepCard({ icon: Icon, title, description, step }) {
 
 function FeatureCard({ icon: Icon, title, description }) {
   return (
-    <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
-      <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+    <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+      <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
       <CardContent className="p-6">
         <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500 transition-colors group-hover:bg-indigo-500/20">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-500 transition-colors group-hover:bg-cyan-500/20">
             <Icon className="size-5" />
           </div>
           <h3 className="text-lg font-semibold text-white">{title}</h3>
         </div>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        <p className="text-sm text-gray-300">{description}</p>
       </CardContent>
     </Card>
   )
@@ -42,20 +42,20 @@ function FeatureCard({ icon: Icon, title, description }) {
 
 export default function HowItWorks() {
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-indigo-950 via-slate-950 to-slate-950">
-      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-indigo-500/30 to-fuchsia-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-fuchsia-500/20 to-indigo-500/20 blur-3xl" />
+    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-gray-900 via-gray-700 to-gray-100">
+      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-cyan-500/30 to-teal-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 blur-3xl" />
       
       <main className="mx-auto w-full max-w-6xl px-4 py-16">
         {/* Hero */}
         <section className="relative flex flex-col items-center gap-6 py-16 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs text-indigo-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-300">
             How It Works
           </div>
           <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
             How Our System Works
           </h1>
-          <p className="max-w-2xl text-balance text-base text-muted-foreground sm:text-lg">
+          <p className="max-w-2xl text-balance text-base text-gray-300 sm:text-lg">
             From logging to validation to transparent decisions - see how our AI validation system ensures accuracy and trust.
           </p>
         </section>
@@ -89,7 +89,7 @@ export default function HowItWorks() {
         <section className="space-y-8 py-12">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-4">Advanced Features</h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg text-gray-300 max-w-3xl mx-auto">
               Our system goes beyond basic validation with cutting-edge technologies and comprehensive monitoring.
             </p>
           </div>
@@ -117,7 +117,7 @@ export default function HowItWorks() {
         <section className="space-y-8 py-12">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-4">Technology Behind the Magic</h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg text-gray-300 max-w-3xl mx-auto">
               Built with state-of-the-art technologies for the most accurate and reliable AI validation possible.
             </p>
           </div>
