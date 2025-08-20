@@ -340,7 +340,7 @@ export default function Dashboard() {
     }
   };
 
-  // Calculate similarity between two strings (stopword-aware)
+  // Calculate similarity between two strings (stopword-aware + simple lemmatization)
   const calculateSimilarity = (str1, str2) => {
     const stopwords = new Set([
       'a','an','the','and','or','but','if','then','else','when','while','of','in','on','at','to','for','from','by','with','about','as','into','like','through','after','over','between','out','against','during','without','before','under','around','among',
@@ -348,12 +348,27 @@ export default function Dashboard() {
       'not','no','yes','can','could','should','would','may','might','will','shall','also','too','very','just'
     ])
 
+    const lemma = (w) => {
+      // basic lemmatization/stemming for common English endings
+      if (w.length <= 3) return w
+      // plurals
+      if (/ies$/.test(w)) return w.replace(/ies$/, 'y') // cities -> city
+      if (/ses$|xes$|zes$|ches$|shes$/.test(w)) return w.replace(/es$/, '') // classes -> class
+      if (/s$/.test(w) && !/ss$/.test(w)) return w.replace(/s$/, '') // languages -> language
+      // past/gerund
+      if (/ing$/.test(w) && w.length > 5) return w.replace(/ing$/, '') // running -> runn (approx)
+      if (/ed$/.test(w) && w.length > 4) return w.replace(/ed$/, '') // worked -> work
+      return w
+    }
+
     const normalize = (text) =>
       text
         .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, ' ') // remove punctuation
+        .replace(/[^a-z0-9\s]/g, ' ')
         .split(/\s+/)
-        .filter(w => w && !stopwords.has(w) && w.length > 2) // drop stopwords and tiny tokens
+        .map(t => t.trim())
+        .filter(w => w && !stopwords.has(w) && w.length > 2)
+        .map(lemma)
 
     const words1 = Array.from(new Set(normalize(str1)))
     const words2 = Array.from(new Set(normalize(str2)))
