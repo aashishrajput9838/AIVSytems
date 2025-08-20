@@ -402,13 +402,24 @@ export default function Dashboard() {
     const entityPatterns = [
       // Personal relationship validation questions (highest priority - requires personal verification)
       {
-        pattern: /(.+?) (meri|my) (friend|sister|brother|cousin|roommate|colleague|neighbor|classmate) (ki|is) (.+?) (hai|is)\.?\s*(is this|ye|is it) (right|correct|true|sahi|theek) (or not|ya nahi|ya galat)\??/i,
+        pattern: /(.+?) (meri|my) (pahle|pehle|first|previous|old)?\s*(friend|sister|brother|cousin|roommate|colleague|neighbor|classmate) (ki|is|the|thi|tha|thein) (.+?) (hai|is|the|thi|tha|thein)\.?\s*(is this|ye|is it|kya ye) (right|correct|true|sahi|theek|statement|galat|wrong|false) (or not|ya nahi|ya galat)?\??/i,
         entity: "Personal Relationship",
-        search: (match) => `${match[1]} ${match[3]} ${match[5]}`,
+        search: (match) => `${match[1]} ${match[4]} ${match[6]}`,
         weight: 0.98, // Very high weight for personal relationship validation
         requiresVerification: true, // Always flag for manual review
         strictValidation: true, // Apply strict validation rules
         isPersonalValidation: true // Flag for personal validation logic
+      },
+      
+      // Simple personal relationship validation questions
+      {
+        pattern: /(.+?) (meri|my) (.+?) (friend|sister|brother|cousin|roommate|colleague|neighbor|classmate) (.+?)\.?\s*(is this|ye|is it|kya ye) (right|correct|true|sahi|theek|statement)\??/i,
+        entity: "Personal Relationship",
+        search: (match) => `${match[1]} ${match[3]} ${match[4]}`,
+        weight: 0.95,
+        requiresVerification: true,
+        strictValidation: true,
+        isPersonalValidation: true
       },
       
       // Personal relationship questions (high priority)
