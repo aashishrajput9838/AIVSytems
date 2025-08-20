@@ -147,6 +147,44 @@ export default function Dashboard() {
       }
     }
 
+    // Validator 3.5: Check for professional claims in responses (new validator)
+    if (modelResponse) {
+      const professionalKeywords = ["teacher", "professor", "doctor", "engineer", "lawyer", "manager", "director", "ceo", "president", "minister", "university", "college", "school", "hospital", "company", "corporation"];
+      const hasProfessionalClaims = professionalKeywords.some(keyword => 
+        modelResponse.toLowerCase().includes(keyword)
+      );
+      
+      if (hasProfessionalClaims) {
+        // Check if this is about a person entity
+        const entityInfo = extractEntities(userQuery);
+        if (entityInfo.entityType === "Person") {
+          validationScore = Math.min(validationScore, 0.4);
+          notes += " Professional claims about person require verification.";
+          externalVerificationRequired = true;
+          validators.push({
+            name: "professional_claims",
+            pass: false,
+            score: 0.4,
+            details: "Professional claims about person - verification required"
+          });
+        } else {
+          validators.push({
+            name: "professional_claims",
+            pass: true,
+            score: 0.8,
+            details: "Professional claims detected but not about person"
+          });
+        }
+      } else {
+        validators.push({
+          name: "professional_claims",
+          pass: true,
+          score: 0.9,
+          details: "No professional claims detected"
+        });
+      }
+    }
+
     // Validator 4: Web Search Factual Validation
     try {
       const factualScore = await validateFactualAccuracy(userQuery, modelResponse);
@@ -162,6 +200,24 @@ export default function Dashboard() {
         externalVerificationRequired = true;
         notes += " Factual accuracy requires verification.";
       }
+      
+      // Special handling for Person entities - always require verification
+      const entityInfo = extractEntities(userQuery);
+      if (entityInfo.entityType === "Person") {
+        externalVerificationRequired = true;
+        notes += " Person entity requires manual verification.";
+        
+        // Check for professional claims that need extra scrutiny
+        const professionalKeywords = ["teacher", "professor", "doctor", "engineer", "lawyer", "manager", "director", "ceo", "president", "minister"];
+        const hasProfessionalClaim = professionalKeywords.some(keyword => 
+          modelResponse.toLowerCase().includes(keyword)
+        );
+        
+        if (hasProfessionalClaim) {
+          notes += " Professional claim detected - requires evidence verification.";
+        }
+      }
+      
     } catch (error) {
       validators.push({
         name: "factual_accuracy",
@@ -181,7 +237,7 @@ export default function Dashboard() {
     return { validationScore, notes, externalVerificationRequired, validators };
   };
 
-  // Web search validation function with named-entity recognition
+  // Web search validation function with named-entity recognition and strict person validation
   const validateFactualAccuracy = async (userQuery, modelResponse) => {
     try {
       // Extract search query and entity information from the question
@@ -194,6 +250,41 @@ export default function Dashboard() {
       // Search Wikipedia for factual information
       const searchResults = await searchWeb(entityInfo.query);
       
+      // Special handling for Person entities (strict validation)
+      if (entityInfo.entityType === "Person") {
+        console.log(`🔍 Strict Person Validation: "${entityInfo.query}"`);
+        
+        // Check if Wikipedia found the person
+        if (searchResults.includes("No specific information found") || searchResults.includes("Search failed")) {
+          console.log(`❌ Unknown Person: "${entityInfo.query}" - No Wikipedia data found`);
+          
+          // Check for professional claims in the response
+          const professionalKeywords = ["teacher", "professor", "doctor", "engineer", "lawyer", "manager", "director", "ceo", "president", "minister"];
+          const hasProfessionalClaim = professionalKeywords.some(keyword => 
+            modelResponse.toLowerCase().includes(keyword)
+          );
+          
+          if (hasProfessionalClaim) {
+            console.log(`⚠️ Professional Claim Detected: "${modelResponse}" - Requires verification`);
+            return 0.2; // Very low score for unverified professional claims about unknown persons
+          }
+          
+          return 0.3; // Low score for unknown persons without professional claims
+        }
+        
+        // If Wikipedia found the person, apply strict similarity checking
+        const similarity = calculateSimilarity(modelResponse.toLowerCase(), searchResults.toLowerCase());
+        
+        // For known persons, require higher similarity threshold
+        if (similarity < 0.5) {
+          console.log(`⚠️ Low Similarity for Known Person: ${similarity.toFixed(2)} - Response may be inaccurate`);
+          return 0.3; // Penalize low similarity for known persons
+        }
+        
+        return Math.min(0.9, similarity * 1.1); // Boost good matches slightly
+      }
+      
+      // For non-person entities, use standard validation
       if (searchResults.includes("No specific information found") || searchResults.includes("Search failed")) {
         return 0.6; // Neutral score if search fails
       }
@@ -238,6 +329,16 @@ export default function Dashboard() {
     
     // Named-entity recognition patterns with weights
     const entityPatterns = [
+      // Person/Personality questions (highest weight - requires strict validation)
+      {
+        pattern: /(kon hai|who is|who was|kaun hai|kaun tha) (.+?)(\?|$)/i,
+        entity: "Person",
+        search: (match) => match[2].trim(),
+        weight: 0.95, // Very high weight for person validation
+        requiresVerification: true, // Always flag for manual review
+        strictValidation: true // Apply stricter validation rules
+      },
+      
       // Capital cities (highest weight - very specific factual information)
       {
         pattern: /capital.*(india|usa|united states|china|russia|uk|britain|france|germany|japan|canada|australia)/i,
@@ -260,7 +361,9 @@ export default function Dashboard() {
           };
           return capitals[country] || "Capital city";
         },
-        weight: 1.0
+        weight: 1.0,
+        requiresVerification: false,
+        strictValidation: false
       },
       
       // Prime Ministers/Presidents (high weight - specific political figures)
@@ -276,7 +379,9 @@ export default function Dashboard() {
           }
           return `${role} ${country}`;
         },
-        weight: 0.9
+        weight: 0.9,
+        requiresVerification: false,
+        strictValidation: false
       },
       
       // Presidents (high weight - specific political figures)
@@ -287,7 +392,9 @@ export default function Dashboard() {
           const country = match[1];
           return `President of ${country}`;
         },
-        weight: 0.9
+        weight: 0.9,
+        requiresVerification: false,
+        strictValidation: false
       },
       
       // Famous landmarks (high weight - specific locations)
@@ -295,7 +402,9 @@ export default function Dashboard() {
         pattern: /(taj mahal|mount everest|ganges|eiffel tower|great wall|statue of liberty|big ben)/i,
         entity: "Landmark",
         search: (match) => match[1],
-        weight: 0.9
+        weight: 0.9,
+        requiresVerification: false,
+        strictValidation: false
       },
       
       // Historical events (medium-high weight - specific dates/facts)
@@ -312,7 +421,9 @@ export default function Dashboard() {
           }
           return event;
         },
-        weight: 0.8
+        weight: 0.8,
+        requiresVerification: false,
+        strictValidation: false
       },
       
       // Countries (medium weight - general geographic entities)
@@ -320,7 +431,9 @@ export default function Dashboard() {
         pattern: /(india|usa|united states|china|russia|uk|britain|france|germany|japan|canada|australia)/i,
         entity: "Country",
         search: (match) => match[1],
-        weight: 0.7
+        weight: 0.7,
+        requiresVerification: false,
+        strictValidation: false
       },
       
       // Major cities (medium weight - specific urban areas)
@@ -328,15 +441,9 @@ export default function Dashboard() {
         pattern: /(delhi|mumbai|bangalore|new york|london|paris|tokyo|beijing|moscow)/i,
         entity: "City",
         search: (match) => match[1],
-        weight: 0.7
-      },
-      
-      // People/Personalities (medium weight - specific individuals)
-      {
-        pattern: /who (is|was) (.+?)(\?|$)/i,
-        entity: "Person",
-        search: (match) => match[2].trim(),
-        weight: 0.8
+        weight: 0.7,
+        requiresVerification: false,
+        strictValidation: false
       },
       
       // Scientific concepts (medium weight - technical terms)
@@ -344,7 +451,9 @@ export default function Dashboard() {
         pattern: /(quantum|gravity|evolution|dna|atoms|molecules|photosynthesis)/i,
         entity: "Scientific Concept",
         search: (match) => match[1],
-        weight: 0.7
+        weight: 0.7,
+        requiresVerification: false,
+        strictValidation: false
       }
     ];
     
@@ -355,7 +464,7 @@ export default function Dashboard() {
         searchQuery = pattern.search(match);
         entityType = pattern.entity;
         matchWeight = pattern.weight;
-        console.log(`Named-entity match (${entityType} = "${searchQuery}" match weight ${matchWeight > 0.8 ? 'zyada' : 'normal'})`);
+        console.log(`Named-entity match (${entityType} = "${searchQuery}" match weight ${matchWeight > 0.8 ? 'zyada' : 'normal'}${pattern.requiresVerification ? ' - REQUIRES VERIFICATION' : ''})`);
         break;
       }
     }
@@ -380,7 +489,9 @@ export default function Dashboard() {
     return {
       query: searchQuery || "General information",
       entityType: entityType || "General",
-      matchWeight: matchWeight
+      matchWeight: matchWeight,
+      requiresVerification: entityType === "Person" || false, // Always require verification for persons
+      strictValidation: entityType === "Person" || false // Apply strict validation for persons
     };
   };
 
