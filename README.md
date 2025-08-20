@@ -37,3 +37,19 @@ npm run preview
 ## Useful Links
 - Vite Docs: https://vitejs.dev/
 - React Docs: https://react.dev/
+ - Firebase: https://firebase.google.com/docs
+
+## Firebase Setup
+Create a `.env.local` in project root with:
+```
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_STORAGE_BUCKET=...
+VITE_FIREBASE_MESSAGING_SENDER_ID=...
+VITE_FIREBASE_APP_ID=...
+```
+Then run:
+```
+npm run dev
+```
