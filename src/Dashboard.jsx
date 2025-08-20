@@ -208,12 +208,33 @@ export default function Dashboard() {
         score: 0.7,
         details: "Personal relationship question detected"
       });
+    } else if (entityInfo.entityType === "Personal Characteristic" && entityInfo.isPersonalValidation) {
+      console.log(`🔍 Personal Characteristic Validation Detected: "${userQuery}"`);
+      
+      // For personal characteristic validation, we can't verify the truth
+      // But we should flag these for manual review
+      validationScore = Math.min(validationScore, 0.3);
+      notes += " Personal characteristic validation - cannot be automatically verified.";
+      externalVerificationRequired = true;
+      validators.push({
+        name: "personal_characteristic_validation",
+        pass: false,
+        score: 0.3,
+        details: "Personal characteristic validation requires manual verification"
+      });
+    } else if (entityInfo.entityType === "Personal Characteristic") {
+      validators.push({
+        name: "personal_characteristic_validation",
+        pass: true,
+        score: 0.7,
+        details: "Personal characteristic question detected"
+      });
     } else {
       validators.push({
         name: "personal_relationship_validation",
         pass: true,
         score: 0.9,
-        details: "No personal relationship validation detected"
+        details: "No personal validation detected"
       });
     }
 
@@ -257,6 +278,16 @@ export default function Dashboard() {
         
         if (entityInfo.isPersonalValidation) {
           notes += " Personal relationship validation cannot be automatically verified.";
+        }
+      }
+      
+      // Special handling for Personal Characteristic entities - always require verification
+      if (entityInfo.entityType === "Personal Characteristic") {
+        externalVerificationRequired = true;
+        notes += " Personal characteristic requires manual verification.";
+        
+        if (entityInfo.isPersonalValidation) {
+          notes += " Personal characteristic validation cannot be automatically verified.";
         }
       }
       
@@ -310,6 +341,35 @@ export default function Dashboard() {
           return 0.3; // Low score because we can't verify personal relationships
         } else {
           console.log(`❓ Ambiguous response to personal validation question`);
+          return 0.2; // Very low score for unclear responses
+        }
+      }
+      
+      // Special handling for Personal Characteristic validation questions
+      if (entityInfo.entityType === "Personal Characteristic" && entityInfo.isPersonalValidation) {
+        console.log(`🔍 Personal Characteristic Validation: "${entityInfo.query}"`);
+        
+        // Check if the response is affirmative or negative
+        const affirmativeKeywords = ["yes", "right", "correct", "true", "sahi", "theek", "haan", "bilkul"];
+        const negativeKeywords = ["no", "wrong", "incorrect", "false", "galat", "nahi", "nope"];
+        
+        const hasAffirmative = affirmativeKeywords.some(keyword => 
+          modelResponse.toLowerCase().includes(keyword)
+        );
+        const hasNegative = negativeKeywords.some(keyword => 
+          modelResponse.toLowerCase().includes(keyword)
+        );
+        
+        // For personal characteristic validation, we can't verify the truth
+        // But we can check if the response is appropriate for the question type
+        if (hasAffirmative && !hasNegative) {
+          console.log(`✅ Affirmative response to personal characteristic validation question`);
+          return 0.3; // Low score because we can't verify personal characteristics
+        } else if (hasNegative && !hasAffirmative) {
+          console.log(`❌ Negative response to personal characteristic validation question`);
+          return 0.3; // Low score because we can't verify personal characteristics
+        } else {
+          console.log(`❓ Ambiguous response to personal characteristic validation question`);
           return 0.2; // Very low score for unclear responses
         }
       }
@@ -431,6 +491,28 @@ export default function Dashboard() {
         requiresVerification: true,
         strictValidation: true,
         isPersonalValidation: true
+      },
+      
+      // Personal characteristic validation questions (describing someone's personality/traits)
+      {
+        pattern: /(.+?) (.+?) (ldki|ladki|boy|girl|person|man|woman|student|friend|colleague) (hai|is)\.?\s*(is this|ye|is it|kya ye) (right|correct|true|sahi|theek)\??/i,
+        entity: "Personal Characteristic",
+        search: (match) => `${match[1]} ${match[2]} ${match[3]}`,
+        weight: 0.95,
+        requiresVerification: true,
+        strictValidation: true,
+        isPersonalValidation: true
+      },
+      
+      // Simple personal characteristic questions
+      {
+        pattern: /(.+?) (.+?) (hai|is)\??/i,
+        entity: "Personal Characteristic",
+        search: (match) => `${match[1]} ${match[2]}`,
+        weight: 0.9,
+        requiresVerification: true,
+        strictValidation: true,
+        isPersonalValidation: false
       },
       
       // Personal relationship questions (high priority)
@@ -605,9 +687,9 @@ export default function Dashboard() {
       query: searchQuery || "General information",
       entityType: entityType || "General",
       matchWeight: matchWeight,
-      requiresVerification: entityType === "Person" || entityType === "Personal Relationship" || false,
-      strictValidation: entityType === "Person" || entityType === "Personal Relationship" || false,
-      isPersonalValidation: entityType === "Personal Relationship" && lowerQuestion.includes("right") || lowerQuestion.includes("correct") || lowerQuestion.includes("true") || lowerQuestion.includes("sahi") || lowerQuestion.includes("theek")
+      requiresVerification: entityType === "Person" || entityType === "Personal Relationship" || entityType === "Personal Characteristic" || false,
+      strictValidation: entityType === "Person" || entityType === "Personal Relationship" || entityType === "Personal Characteristic" || false,
+      isPersonalValidation: (entityType === "Personal Relationship" || entityType === "Personal Characteristic") && (lowerQuestion.includes("right") || lowerQuestion.includes("correct") || lowerQuestion.includes("true") || lowerQuestion.includes("sahi") || lowerQuestion.includes("theek"))
     };
   };
 
