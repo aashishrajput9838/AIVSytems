@@ -393,8 +393,28 @@ export default function Dashboard() {
     setShowChatGPTMode(false);
   };
 
+  // Check if duplicate log exists within 1 minute
+  const isDuplicateLog = (userQuery, modelResponse) => {
+    const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 60 * 1000); // 1 minute ago
+    
+    return logs.some(log => {
+      const logTime = log.timestamp?.seconds ? new Date(log.timestamp.seconds * 1000) : new Date(log.timestamp);
+      const isRecent = logTime > oneMinuteAgo;
+      const isSameContent = log.user_query === userQuery && log.model_response === modelResponse;
+      
+      return isRecent && isSameContent;
+    });
+  };
+
   const captureConversation = async (question, response) => {
     if (!isCapturing) return;
+
+    // Check for duplicate within 1 minute
+    if (isDuplicateLog(question.trim(), response.trim())) {
+      setError("Duplicate log detected! Same content was added within the last minute.");
+      return;
+    }
 
     try {
       // Validate the response
@@ -437,6 +457,12 @@ export default function Dashboard() {
     e.preventDefault();
     if (!newLog.user_query.trim() || !newLog.model_response.trim()) {
       setError("Please fill in both user query and model response");
+      return;
+    }
+
+    // Check for duplicate within 1 minute
+    if (isDuplicateLog(newLog.user_query.trim(), newLog.model_response.trim())) {
+      setError("Duplicate log detected! Same content was added within the last minute.");
       return;
     }
 
@@ -573,6 +599,9 @@ export default function Dashboard() {
                 <div className="text-sm text-muted-foreground">
                   💡 <strong>How to use:</strong> Ask ChatGPT a question, copy the response, paste it here, and click "Capture & Validate". 
                   The system will automatically validate and log everything!
+                </div>
+                <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                  ⚠️ <strong>Duplicate Prevention:</strong> The system prevents adding identical logs within 1 minute to avoid spam.
                 </div>
               </div>
             )}
