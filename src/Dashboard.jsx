@@ -422,6 +422,17 @@ export default function Dashboard() {
         isPersonalValidation: true
       },
       
+      // Flexible personal relationship validation (catches "new roommate", "old friend", etc.)
+      {
+        pattern: /(.+?) (meri|my) (.+?) (friend|sister|brother|cousin|roommate|colleague|neighbor|classmate) (hai|is)\.?\s*(is this|ye|is it|kya ye) (right|correct|true|sahi|theek)\??/i,
+        entity: "Personal Relationship",
+        search: (match) => `${match[1]} ${match[3]} ${match[4]}`,
+        weight: 0.95,
+        requiresVerification: true,
+        strictValidation: true,
+        isPersonalValidation: true
+      },
+      
       // Personal relationship questions (high priority)
       {
         pattern: /(.+?) (meri|my) (friend|sister|brother|cousin|roommate|colleague|neighbor|classmate) (hai|is)\??/i,
