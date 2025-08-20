@@ -61,7 +61,7 @@ export default function Dashboard() {
   }
 
   // Validation logic (same as Cloud Functions would do)
-  const validateResponse = (userQuery, modelResponse) => {
+  const validateResponse = async (userQuery, modelResponse) => {
     let validationScore = 0.0;
     let notes = "Validation completed.";
     let externalVerificationRequired = false;
@@ -140,13 +140,135 @@ export default function Dashboard() {
       }
     }
 
-    // Calculate final validation score
+    // Validator 4: Web Search Factual Validation
+    try {
+      const factualScore = await validateFactualAccuracy(userQuery, modelResponse);
+      validators.push({
+        name: "factual_accuracy",
+        pass: factualScore >= 0.7,
+        score: factualScore,
+        details: factualScore >= 0.7 ? "Factually accurate" : "Factual accuracy concerns"
+      });
+      
+      // If factual score is low, require external verification
+      if (factualScore < 0.7) {
+        externalVerificationRequired = true;
+        notes += " Factual accuracy requires verification.";
+      }
+    } catch (error) {
+      validators.push({
+        name: "factual_accuracy",
+        pass: false,
+        score: 0.5,
+        details: "Factual validation failed - manual review needed"
+      });
+      externalVerificationRequired = true;
+    }
+
+    // Calculate final validation score (average of all validators)
     if (validators.length > 0) {
       const totalScore = validators.reduce((sum, validator) => sum + validator.score, 0);
       validationScore = totalScore / validators.length;
     }
 
     return { validationScore, notes, externalVerificationRequired, validators };
+  };
+
+  // Web search validation function
+  const validateFactualAccuracy = async (userQuery, modelResponse) => {
+    try {
+      // Extract key entities from the question
+      const entities = extractEntities(userQuery);
+      
+      if (entities.length === 0) {
+        return 0.8; // Neutral score if no clear entities
+      }
+
+      // Search for factual information
+      const searchResults = await searchWeb(entities.join(" "));
+      
+      // Compare AI response with search results
+      const similarity = calculateSimilarity(modelResponse.toLowerCase(), searchResults.toLowerCase());
+      
+      // Convert similarity to score (0-1)
+      if (similarity > 0.8) return 0.9;      // Very similar
+      if (similarity > 0.6) return 0.7;      // Somewhat similar  
+      if (similarity > 0.4) return 0.5;      // Partially similar
+      if (similarity > 0.2) return 0.3;      // Low similarity
+      return 0.1;                             // Very different
+      
+    } catch (error) {
+      console.error("Factual validation error:", error);
+      return 0.5; // Neutral score on error
+    }
+  };
+
+  // Extract key entities from question
+  const extractEntities = (question) => {
+    const lowerQuestion = question.toLowerCase();
+    const entities = [];
+    
+    // Common factual question patterns
+    if (lowerQuestion.includes("who is") || lowerQuestion.includes("who was")) {
+      entities.push("current", "person", "leader");
+    }
+    if (lowerQuestion.includes("prime minister") || lowerQuestion.includes("pm")) {
+      entities.push("prime minister", "india");
+    }
+    if (lowerQuestion.includes("capital")) {
+      entities.push("capital", "country");
+    }
+    if (lowerQuestion.includes("president")) {
+      entities.push("president", "country");
+    }
+    if (lowerQuestion.includes("when") || lowerQuestion.includes("date")) {
+      entities.push("date", "event");
+    }
+    if (lowerQuestion.includes("where")) {
+      entities.push("location", "place");
+    }
+    
+    // Add specific entities mentioned
+    const specificEntities = ["india", "usa", "china", "russia", "uk", "france", "germany"];
+    specificEntities.forEach(entity => {
+      if (lowerQuestion.includes(entity)) {
+        entities.push(entity);
+      }
+    });
+    
+    return entities;
+  };
+
+  // Simulate web search (replace with actual API)
+  const searchWeb = async (query) => {
+    // For demo purposes, return mock search results
+    // In production, integrate with Google Search API, Wikipedia API, etc.
+    
+    const mockResults = {
+      "prime minister india": "Narendra Modi is the current Prime Minister of India",
+      "capital india": "New Delhi is the capital of India",
+      "president usa": "Joe Biden is the current President of the United States",
+      "capital usa": "Washington D.C. is the capital of the United States"
+    };
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Return mock result or "No results found"
+    return mockResults[query.toLowerCase()] || "No specific information found";
+  };
+
+  // Calculate similarity between two strings
+  const calculateSimilarity = (str1, str2) => {
+    const words1 = str1.split(/\s+/);
+    const words2 = str2.split(/\s+/);
+    
+    const commonWords = words1.filter(word => 
+      words2.some(word2 => word2.includes(word) || word.includes(word2))
+    );
+    
+    const totalWords = Math.max(words1.length, words2.length);
+    return commonWords.length / totalWords;
   };
 
   const handleAddLog = async (e) => {
@@ -161,7 +283,7 @@ export default function Dashboard() {
       setError("");
       
       // Validate the response
-      const validation = validateResponse(newLog.user_query, newLog.model_response);
+      const validation = await validateResponse(newLog.user_query, newLog.model_response);
       
       // Create log entry with validation results
       const logEntry = {
