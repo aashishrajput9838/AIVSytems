@@ -1154,64 +1154,96 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">AI Response Validation Dashboard</h1>
-        <div className="flex gap-2">
-          <Button onClick={() => setShowChatGPTMode(!showChatGPTMode)} variant="outline">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            {showChatGPTMode ? "Exit ChatGPT Mode" : "ChatGPT Mode"}
-          </Button>
-          <Button onClick={() => setShowAddForm(!showAddForm)}>
-            <Plus className="h-4 w-4 mr-2" />
-            {showAddForm ? "Cancel" : "Add Log"}
-          </Button>
-        </div>
-      </div>
-
-      {/* ChatGPT Mode Interface */}
-      {showChatGPTMode && (
-        <Card className="shadow-lg rounded-2xl">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">ChatGPT Mode - Auto-Capture Conversations</h2>
-              <div className="flex gap-2">
-                {!isCapturing ? (
-                  <Button onClick={startCapturing} className="bg-green-600 hover:bg-green-700">
-                    Start Capturing
-                  </Button>
-                ) : (
-                  <Button onClick={stopCapturing} variant="destructive">
-                    Stop Capturing
-                  </Button>
-                )}
-              </div>
+    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-indigo-950 via-slate-950 to-slate-950">
+      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-indigo-500/30 to-fuchsia-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-fuchsia-500/20 to-indigo-500/20 blur-3xl" />
+      
+      <main className="mx-auto w-full max-w-7xl px-4 py-8">
+        {/* Header */}
+        <section className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">
+                AI Response Validation Dashboard
+              </h1>
+              <p className="text-muted-foreground">
+                Welcome back, {user?.email || 'User'} • Monitor and validate AI responses in real-time
+              </p>
             </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs text-indigo-300">
+              Live Monitoring
+            </div>
+          </div>
+        </section>
+
+        {/* Action Buttons */}
+        <section className="mb-8">
+          <div className="flex gap-4">
+            <Button 
+              onClick={() => setShowChatGPTMode(!showChatGPTMode)} 
+              variant="outline"
+              className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10"
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              {showChatGPTMode ? "Exit ChatGPT Mode" : "ChatGPT Mode"}
+            </Button>
+            <Button 
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {showAddForm ? "Cancel" : "Add Log"}
+            </Button>
+          </div>
+        </section>
+
+        {/* ChatGPT Mode Interface */}
+        {showChatGPTMode && (
+          <section className="mb-8">
+            <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm">
+              <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-white">ChatGPT Mode - Auto-Capture Conversations</h2>
+                  <div className="flex gap-2">
+                    {!isCapturing ? (
+                      <Button onClick={startCapturing} className="bg-green-600 hover:bg-green-700">
+                        Start Capturing
+                      </Button>
+                    ) : (
+                      <Button onClick={stopCapturing} variant="destructive">
+                        Stop Capturing
+                      </Button>
+                    )}
+                  </div>
+                </div>
             
             {isCapturing && (
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Your Question</label>
+                    <label className="block text-sm font-medium mb-2 text-white">Your Question</label>
                     <Input
                       placeholder="Type your question here..."
                       value={currentQuestion}
                       onChange={(e) => setCurrentQuestion(e.target.value)}
+                      className="bg-background/60 backdrop-blur border-indigo-500/30"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">AI Response</label>
+                    <label className="block text-sm font-medium mb-2 text-white">AI Response</label>
                     <Input
                       placeholder="Paste AI response here..."
                       value={currentResponse}
                       onChange={(e) => setCurrentResponse(e.target.value)}
+                      className="bg-background/60 backdrop-blur border-indigo-500/30"
                     />
                   </div>
                 </div>
                 <Button 
                   onClick={() => captureConversation(currentQuestion, currentResponse)}
                   disabled={!currentQuestion.trim() || !currentResponse.trim()}
-                  className="w-full"
+                  className="w-full bg-indigo-600 hover:bg-indigo-700"
                 >
                   Capture & Validate Conversation
                 </Button>
@@ -1220,7 +1252,7 @@ export default function Dashboard() {
                   💡 <strong>How to use:</strong> Ask ChatGPT a question, copy the response, paste it here, and click "Capture & Validate". 
                   The system will automatically validate and log everything!
                 </div>
-                <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                <div className="text-sm text-amber-400 bg-amber-500/10 p-3 rounded-lg border border-amber-500/30">
                   ⚠️ <strong>Duplicate Prevention:</strong> The system prevents adding identical logs within 1 minute to avoid spam.
                 </div>
               </div>
@@ -1229,15 +1261,15 @@ export default function Dashboard() {
             {/* Chat History */}
             {chatHistory.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-medium mb-3">Captured Conversations</h3>
+                <h3 className="text-lg font-medium mb-3 text-white">Captured Conversations</h3>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {chatHistory.map((chat, index) => (
-                    <div key={index} className="border rounded-lg p-3 bg-gray-50">
-                      <div className="text-sm text-gray-600 mb-1">
+                    <div key={index} className="border border-indigo-500/30 rounded-lg p-3 bg-background/40 backdrop-blur">
+                      <div className="text-sm text-muted-foreground mb-1">
                         {chat.timestamp.toLocaleTimeString()}
                       </div>
-                      <div className="font-medium text-sm">Q: {chat.question}</div>
-                      <div className="text-sm mt-1">A: {chat.response}</div>
+                      <div className="font-medium text-sm text-white">Q: {chat.question}</div>
+                      <div className="text-sm mt-1 text-muted-foreground">A: {chat.response}</div>
                       <div className="mt-2">
                         <span className={`px-2 py-1 rounded-full text-white text-xs ${
                           chat.validation.validationScore >= 0.7
@@ -1254,125 +1286,139 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
-      )}
+              </CardContent>
+            </Card>
+          </section>
+        )}
 
-      {/* Add Log Form */}
-      {showAddForm && (
-        <Card className="shadow-lg rounded-2xl">
-          <CardContent className="p-6">
-            <form onSubmit={handleAddLog} className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="block text-sm font-medium mb-2">User Query</label>
-                  <Input
-                    placeholder="Enter the user's question/prompt..."
-                    value={newLog.user_query}
-                    onChange={(e) => setNewLog({...newLog, user_query: e.target.value})}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Model Response</label>
-                  <Input
-                    placeholder="Enter the AI model's response..."
-                    value={newLog.model_response}
-                    onChange={(e) => setNewLog({...newLog, model_response: e.target.value})}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Adding..." : "Add & Validate"}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Search Bar */}
-      <div className="flex gap-2 items-center">
-        <Input
-          placeholder="Search queries or responses..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <Button variant="outline">
-          <Search className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {isLoading && (
-        <div className="text-sm text-muted-foreground">Loading logs…</div>
-      )}
-      {error && (
-        <div className="text-sm text-red-600">{error}</div>
-      )}
-
-      {/* Logs Table */}
-      <Card className="shadow-lg rounded-2xl">
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Timestamp</TableHead>
-                <TableHead>User Query</TableHead>
-                <TableHead>Model Response</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>Entity Type</TableHead>
-                <TableHead>Verification</TableHead>
-                <TableHead>Notes</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredLogs.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell>{formatTimestamp(log.timestamp)}</TableCell>
-                  <TableCell>{log.user_query}</TableCell>
-                  <TableCell>{log.model_response}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-white text-sm ${
-                        Number(log.validation_score || 0) >= 0.7
-                          ? "bg-green-600"
-                          : Number(log.validation_score || 0) >= 0.3
-                          ? "bg-yellow-500"
-                          : "bg-red-600"
-                      }`}
-                    >
-                      {Number(log.validation_score || 0).toFixed(2)}
-                    </span>
-                  </TableCell>
-                  <TableCell>{log.entity_info?.entityType || "N/A"}</TableCell>
-                  <TableCell>
-                    {log.external_verification_required ? (
-                      <span className="text-red-500 font-semibold">Required</span>
-                    ) : (
-                      <span className="text-green-600 font-semibold">Not Needed</span>
-                    )}
-                  </TableCell>
-                  <TableCell>{log.notes}</TableCell>
-                  <TableCell className="flex gap-2">
-                    <Button size="sm" onClick={() => approveLog(log.id)}>
-                      <Check className="h-4 w-4 mr-1" /> Approve
+        {/* Add Log Form */}
+        {showAddForm && (
+          <section className="mb-8">
+            <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm">
+              <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+              <CardContent className="p-6">
+                <h2 className="text-xl font-semibold text-white mb-4">Add New Log Entry</h2>
+                <form onSubmit={handleAddLog} className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-white">User Query</label>
+                      <Input
+                        placeholder="Enter the user's question/prompt..."
+                        value={newLog.user_query}
+                        onChange={(e) => setNewLog({...newLog, user_query: e.target.value})}
+                        required
+                        className="bg-background/60 backdrop-blur border-indigo-500/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-white">Model Response</label>
+                      <Input
+                        placeholder="Enter the AI model's response..."
+                        value={newLog.model_response}
+                        onChange={(e) => setNewLog({...newLog, model_response: e.target.value})}
+                        required
+                        className="bg-background/60 backdrop-blur border-indigo-500/30"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" disabled={isLoading} className="bg-indigo-600 hover:bg-indigo-700">
+                      {isLoading ? "Adding..." : "Add & Validate"}
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => rejectLog(log.id)}>
-                      <X className="h-4 w-4 mr-1" /> Reject
+                    <Button type="button" variant="outline" onClick={() => setShowAddForm(false)} className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10">
+                      Cancel
                     </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </section>
+        )}
+
+        {/* Search Bar */}
+        <section className="mb-6">
+          <div className="flex gap-2 items-center">
+            <Input
+              placeholder="Search queries or responses..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="bg-background/60 backdrop-blur border-indigo-500/30"
+            />
+            <Button variant="outline" className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10">
+              <Search className="h-4 w-4" />
+            </Button>
+          </div>
+        </section>
+
+        {isLoading && (
+          <div className="text-sm text-muted-foreground">Loading logs…</div>
+        )}
+        {error && (
+          <div className="text-sm text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/30">{error}</div>
+        )}
+
+        {/* Logs Table */}
+        <section className="space-y-6">
+          <Card className="group relative overflow-hidden rounded-2xl border bg-background/60 backdrop-blur shadow-sm">
+            <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 blur-2xl" />
+            <CardContent className="p-6">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-indigo-500/30">
+                    <TableHead className="text-indigo-300">Timestamp</TableHead>
+                    <TableHead className="text-indigo-300">User Query</TableHead>
+                    <TableHead className="text-indigo-300">Model Response</TableHead>
+                    <TableHead className="text-indigo-300">Score</TableHead>
+                    <TableHead className="text-indigo-300">Entity Type</TableHead>
+                    <TableHead className="text-indigo-300">Verification</TableHead>
+                    <TableHead className="text-indigo-300">Notes</TableHead>
+                    <TableHead className="text-indigo-300">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredLogs.map((log) => (
+                    <TableRow key={log.id} className="border-indigo-500/20 hover:bg-indigo-500/5">
+                      <TableCell className="text-muted-foreground">{formatTimestamp(log.timestamp)}</TableCell>
+                      <TableCell className="text-white">{log.user_query}</TableCell>
+                      <TableCell className="text-white">{log.model_response}</TableCell>
+                      <TableCell>
+                        <span
+                          className={`px-2 py-1 rounded-full text-white text-sm ${
+                            Number(log.validation_score || 0) >= 0.7
+                              ? "bg-green-600"
+                              : Number(log.validation_score || 0) >= 0.3
+                              ? "bg-yellow-500"
+                              : "bg-red-600"
+                          }`}
+                        >
+                          {Number(log.validation_score || 0).toFixed(2)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{log.entity_info?.entityType || "N/A"}</TableCell>
+                      <TableCell>
+                        {log.external_verification_required ? (
+                          <span className="text-red-400 font-semibold">Required</span>
+                        ) : (
+                          <span className="text-green-400 font-semibold">Not Needed</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{log.notes}</TableCell>
+                      <TableCell className="flex gap-2">
+                        <Button size="sm" onClick={() => approveLog(log.id)} className="bg-green-600 hover:bg-green-700">
+                          <Check className="h-4 w-4 mr-1" /> Approve
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => rejectLog(log.id)}>
+                          <X className="h-4 w-4 mr-1" /> Reject
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </section>
+      </main>
     </div>
   );
 }
