@@ -1,116 +1,130 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import {
-  Activity,
-  Brain,
-  ShieldCheck,
-} from 'lucide-react'
-
-function FeatureCard({ icon: Icon, title, description }) {
-  return (
-    <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
-      <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
-      <CardContent className="p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-500 transition-colors group-hover:bg-cyan-500/20">
-            <Icon className="size-5" />
-          </div>
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
-        </div>
-        <p className="text-sm text-gray-300">{description}</p>
-      </CardContent>
-    </Card>
-  )
-}
-
-function DemoPreview() {
-  return (
-    <Card className="rounded-2xl border bg-gray-800/70 shadow-sm">
-      <CardContent className="p-6">
-        <div className="mb-3 text-sm text-gray-300">
-          Explore the full dashboard for live filters, scores, and actions.
-        </div>
-        <Button asChild className="bg-cyan-600 hover:bg-cyan-700 text-white">
-          <Link to="/dashboard" className="">Open Dashboard</Link>
-        </Button>
-      </CardContent>
-    </Card>
-  )
-}
-
 import { Link } from 'react-router-dom'
+import { ArrowDownRight, Brain, Shield, Activity } from 'lucide-react'
 
 export default function Home() {
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-gray-900 via-gray-700 to-gray-100">
-      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-cyan-500/30 to-teal-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 blur-3xl" />
+    <div className="relative min-h-dvh w-full overflow-hidden">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-amber-900 to-amber-100">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,191,36,0.3),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,191,36,0.2),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(0,0,0,0.8),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(0,0,0,0.6),transparent_50%)]"></div>
+      </div>
 
-      
-
-      <main className="mx-auto w-full max-w-6xl px-4">
-        {/* Hero */}
-        <section className="relative flex flex-col items-center gap-6 py-16 text-center sm:py-24">
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-300">
-            Future of responsible AI
-          </div>
-          <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
-            AI Response Validation System
-          </h1>
-          <p className="max-w-2xl text-balance text-base text-gray-300 sm:text-lg">
-            Bringing trust, transparency, and accountability to AI decisions.
-          </p>
-          <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-            <Button asChild className="bg-cyan-600 hover:bg-cyan-700 text-white">
-              <Link to="/dashboard">Try Dashboard</Link>
+      {/* Main White Content Area */}
+      <div className="relative z-10 mx-auto mt-8 mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
+        {/* Header/Navigation */}
+        <header className="flex items-center justify-between p-8 border-b border-gray-100">
+          <div className="text-sm font-medium text-black">aivsystems</div>
+          <nav className="flex items-center gap-8 text-sm text-black">
+            <a href="#dashboard" className="hover:text-amber-600 transition-colors">DASHBOARD</a>
+            <a href="#about" className="hover:text-amber-600 transition-colors">ABOUT</a>
+            <a href="#capabilities" className="hover:text-amber-600 transition-colors">CAPABILITIES</a>
+            <a href="#insights" className="hover:text-amber-600 transition-colors">INSIGHTS</a>
+            <Button variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50">
+              <ArrowDownRight className="h-3 w-3" />
+              CONTACT
             </Button>
-            <Button variant="outline" asChild className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10">
-              <Link to="/how-it-works">Learn More</Link>
-            </Button>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section id="features" className="space-y-8 py-6">
-          <h2 className="text-center text-2xl font-semibold text-white">Capabilities</h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <FeatureCard
-              icon={Activity}
-              title="Real-Time AI Monitoring"
-              description="Track model outputs, risks, and validations as they happen across your stack."
-            />
-            <FeatureCard
-              icon={Brain}
-              title="Reasoning Transparency"
-              description="Surface chain-of-thought signals and validations for explainable decisions."
-            />
-            <FeatureCard
-              icon={ShieldCheck}
-              title="Trust & Accountability"
-              description="Governance-ready audit trails with approvals, thresholds, and escalations."
-            />
-          </div>
-        </section>
-
-        {/* Demo Preview */}
-        <section className="space-y-6 py-12">
-          <h2 className="text-center text-2xl font-semibold text-white">Live Demo Preview</h2>
-          <DemoPreview />
-        </section>
-
-        
-      </main>
-
-      <footer id="footer" className="mx-auto w-full max-w-6xl px-4 py-10">
-        <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-600 pt-6 text-sm text-gray-400 sm:flex-row">
-          <span>© {new Date().getFullYear()} AIV Systems</span>
-          <nav className="flex items-center gap-4">
-            <a href="#" className="hover:text-white">About</a>
-            <a href="#" className="hover:text-white">Contact</a>
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-white">GitHub</a>
           </nav>
+        </header>
+
+        {/* Main Content */}
+        <main className="p-8">
+          {/* Main Headline */}
+          <div className="text-center mb-12">
+            <h1 className="text-6xl font-bold text-black mb-8 tracking-tight">
+              AIV SYSTEMS
+            </h1>
+            
+            {/* Central Graphic */}
+            <div className="relative mx-auto w-64 h-64 mb-8">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-amber-600 to-black rounded-lg overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,191,36,0.8),transparent_50%)]"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(0,0,0,0.6),transparent_50%)]"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-white text-8xl font-bold opacity-90">AI</div>
+                </div>
+              </div>
+              <div className="absolute -right-8 top-1/2 transform -translate-y-1/2 w-16 h-16 bg-gray-100 rounded-lg"></div>
+            </div>
+            
+            <h2 className="text-6xl font-bold text-black tracking-tight">
+              VALIDATION
+            </h2>
+          </div>
+
+          {/* Supporting Text */}
+          <div className="flex justify-between items-end text-sm text-black">
+            <div className="max-w-xs">
+              <p className="font-medium">
+                A <span className="font-bold">CREATIVE AI VALIDATION</span> SYSTEM
+              </p>
+            </div>
+            <div className="max-w-xs text-right">
+              <p className="font-medium">
+                SETTING <span className="font-bold">AI TRUST IN MOTION</span>
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Floating Action Cards */}
+      <div className="relative z-20 mx-auto w-[95%] max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Brain className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-black">AI Monitoring</h3>
+              </div>
+              <p className="text-sm text-gray-600">
+                Real-time validation and monitoring of AI responses with advanced NLP algorithms.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Shield className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-black">Trust & Security</h3>
+              </div>
+              <p className="text-sm text-gray-600">
+                Multi-source fact checking and comprehensive audit trails for complete transparency.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-amber-100 rounded-lg">
+                  <Activity className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="font-semibold text-black">Live Dashboard</h3>
+              </div>
+              <p className="text-sm text-gray-600">
+                Interactive dashboard with real-time validation scores and detailed analytics.
+              </p>
+            </CardContent>
+          </Card>
         </div>
-      </footer>
+
+        {/* CTA Section */}
+        <div className="text-center mt-12">
+          <Button asChild className="bg-black text-white hover:bg-amber-600 hover:text-black transition-all duration-300 px-8 py-4 text-lg font-medium">
+            <Link to="/dashboard">Explore Dashboard</Link>
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
