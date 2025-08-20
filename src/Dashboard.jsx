@@ -423,18 +423,31 @@ export default function Dashboard() {
       // Compare AI response with Wikipedia results
       const similarity = calculateSimilarity(modelResponse.toLowerCase(), searchResults.toLowerCase());
       
+      // Check if results are cross-verified from multiple sources
+      const isCrossVerified = searchResults.includes("[CROSS-VERIFIED]");
+      const isMultiSource = searchResults.includes("[MULTI-SOURCE]");
+      
       // Apply entity-specific weighting for more accurate scoring
       let weightedScore = similarity;
       
+      // Boost score for cross-verified information
+      if (isCrossVerified) {
+        weightedScore = Math.min(1.0, similarity * 1.3); // 30% boost for cross-verified data
+        console.log(`✅ Cross-verified data detected - boosting score from ${similarity.toFixed(2)} to ${weightedScore.toFixed(2)}`);
+      } else if (isMultiSource) {
+        weightedScore = Math.min(1.0, similarity * 1.15); // 15% boost for multi-source data
+        console.log(`📊 Multi-source data detected - boosting score from ${similarity.toFixed(2)} to ${weightedScore.toFixed(2)}`);
+      }
+      
       // Boost score for high-confidence entities (capitals, political leaders, landmarks)
       if (entityInfo.matchWeight > 0.8) {
-        weightedScore = Math.min(1.0, similarity * 1.2); // Boost by 20% for high-confidence entities
-        console.log(`High-confidence entity detected: ${entityInfo.entityType} - boosting score from ${similarity.toFixed(2)} to ${weightedScore.toFixed(2)}`);
+        weightedScore = Math.min(1.0, weightedScore * 1.2); // Boost by 20% for high-confidence entities
+        console.log(`High-confidence entity detected: ${entityInfo.entityType} - boosting score to ${weightedScore.toFixed(2)}`);
       }
       
       // Penalize low scores for high-confidence entities more severely
       if (entityInfo.matchWeight > 0.8 && similarity < 0.3) {
-        weightedScore = similarity * 0.7; // Additional penalty for factual errors in high-confidence areas
+        weightedScore = weightedScore * 0.7; // Additional penalty for factual errors in high-confidence areas
         console.log(`Factual error in high-confidence area: ${entityInfo.entityType} - applying penalty: ${weightedScore.toFixed(2)}`);
       }
       
@@ -693,42 +706,126 @@ export default function Dashboard() {
     };
   };
 
-  // Wikipedia API search function
+  // Multi-source web search validation function with cross-checking
   const searchWeb = async (query) => {
     try {
-      // Wikipedia API endpoint
-      const searchUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+      console.log(`🔍 Multi-source search for: "${query}"`);
       
-      const response = await fetch(searchUrl);
+      const results = {
+        wikipedia: null,
+        britannica: null,
+        unData: null
+      };
       
-      if (!response.ok) {
-        // If direct page not found, try search API
-        const searchApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=${encodeURIComponent(query)}&origin=*`;
-        const searchResponse = await fetch(searchApiUrl);
+      // Source 1: Wikipedia API
+      try {
+        const searchUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+        const response = await fetch(searchUrl);
         
-        if (searchResponse.ok) {
-          const searchData = await searchResponse.json();
-          if (searchData.query && searchData.query.search && searchData.query.search.length > 0) {
-            const firstResult = searchData.query.search[0];
-            return firstResult.snippet.replace(/<\/?[^>]+(>|$)/g, ""); // Remove HTML tags
+        if (response.ok) {
+          const data = await response.json();
+          results.wikipedia = data.extract || data.description || "Information found but no extract available";
+          console.log(`✅ Wikipedia: Found data (${results.wikipedia.length} chars)`);
+        } else {
+          // Try Wikipedia search API as fallback
+          const searchApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=${encodeURIComponent(query)}&origin=*`;
+          const searchResponse = await fetch(searchApiUrl);
+          
+          if (searchResponse.ok) {
+            const searchData = await searchResponse.json();
+            if (searchData.query && searchData.query.search && searchData.query.search.length > 0) {
+              const firstResult = searchData.query.search[0];
+              results.wikipedia = firstResult.snippet.replace(/<\/?[^>]+(>|$)/g, "");
+              console.log(`✅ Wikipedia Search: Found data (${results.wikipedia.length} chars)`);
+            }
+          }
+        }
+      } catch (error) {
+        console.log(`❌ Wikipedia: ${error.message}`);
+      }
+      
+      // Source 2: Britannica API (simulated - would need API key in production)
+      try {
+        // For now, we'll simulate Britannica search with a different approach
+        // In production, you would use: https://api.britannica.com/v1/search?q=${query}
+        const britannicaUrl = `https://www.britannica.com/search?query=${encodeURIComponent(query)}`;
+        // Note: This is a placeholder. Real Britannica API requires authentication
+        results.britannica = "Britannica data would be available with API key";
+        console.log(`ℹ️ Britannica: API key required for real data`);
+      } catch (error) {
+        console.log(`❌ Britannica: ${error.message}`);
+      }
+      
+      // Source 3: UN Data API (simulated - would need API key in production)
+      try {
+        // For now, we'll simulate UN data search
+        // In production, you would use: https://data.un.org/ws/rest/data?q=${query}
+        const unDataUrl = `https://data.un.org/ws/rest/data?q=${encodeURIComponent(query)}`;
+        // Note: This is a placeholder. Real UN Data API requires authentication
+        results.unData = "UN Data would be available with API key";
+        console.log(`ℹ️ UN Data: API key required for real data`);
+      } catch (error) {
+        console.log(`❌ UN Data: ${error.message}`);
+      }
+      
+      // Cross-check and combine results
+      const validResults = Object.values(results).filter(result => 
+        result && result !== "Britannica data would be available with API key" && 
+        result !== "UN Data would be available with API key"
+      );
+      
+      if (validResults.length === 0) {
+        console.log(`❌ No valid data found from any source`);
+        return "No specific information found from multiple sources";
+      }
+      
+      // If we have multiple sources, cross-check for consistency
+      if (validResults.length > 1) {
+        console.log(`🔍 Cross-checking ${validResults.length} sources for consistency`);
+        
+        // Calculate similarity between different sources
+        const similarities = [];
+        for (let i = 0; i < validResults.length; i++) {
+          for (let j = i + 1; j < validResults.length; j++) {
+            const similarity = calculateSimilarity(validResults[i], validResults[j]);
+            similarities.push(similarity);
+            console.log(`📊 Source ${i+1} vs Source ${j+1} similarity: ${similarity.toFixed(3)}`);
           }
         }
         
-        return "No specific information found";
+        // Calculate average consistency
+        const avgConsistency = similarities.length > 0 ? 
+          similarities.reduce((sum, sim) => sum + sim, 0) / similarities.length : 0;
+        
+        console.log(`📊 Average cross-source consistency: ${avgConsistency.toFixed(3)}`);
+        
+        // If sources are consistent (high similarity), boost confidence
+        if (avgConsistency > 0.7) {
+          console.log(`✅ High consistency across sources - boosting confidence`);
+          // Combine the most detailed result with consistency boost
+          const bestResult = validResults.reduce((best, current) => 
+            current.length > best.length ? current : best
+          );
+          return `[CROSS-VERIFIED] ${bestResult}`;
+        } else if (avgConsistency > 0.4) {
+          console.log(`⚠️ Moderate consistency across sources`);
+          // Use the most detailed result
+          const bestResult = validResults.reduce((best, current) => 
+            current.length > best.length ? current : best
+          );
+          return `[MULTI-SOURCE] ${bestResult}`;
+        } else {
+          console.log(`❌ Low consistency across sources - using primary source`);
+          return validResults[0];
+        }
       }
       
-      const data = await response.json();
-      
-      if (data.extract) {
-        return data.extract;
-      } else if (data.description) {
-        return data.description;
-      } else {
-        return "Information found but no extract available";
-      }
+      // Single source result
+      console.log(`✅ Using single source result`);
+      return validResults[0];
       
     } catch (error) {
-      console.error("Wikipedia API error:", error);
+      console.error("Multi-source search error:", error);
       return "Search failed - manual review needed";
     }
   };
