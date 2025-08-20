@@ -340,17 +340,29 @@ export default function Dashboard() {
     }
   };
 
-  // Calculate similarity between two strings
+  // Calculate similarity between two strings (stopword-aware)
   const calculateSimilarity = (str1, str2) => {
-    const words1 = str1.split(/\s+/);
-    const words2 = str2.split(/\s+/);
-    
-    const commonWords = words1.filter(word => 
-      words2.some(word2 => word2.includes(word) || word.includes(word2))
-    );
-    
-    const totalWords = Math.max(words1.length, words2.length);
-    return commonWords.length / totalWords;
+    const stopwords = new Set([
+      'a','an','the','and','or','but','if','then','else','when','while','of','in','on','at','to','for','from','by','with','about','as','into','like','through','after','over','between','out','against','during','without','before','under','around','among',
+      'is','am','are','was','were','be','been','being','do','does','did','doing','have','has','had','having','it','its','this','that','these','those','i','you','he','she','they','we','them','his','her','their','our','your','yours','ours',
+      'not','no','yes','can','could','should','would','may','might','will','shall','also','too','very','just'
+    ])
+
+    const normalize = (text) =>
+      text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ') // remove punctuation
+        .split(/\s+/)
+        .filter(w => w && !stopwords.has(w) && w.length > 2) // drop stopwords and tiny tokens
+
+    const words1 = Array.from(new Set(normalize(str1)))
+    const words2 = Array.from(new Set(normalize(str2)))
+
+    if (words1.length === 0 || words2.length === 0) return 0
+
+    const common = words1.filter(w1 => words2.some(w2 => w1 === w2 || w1.includes(w2) || w2.includes(w1)))
+    const total = Math.max(words1.length, words2.length)
+    return common.length / total
   };
 
   // ChatGPT Mode functions
