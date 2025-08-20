@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Check, X, Search, Plus } from "lucide-react";
+import { Check, X, Search, Plus, MessageSquare, FileText } from "lucide-react";
 import { getLogs, approveLogById, rejectLogById, addLog } from "@/lib/api";
 import { useAuth } from "@/AuthProvider";
 
@@ -24,6 +24,13 @@ export default function Dashboard() {
     notes: "",
     status: "pending"
   });
+
+  // ChatGPT Mode state
+  const [showChatGPTMode, setShowChatGPTMode] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState("");
+  const [currentResponse, setCurrentResponse] = useState("");
+  const [isCapturing, setIsCapturing] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -346,6 +353,59 @@ export default function Dashboard() {
     return commonWords.length / totalWords;
   };
 
+  // ChatGPT Mode functions
+  const startCapturing = () => {
+    setIsCapturing(true);
+    setChatHistory([]);
+    setCurrentQuestion("");
+    setCurrentResponse("");
+  };
+
+  const stopCapturing = () => {
+    setIsCapturing(false);
+    setShowChatGPTMode(false);
+  };
+
+  const captureConversation = async (question, response) => {
+    if (!isCapturing) return;
+
+    try {
+      // Validate the response
+      const validation = await validateResponse(question, response);
+      
+      // Create log entry with validation results
+      const logEntry = {
+        user_query: question.trim(),
+        model_response: response.trim(),
+        validation_score: validation.validationScore,
+        external_verification_required: validation.externalVerificationRequired,
+        notes: validation.notes,
+        validators: validation.validators,
+        status: "validated",
+        created_by: user?.email || "unknown",
+        timestamp: new Date().toISOString(),
+        source: "chatgpt_mode"
+      };
+
+      await addLog(logEntry);
+      
+      // Add to chat history
+      setChatHistory(prev => [...prev, {
+        question,
+        response,
+        validation: validation,
+        timestamp: new Date()
+      }]);
+      
+      // Reload logs to show the new entry
+      const data = await getLogs();
+      setLogs(Array.isArray(data) ? data : []);
+      
+    } catch (err) {
+      console.error("Failed to capture conversation:", err);
+    }
+  };
+
   const handleAddLog = async (e) => {
     e.preventDefault();
     if (!newLog.user_query.trim() || !newLog.model_response.trim()) {
@@ -424,11 +484,103 @@ export default function Dashboard() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">AI Response Validation Dashboard</h1>
-        <Button onClick={() => setShowAddForm(!showAddForm)}>
-          <Plus className="h-4 w-4 mr-2" />
-          {showAddForm ? "Cancel" : "Add Log"}
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowChatGPTMode(!showChatGPTMode)} variant="outline">
+            <MessageSquare className="h-4 w-4 mr-2" />
+            {showChatGPTMode ? "Exit ChatGPT Mode" : "ChatGPT Mode"}
+          </Button>
+          <Button onClick={() => setShowAddForm(!showAddForm)}>
+            <Plus className="h-4 w-4 mr-2" />
+            {showAddForm ? "Cancel" : "Add Log"}
+          </Button>
+        </div>
       </div>
+
+      {/* ChatGPT Mode Interface */}
+      {showChatGPTMode && (
+        <Card className="shadow-lg rounded-2xl">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">ChatGPT Mode - Auto-Capture Conversations</h2>
+              <div className="flex gap-2">
+                {!isCapturing ? (
+                  <Button onClick={startCapturing} className="bg-green-600 hover:bg-green-700">
+                    Start Capturing
+                  </Button>
+                ) : (
+                  <Button onClick={stopCapturing} variant="destructive">
+                    Stop Capturing
+                  </Button>
+                )}
+              </div>
+            </div>
+            
+            {isCapturing && (
+              <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Your Question</label>
+                    <Input
+                      placeholder="Type your question here..."
+                      value={currentQuestion}
+                      onChange={(e) => setCurrentQuestion(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">AI Response</label>
+                    <Input
+                      placeholder="Paste AI response here..."
+                      value={currentResponse}
+                      onChange={(e) => setCurrentResponse(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => captureConversation(currentQuestion, currentResponse)}
+                  disabled={!currentQuestion.trim() || !currentResponse.trim()}
+                  className="w-full"
+                >
+                  Capture & Validate Conversation
+                </Button>
+                
+                <div className="text-sm text-muted-foreground">
+                  💡 <strong>How to use:</strong> Ask ChatGPT a question, copy the response, paste it here, and click "Capture & Validate". 
+                  The system will automatically validate and log everything!
+                </div>
+              </div>
+            )}
+
+            {/* Chat History */}
+            {chatHistory.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-lg font-medium mb-3">Captured Conversations</h3>
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {chatHistory.map((chat, index) => (
+                    <div key={index} className="border rounded-lg p-3 bg-gray-50">
+                      <div className="text-sm text-gray-600 mb-1">
+                        {chat.timestamp.toLocaleTimeString()}
+                      </div>
+                      <div className="font-medium text-sm">Q: {chat.question}</div>
+                      <div className="text-sm mt-1">A: {chat.response}</div>
+                      <div className="mt-2">
+                        <span className={`px-2 py-1 rounded-full text-white text-xs ${
+                          chat.validation.validationScore >= 0.7
+                            ? "bg-green-600"
+                            : chat.validation.validationScore >= 0.3
+                            ? "bg-yellow-500"
+                            : "bg-red-600"
+                        }`}>
+                          Score: {chat.validation.validationScore.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add Log Form */}
       {showAddForm && (
