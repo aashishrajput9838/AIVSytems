@@ -177,17 +177,21 @@ export default function Dashboard() {
   // Web search validation function
   const validateFactualAccuracy = async (userQuery, modelResponse) => {
     try {
-      // Extract key entities from the question
-      const entities = extractEntities(userQuery);
+      // Extract search query from the question
+      const searchQuery = extractEntities(userQuery);
       
-      if (entities.length === 0) {
+      if (!searchQuery || searchQuery === "General information") {
         return 0.8; // Neutral score if no clear entities
       }
 
-      // Search for factual information
-      const searchResults = await searchWeb(entities.join(" "));
+      // Search Wikipedia for factual information
+      const searchResults = await searchWeb(searchQuery);
       
-      // Compare AI response with search results
+      if (searchResults.includes("No specific information found") || searchResults.includes("Search failed")) {
+        return 0.6; // Neutral score if search fails
+      }
+      
+      // Compare AI response with Wikipedia results
       const similarity = calculateSimilarity(modelResponse.toLowerCase(), searchResults.toLowerCase());
       
       // Convert similarity to score (0-1)
@@ -203,59 +207,130 @@ export default function Dashboard() {
     }
   };
 
-  // Extract key entities from question
+  // Extract key entities from question and create Wikipedia search query
   const extractEntities = (question) => {
     const lowerQuestion = question.toLowerCase();
-    const entities = [];
+    let searchQuery = "";
     
     // Common factual question patterns
     if (lowerQuestion.includes("who is") || lowerQuestion.includes("who was")) {
-      entities.push("current", "person", "leader");
-    }
-    if (lowerQuestion.includes("prime minister") || lowerQuestion.includes("pm")) {
-      entities.push("prime minister", "india");
-    }
-    if (lowerQuestion.includes("capital")) {
-      entities.push("capital", "country");
-    }
-    if (lowerQuestion.includes("president")) {
-      entities.push("president", "country");
-    }
-    if (lowerQuestion.includes("when") || lowerQuestion.includes("date")) {
-      entities.push("date", "event");
-    }
-    if (lowerQuestion.includes("where")) {
-      entities.push("location", "place");
-    }
-    
-    // Add specific entities mentioned
-    const specificEntities = ["india", "usa", "china", "russia", "uk", "france", "germany"];
-    specificEntities.forEach(entity => {
-      if (lowerQuestion.includes(entity)) {
-        entities.push(entity);
+      if (lowerQuestion.includes("prime minister") || lowerQuestion.includes("pm")) {
+        searchQuery = "Prime Minister of India";
+      } else if (lowerQuestion.includes("president")) {
+        if (lowerQuestion.includes("india")) {
+          searchQuery = "President of India";
+        } else if (lowerQuestion.includes("usa") || lowerQuestion.includes("united states")) {
+          searchQuery = "President of the United States";
+        } else {
+          searchQuery = "President";
+        }
+      } else {
+        // Extract the person/entity name
+        const whoMatch = lowerQuestion.match(/who is (.+?)(\?|$)/);
+        if (whoMatch) {
+          searchQuery = whoMatch[1].trim();
+        }
       }
-    });
+    }
     
-    return entities;
+    if (lowerQuestion.includes("capital")) {
+      if (lowerQuestion.includes("india")) {
+        searchQuery = "New Delhi";
+      } else if (lowerQuestion.includes("usa") || lowerQuestion.includes("united states")) {
+        searchQuery = "Washington D.C.";
+      } else if (lowerQuestion.includes("china")) {
+        searchQuery = "Beijing";
+      } else if (lowerQuestion.includes("russia")) {
+        searchQuery = "Moscow";
+      } else if (lowerQuestion.includes("uk") || lowerQuestion.includes("britain")) {
+        searchQuery = "London";
+      } else if (lowerQuestion.includes("france")) {
+        searchQuery = "Paris";
+      } else if (lowerQuestion.includes("germany")) {
+        searchQuery = "Berlin";
+      } else {
+        searchQuery = "Capital city";
+      }
+    }
+    
+    if (lowerQuestion.includes("when") || lowerQuestion.includes("date")) {
+      if (lowerQuestion.includes("independence")) {
+        searchQuery = "Independence Day India";
+      } else if (lowerQuestion.includes("republic")) {
+        searchQuery = "Republic Day India";
+      } else {
+        searchQuery = "Historical event";
+      }
+    }
+    
+    if (lowerQuestion.includes("where")) {
+      if (lowerQuestion.includes("taj mahal")) {
+        searchQuery = "Taj Mahal";
+      } else if (lowerQuestion.includes("mount everest")) {
+        searchQuery = "Mount Everest";
+      } else if (lowerQuestion.includes("ganges")) {
+        searchQuery = "Ganges River";
+      } else {
+        searchQuery = "Geographic location";
+      }
+    }
+    
+    // If no specific pattern found, try to extract key terms
+    if (!searchQuery) {
+      const keyTerms = [];
+      const specificEntities = ["india", "usa", "china", "russia", "uk", "france", "germany", "delhi", "mumbai", "bangalore"];
+      specificEntities.forEach(entity => {
+        if (lowerQuestion.includes(entity)) {
+          keyTerms.push(entity);
+        }
+      });
+      
+      if (keyTerms.length > 0) {
+        searchQuery = keyTerms.join(" ");
+      }
+    }
+    
+    return searchQuery || "General information";
   };
 
-  // Simulate web search (replace with actual API)
+  // Wikipedia API search function
   const searchWeb = async (query) => {
-    // For demo purposes, return mock search results
-    // In production, integrate with Google Search API, Wikipedia API, etc.
-    
-    const mockResults = {
-      "prime minister india": "Narendra Modi is the current Prime Minister of India",
-      "capital india": "New Delhi is the capital of India",
-      "president usa": "Joe Biden is the current President of the United States",
-      "capital usa": "Washington D.C. is the capital of the United States"
-    };
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Return mock result or "No results found"
-    return mockResults[query.toLowerCase()] || "No specific information found";
+    try {
+      // Wikipedia API endpoint
+      const searchUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+      
+      const response = await fetch(searchUrl);
+      
+      if (!response.ok) {
+        // If direct page not found, try search API
+        const searchApiUrl = `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=${encodeURIComponent(query)}&origin=*`;
+        const searchResponse = await fetch(searchApiUrl);
+        
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          if (searchData.query && searchData.query.search && searchData.query.search.length > 0) {
+            const firstResult = searchData.query.search[0];
+            return firstResult.snippet.replace(/<\/?[^>]+(>|$)/g, ""); // Remove HTML tags
+          }
+        }
+        
+        return "No specific information found";
+      }
+      
+      const data = await response.json();
+      
+      if (data.extract) {
+        return data.extract;
+      } else if (data.description) {
+        return data.description;
+      } else {
+        return "Information found but no extract available";
+      }
+      
+    } catch (error) {
+      console.error("Wikipedia API error:", error);
+      return "Search failed - manual review needed";
+    }
   };
 
   // Calculate similarity between two strings
