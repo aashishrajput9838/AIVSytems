@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { Brain, ShieldCheck, Activity } from 'lucide-react'
+import { LineChart, TrendingUp, AlertTriangle } from 'lucide-react'
 
-function FeatureCard({ icon: Icon, title, description }) {
+function InsightCard({ icon: Icon, title, description }) {
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl">
       <CardContent className="p-6">
@@ -17,7 +17,7 @@ function FeatureCard({ icon: Icon, title, description }) {
   )
 }
 
-export default function About() {
+export default function Insights() {
   return (
     <div className="relative min-h-dvh w-full overflow-hidden">
       {/* Dynamic Background (same as Home) */}
@@ -34,56 +34,34 @@ export default function About() {
           {/* Hero */}
           <section className="relative flex flex-col items-center gap-6 py-12 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs text-amber-700">
-              About Our Mission
+              Insights
             </div>
             <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-black sm:text-5xl md:text-6xl">
-              AI Response Validation System
+              Trends and Observations
             </h1>
             <p className="max-w-2xl text-balance text-base text-gray-600 sm:text-lg">
-              Bringing trust, transparency, and accountability to AI decisions through advanced validation and monitoring.
+              Explore validation scores, risk patterns, and model behavior to improve reliability.
             </p>
           </section>
 
-          {/* Mission */}
+          {/* Insight Cards */}
           <section className="space-y-8 py-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-black mb-4">Our Mission</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                The AI Response Validation System helps teams monitor AI outputs, validate reasoning, and build trust with transparent audit trails.
-                We believe in responsible AI that can be trusted, understood, and held accountable.
-              </p>
-            </div>
-          </section>
-
-          {/* Features */}
-          <section className="space-y-8 py-8">
-            <h2 className="text-center text-3xl font-bold text-black mb-8">Key Features</h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              <FeatureCard
-                icon={Activity}
-                title="Real-Time Monitoring"
-                description="Track model outputs, risks, and validations as they happen across your AI stack with live updates."
+              <InsightCard
+                icon={LineChart}
+                title="Score Distribution"
+                description="Understand how your validations are scoring across datasets and time windows."
               />
-              <FeatureCard
-                icon={Brain}
-                title="Advanced Validation"
-                description="Multi-source fact checking with Wikipedia, Britannica, and UN data for comprehensive accuracy verification."
+              <InsightCard
+                icon={TrendingUp}
+                title="Improvement Signals"
+                description="Spot areas where model responses are getting better—or worse—and act proactively."
               />
-              <FeatureCard
-                icon={ShieldCheck}
-                title="Trust & Accountability"
-                description="Governance-ready audit trails with approvals, thresholds, and escalations for complete transparency."
+              <InsightCard
+                icon={AlertTriangle}
+                title="Risk Hotspots"
+                description="Identify frequent sensitive topics, unverifiable claims, and entities needing manual checks."
               />
-            </div>
-          </section>
-
-          {/* Technology */}
-          <section className="space-y-8 py-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-black mb-4">Technology Stack</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Built with modern technologies including React, Firebase, and advanced NLP algorithms for the most accurate validation possible.
-              </p>
             </div>
           </section>
         </main>

@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Check, X, Search, Plus, MessageSquare, FileText } from "lucide-react";
 import { getLogs, approveLogById, rejectLogById, addLog } from "@/lib/api";
 import { useAuth } from "@/AuthProvider";
+import { askModel } from "@/lib/models";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -31,6 +32,7 @@ export default function Dashboard() {
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [currentResponse, setCurrentResponse] = useState("");
   const [isCapturing, setIsCapturing] = useState(false);
+  const [isAsking, setIsAsking] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -1154,27 +1156,33 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden bg-gradient-to-b from-gray-900 via-gray-700 to-gray-100">
-      <div className="pointer-events-none absolute -left-20 -top-20 size-[36rem] rounded-full bg-gradient-to-br from-cyan-500/30 to-teal-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 size-[36rem] rounded-full bg-gradient-to-br from-teal-500/20 to-cyan-500/20 blur-3xl" />
+    <div className="relative min-h-dvh w-full overflow-hidden">
+      {/* Dynamic Background (same as Home) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-amber-900 to-amber-100">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,191,36,0.3),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,191,36,0.2),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(0,0,0,0.8),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(0,0,0,0.6),transparent_50%)]"></div>
+      </div>
       
-      <main className="mx-auto w-full max-w-7xl px-4 py-8">
-        {/* Header */}
-        <section className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">
-                AI Response Validation Dashboard
-              </h1>
-              <p className="text-muted-foreground">
-                Welcome back, {user?.email || 'User'} • Monitor and validate AI responses in real-time
-              </p>
+      <div className="relative z-10 mx-auto mt-8 mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
+        <main className="p-8">
+          {/* Header */}
+          <section className="mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-extrabold tracking-tight text-black mb-2">
+                  AI Response Validation Dashboard
+                </h1>
+                <p className="text-gray-600">
+                  Welcome back, {user?.email || 'User'} • Monitor and validate AI responses in real-time
+                </p>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs text-amber-700">
+                Live Monitoring
+              </div>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-300">
-              Live Monitoring
-            </div>
-          </div>
-        </section>
+          </section>
 
         {/* Action Buttons */}
         <section className="mb-8">
@@ -1182,14 +1190,14 @@ export default function Dashboard() {
             <Button 
               onClick={() => setShowChatGPTMode(!showChatGPTMode)} 
               variant="outline"
-              className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10"
+              className="border-gray-300 text-gray-700 hover:bg-amber-50"
             >
               <MessageSquare className="h-4 w-4 mr-2" />
               {showChatGPTMode ? "Exit ChatGPT Mode" : "ChatGPT Mode"}
             </Button>
             <Button 
               onClick={() => setShowAddForm(!showAddForm)}
-              className="bg-cyan-600 hover:bg-cyan-700 text-white"
+              className="bg-black hover:bg-amber-600 hover:text-black text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               {showAddForm ? "Cancel" : "Add Log"}
@@ -1200,14 +1208,13 @@ export default function Dashboard() {
         {/* ChatGPT Mode Interface */}
         {showChatGPTMode && (
           <section className="mb-8">
-            <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm">
-              <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
+            <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-white">ChatGPT Mode - Auto-Capture Conversations</h2>
+                  <h2 className="text-xl font-semibold text-black">ChatGPT Mode - Auto-Capture Conversations</h2>
                   <div className="flex gap-2">
                     {!isCapturing ? (
-                      <Button onClick={startCapturing} className="bg-green-600 hover:bg-green-700">
+                      <Button onClick={startCapturing} className="bg-black text-white hover:bg-amber-600 hover:text-black">
                         Start Capturing
                       </Button>
                     ) : (
@@ -1222,37 +1229,58 @@ export default function Dashboard() {
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">Your Question</label>
+                    <label className="block text-sm font-medium mb-2 text-black">Your Question</label>
                     <Input
                       placeholder="Type your question here..."
                       value={currentQuestion}
                       onChange={(e) => setCurrentQuestion(e.target.value)}
-                      className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
+                      className="bg-white border border-gray-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2 text-white">AI Response</label>
+                    <label className="block text-sm font-medium mb-2 text-black">AI Response</label>
                     <Input
-                      placeholder="Paste AI response here..."
+                      placeholder="Will be auto-filled from model… (or edit)"
                       value={currentResponse}
                       onChange={(e) => setCurrentResponse(e.target.value)}
-                      className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
+                      className="bg-white border border-gray-200"
                     />
                   </div>
                 </div>
-                <Button 
-                  onClick={() => captureConversation(currentQuestion, currentResponse)}
-                  disabled={!currentQuestion.trim() || !currentResponse.trim()}
-                  className="w-full bg-cyan-600 hover:bg-cyan-700"
-                >
-                  Capture & Validate Conversation
-                </Button>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <Button 
+                    onClick={async () => {
+                      if (!currentQuestion.trim() || isAsking) return
+                      try {
+                        setIsAsking(true)
+                        setError("")
+                        const answer = await askModel(currentQuestion.trim())
+                        setCurrentResponse(answer)
+                      } catch (e) {
+                        setError(e?.message || 'Model call failed')
+                      } finally {
+                        setIsAsking(false)
+                      }
+                    }}
+                    disabled={!currentQuestion.trim() || isAsking}
+                    className="w-full bg-black text-white hover:bg-amber-600 hover:text-black"
+                  >
+                    {isAsking ? 'Asking…' : 'Ask Model & Autofill Answer'}
+                  </Button>
+                  <Button 
+                    onClick={() => captureConversation(currentQuestion, currentResponse)}
+                    disabled={!currentQuestion.trim() || !currentResponse.trim()}
+                    className="w-full bg-black text-white hover:bg-amber-600 hover:text-black"
+                  >
+                    Capture & Validate Conversation
+                  </Button>
+                </div>
                 
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm text-gray-600">
                   💡 <strong>How to use:</strong> Ask ChatGPT a question, copy the response, paste it here, and click "Capture & Validate". 
                   The system will automatically validate and log everything!
                 </div>
-                <div className="text-sm text-amber-400 bg-amber-500/10 p-3 rounded-lg border border-amber-500/30">
+                <div className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200">
                   ⚠️ <strong>Duplicate Prevention:</strong> The system prevents adding identical logs within 1 minute to avoid spam.
                 </div>
               </div>
@@ -1261,15 +1289,15 @@ export default function Dashboard() {
             {/* Chat History */}
             {chatHistory.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-medium mb-3 text-white">Captured Conversations</h3>
+                <h3 className="text-lg font-medium mb-3 text-black">Captured Conversations</h3>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {chatHistory.map((chat, index) => (
-                    <div key={index} className="border border-indigo-500/30 rounded-lg p-3 bg-background/40 backdrop-blur">
-                      <div className="text-sm text-muted-foreground mb-1">
+                    <div key={index} className="border border-gray-200 rounded-lg p-3 bg-white/70 backdrop-blur">
+                      <div className="text-sm text-gray-500 mb-1">
                         {chat.timestamp.toLocaleTimeString()}
                       </div>
-                      <div className="font-medium text-sm text-white">Q: {chat.question}</div>
-                      <div className="text-sm mt-1 text-muted-foreground">A: {chat.response}</div>
+                      <div className="font-medium text-sm text-black">Q: {chat.question}</div>
+                      <div className="text-sm mt-1 text-gray-600">A: {chat.response}</div>
                       <div className="mt-2">
                         <span className={`px-2 py-1 rounded-full text-white text-xs ${
                           chat.validation.validationScore >= 0.7
@@ -1294,38 +1322,37 @@ export default function Dashboard() {
         {/* Add Log Form */}
         {showAddForm && (
           <section className="mb-8">
-            <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm">
-              <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
+            <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-white mb-4">Add New Log Entry</h2>
+                <h2 className="text-xl font-semibold text-black mb-4">Add New Log Entry</h2>
                 <form onSubmit={handleAddLog} className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-medium mb-2 text-white">User Query</label>
+                      <label className="block text-sm font-medium mb-2 text-black">User Query</label>
                       <Input
                         placeholder="Enter the user's question/prompt..."
                         value={newLog.user_query}
                         onChange={(e) => setNewLog({...newLog, user_query: e.target.value})}
                         required
-                        className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
+                        className="bg-white border border-gray-200"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2 text-white">Model Response</label>
+                      <label className="block text-sm font-medium mb-2 text-black">Model Response</label>
                       <Input
                         placeholder="Enter the AI model's response..."
                         value={newLog.model_response}
                         onChange={(e) => setNewLog({...newLog, model_response: e.target.value})}
                         required
-                        className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
+                        className="bg-white border border-gray-200"
                       />
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button type="submit" disabled={isLoading} className="bg-cyan-600 hover:bg-cyan-700">
+                    <Button type="submit" disabled={isLoading} className="bg-black text-white hover:bg-amber-600 hover:text-black">
                       {isLoading ? "Adding..." : "Add & Validate"}
                     </Button>
-                    <Button type="button" variant="outline" onClick={() => setShowAddForm(false)} className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10">
+                    <Button type="button" variant="outline" onClick={() => setShowAddForm(false)} className="border-gray-300 text-gray-700 hover:bg-amber-50">
                       Cancel
                     </Button>
                   </div>
@@ -1342,9 +1369,9 @@ export default function Dashboard() {
               placeholder="Search queries or responses..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-gray-800/60 backdrop-blur border-cyan-500/30"
+              className="bg-white border border-gray-200"
             />
-            <Button variant="outline" className="border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10">
+            <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-amber-50">
               <Search className="h-4 w-4" />
             </Button>
           </div>
@@ -1359,28 +1386,27 @@ export default function Dashboard() {
 
         {/* Logs Table */}
         <section className="space-y-6">
-          <Card className="group relative overflow-hidden rounded-2xl border bg-gray-800/60 backdrop-blur shadow-sm">
-            <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-gradient-to-br from-cyan-500/20 to-teal-500/20 blur-2xl" />
+          <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
             <CardContent className="p-6">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-cyan-500/30">
-                    <TableHead className="text-cyan-300">Timestamp</TableHead>
-                    <TableHead className="text-cyan-300">User Query</TableHead>
-                    <TableHead className="text-cyan-300">Model Response</TableHead>
-                    <TableHead className="text-cyan-300">Score</TableHead>
-                    <TableHead className="text-cyan-300">Entity Type</TableHead>
-                    <TableHead className="text-cyan-300">Verification</TableHead>
-                    <TableHead className="text-cyan-300">Notes</TableHead>
-                    <TableHead className="text-cyan-300">Actions</TableHead>
+                  <TableRow className="border-gray-200">
+                    <TableHead className="text-black">Timestamp</TableHead>
+                    <TableHead className="text-black">User Query</TableHead>
+                    <TableHead className="text-black">Model Response</TableHead>
+                    <TableHead className="text-black">Score</TableHead>
+                    <TableHead className="text-black">Entity Type</TableHead>
+                    <TableHead className="text-black">Verification</TableHead>
+                    <TableHead className="text-black">Notes</TableHead>
+                    <TableHead className="text-black">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredLogs.map((log) => (
-                    <TableRow key={log.id} className="border-cyan-500/20 hover:bg-cyan-500/5">
-                      <TableCell className="text-muted-foreground">{formatTimestamp(log.timestamp)}</TableCell>
-                      <TableCell className="text-white">{log.user_query}</TableCell>
-                      <TableCell className="text-white">{log.model_response}</TableCell>
+                    <TableRow key={log.id} className="border-gray-100 hover:bg-amber-50/40">
+                      <TableCell className="text-gray-600">{formatTimestamp(log.timestamp)}</TableCell>
+                      <TableCell className="text-black">{log.user_query}</TableCell>
+                      <TableCell className="text-black">{log.model_response}</TableCell>
                       <TableCell>
                         <span
                           className={`px-2 py-1 rounded-full text-white text-sm ${
@@ -1394,17 +1420,17 @@ export default function Dashboard() {
                           {Number(log.validation_score || 0).toFixed(2)}
                         </span>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{log.entity_info?.entityType || "N/A"}</TableCell>
+                      <TableCell className="text-gray-600">{log.entity_info?.entityType || "N/A"}</TableCell>
                       <TableCell>
                         {log.external_verification_required ? (
-                          <span className="text-red-400 font-semibold">Required</span>
+                          <span className="text-red-600 font-semibold">Required</span>
                         ) : (
-                          <span className="text-green-400 font-semibold">Not Needed</span>
+                          <span className="text-green-700 font-semibold">Not Needed</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{log.notes}</TableCell>
+                      <TableCell className="text-gray-600">{log.notes}</TableCell>
                       <TableCell className="flex gap-2">
-                        <Button size="sm" onClick={() => approveLog(log.id)} className="bg-green-600 hover:bg-green-700">
+                        <Button size="sm" onClick={() => approveLog(log.id)} className="bg-black text-white hover:bg-amber-600 hover:text-black">
                           <Check className="h-4 w-4 mr-1" /> Approve
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => rejectLog(log.id)}>
@@ -1418,7 +1444,8 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </section>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

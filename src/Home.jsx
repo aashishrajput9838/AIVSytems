@@ -20,13 +20,15 @@ export default function Home() {
         <header className="flex items-center justify-between p-8 border-b border-gray-100">
           <div className="text-sm font-medium text-black">aivsystems</div>
           <nav className="flex items-center gap-8 text-sm text-black">
-            <a href="#dashboard" className="hover:text-amber-600 transition-colors">DASHBOARD</a>
-            <a href="#about" className="hover:text-amber-600 transition-colors">ABOUT</a>
-            <a href="#capabilities" className="hover:text-amber-600 transition-colors">CAPABILITIES</a>
-            <a href="#insights" className="hover:text-amber-600 transition-colors">INSIGHTS</a>
-            <Button variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50">
-              <ArrowDownRight className="h-3 w-3" />
-              CONTACT
+            <Link to="/dashboard" className="hover:text-amber-600 transition-colors">DASHBOARD</Link>
+            <Link to="/about" className="hover:text-amber-600 transition-colors">ABOUT</Link>
+            <Link to="/capabilities" className="hover:text-amber-600 transition-colors">CAPABILITIES</Link>
+            <Link to="/insights" className="hover:text-amber-600 transition-colors">INSIGHTS</Link>
+            <Button asChild variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50">
+              <Link to="/contact">
+                <ArrowDownRight className="h-3 w-3" />
+                CONTACT
+              </Link>
             </Button>
           </nav>
         </header>

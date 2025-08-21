@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { Brain, ShieldCheck, Activity } from 'lucide-react'
+import { Brain, ShieldCheck, Activity, Layers, Search, Sparkles } from 'lucide-react'
 
-function FeatureCard({ icon: Icon, title, description }) {
+function CapabilityCard({ icon: Icon, title, description }) {
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl">
       <CardContent className="p-6">
@@ -17,7 +17,7 @@ function FeatureCard({ icon: Icon, title, description }) {
   )
 }
 
-export default function About() {
+export default function Capabilities() {
   return (
     <div className="relative min-h-dvh w-full overflow-hidden">
       {/* Dynamic Background (same as Home) */}
@@ -34,56 +34,49 @@ export default function About() {
           {/* Hero */}
           <section className="relative flex flex-col items-center gap-6 py-12 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs text-amber-700">
-              About Our Mission
+              Capabilities
             </div>
             <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-black sm:text-5xl md:text-6xl">
-              AI Response Validation System
+              What Our System Can Do
             </h1>
             <p className="max-w-2xl text-balance text-base text-gray-600 sm:text-lg">
-              Bringing trust, transparency, and accountability to AI decisions through advanced validation and monitoring.
+              A quick tour of the core modules that make AI validation accurate, reliable, and transparent.
             </p>
           </section>
 
-          {/* Mission */}
+          {/* Capability Grid */}
           <section className="space-y-8 py-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-black mb-4">Our Mission</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                The AI Response Validation System helps teams monitor AI outputs, validate reasoning, and build trust with transparent audit trails.
-                We believe in responsible AI that can be trusted, understood, and held accountable.
-              </p>
-            </div>
-          </section>
-
-          {/* Features */}
-          <section className="space-y-8 py-8">
-            <h2 className="text-center text-3xl font-bold text-black mb-8">Key Features</h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              <FeatureCard
+              <CapabilityCard
                 icon={Activity}
-                title="Real-Time Monitoring"
-                description="Track model outputs, risks, and validations as they happen across your AI stack with live updates."
+                title="Live Monitoring"
+                description="Stream, capture, and inspect AI prompts and responses with real-time updates."
               />
-              <FeatureCard
+              <CapabilityCard
                 icon={Brain}
-                title="Advanced Validation"
-                description="Multi-source fact checking with Wikipedia, Britannica, and UN data for comprehensive accuracy verification."
+                title="Reasoning Validation"
+                description="Advanced NLP checks including TF‑IDF, cosine similarity, fuzzy matching, and entity rules."
               />
-              <FeatureCard
+              <CapabilityCard
+                icon={Search}
+                title="Factual Checking"
+                description="Cross‑reference with Wikipedia and other sources; apply weighted scoring per entity type."
+              />
+              <CapabilityCard
                 icon={ShieldCheck}
-                title="Trust & Accountability"
-                description="Governance-ready audit trails with approvals, thresholds, and escalations for complete transparency."
+                title="Risk & Compliance"
+                description="Flag sensitive content, unverifiable personal claims, and require manual verification."
               />
-            </div>
-          </section>
-
-          {/* Technology */}
-          <section className="space-y-8 py-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-black mb-4">Technology Stack</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Built with modern technologies including React, Firebase, and advanced NLP algorithms for the most accurate validation possible.
-              </p>
+              <CapabilityCard
+                icon={Layers}
+                title="Multi‑Source Validation"
+                description="Blend multiple sources and boost scores when cross‑verified; penalize inconsistencies."
+              />
+              <CapabilityCard
+                icon={Sparkles}
+                title="Smart Deduplication"
+                description="Prevent repeated logs within a minute to keep your dataset clean and meaningful."
+              />
             </div>
           </section>
         </main>

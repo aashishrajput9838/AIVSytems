@@ -3,6 +3,8 @@ import App from './App'
 import Home from './Home'
 import Dashboard from './Dashboard'
 import HowItWorks from './pages/HowItWorks'
+import Capabilities from './pages/Capabilities'
+import Insights from './pages/Insights'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
@@ -23,6 +25,8 @@ export const router = createBrowserRouter(
       children: [
         { index: true, element: <Home /> },
         { path: 'how-it-works', element: <HowItWorks /> },
+        { path: 'capabilities', element: <Capabilities /> },
+        { path: 'insights', element: <Insights /> },
         { path: 'about', element: <About /> },
         { path: 'contact', element: <Contact /> },
         { path: 'login', element: <Login /> },
