@@ -5,7 +5,7 @@ import { askModel } from '@/services/ai/models'
 import { validateResponse, extractEntities } from '@/features/validation/algorithms'
 import { handleApiError, logError } from '@/shared/utils/errorHandling'
 
-export function useDashboard() {
+export default function useDashboard() {
   const { user } = useAuth()
 
   // State management

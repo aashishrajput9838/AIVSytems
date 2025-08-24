@@ -83,7 +83,7 @@ export function AuthProvider({ children }) {
   )
 }
 
-export function useAuth() {
+export default function useAuth() {
   return useContext(AuthContext)
 }
 

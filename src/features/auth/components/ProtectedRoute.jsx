@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Navigate, useLocation } from 'react-router-dom'
-import { useAuth } from '../AuthProvider'
+import useAuth from '../AuthProvider'
 import { AuthLoadingScreen } from './AuthLoadingScreen'
 
 export const ProtectedRoute = ({

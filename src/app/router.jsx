@@ -9,7 +9,7 @@ import Insights from '@/features/analytics/Insights'
 import About from '@/features/pages/About'
 import Contact from '@/features/pages/Contact'
 import Login from '@/features/auth/Login'
-import { useAuth } from '@/features/auth/AuthProvider'
+import useAuth from '@/features/auth/AuthProvider'
 
 function Protected({ children }) {
   const { user, loading } = useAuth()

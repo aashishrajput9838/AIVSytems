@@ -4,7 +4,7 @@ import AddLogForm from './AddLogForm'
 import LogsTable from './LogsTable'
 import { DashboardHeader, DashboardControls, SearchBar, ErrorDisplay } from './components'
 import DashboardErrorBoundary from './components/DashboardErrorBoundary'
-import { useDashboard } from './hooks/useDashboard'
+import useDashboard from './hooks/useDashboard'
 import { StatsSkeleton, TableSkeleton, CardSkeleton } from '@/shared/components/ui'
 
 export default function Dashboard() {
