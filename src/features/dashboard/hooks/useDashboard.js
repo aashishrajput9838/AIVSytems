@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { getLogs, approveLogById, rejectLogById, addLog } from '@/services/api/logs'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { askModel } from '@/services/ai/models'
 import { validateResponse, extractEntities } from '@/features/validation/algorithms'
+import { handleApiError, logError } from '@/shared/utils/errorHandling'
 
 export function useDashboard() {
   const { user } = useAuth()
@@ -44,6 +45,13 @@ export function useDashboard() {
     },
   ]
 
+  // Enhanced error handler
+  const handleError = useCallback((error, context) => {
+    const userFriendlyError = handleApiError(error)
+    setError(userFriendlyError)
+    logError(error, context, { userId: user?.email })
+  }, [user?.email])
+
   // Load logs on component mount
   useEffect(() => {
     const loadLogs = async () => {
@@ -53,14 +61,14 @@ export function useDashboard() {
         const data = await getLogs()
         setLogs(Array.isArray(data) ? data : [])
       } catch (e) {
-        setError(e?.message || 'Failed to load logs')
+        handleError(e, 'Dashboard: Load Logs')
       } finally {
         setIsLoading(false)
       }
     }
 
     loadLogs()
-  }, [])
+  }, [handleError])
 
   // Filtered logs based on search
   const filteredLogs = logs.filter((l) =>
@@ -90,16 +98,21 @@ export function useDashboard() {
   const runAllTests = async () => {
     setIsRunningTests(true)
     const results = []
-    for (const tc of sampleTests) {
-      const v = await validateResponse(tc.userQuery, tc.modelResponse)
-      const score = Number(v.validationScore || 0)
-      let pass = true
-      if (typeof tc.expectedMinScore === 'number') pass = pass && score >= tc.expectedMinScore
-      if (typeof tc.expectedMaxScore === 'number') pass = pass && score <= tc.expectedMaxScore
-      results.push({ ...tc, score, pass, notes: v.notes, validators: v.validators })
+    try {
+      for (const tc of sampleTests) {
+        const v = await validateResponse(tc.userQuery, tc.modelResponse)
+        const score = Number(v.validationScore || 0)
+        let pass = true
+        if (typeof tc.expectedMinScore === 'number') pass = pass && score >= tc.expectedMinScore
+        if (typeof tc.expectedMaxScore === 'number') pass = pass && score <= tc.expectedMaxScore
+        results.push({ ...tc, score, pass, notes: v.notes, validators: v.validators })
+      }
+      setTestResults(results)
+    } catch (e) {
+      handleError(e, 'Dashboard: Run Tests')
+    } finally {
+      setIsRunningTests(false)
     }
-    setTestResults(results)
-    setIsRunningTests(false)
   }
 
   // ChatGPT mode functions
@@ -123,7 +136,7 @@ export function useDashboard() {
       const ans = await askModel(currentQuestion.trim())
       setCurrentResponse(ans)
     } catch (e) {
-      setError(e?.message || 'Model call failed')
+      handleError(e, 'Dashboard: Ask Model')
     } finally {
       setIsAsking(false)
     }
@@ -162,7 +175,7 @@ export function useDashboard() {
       const data = await getLogs()
       setLogs(Array.isArray(data) ? data : [])
     } catch (e) {
-      setError(e?.message || 'Failed to capture conversation')
+      handleError(e, 'Dashboard: Capture Conversation')
     }
   }
 
@@ -206,7 +219,7 @@ export function useDashboard() {
       const data = await getLogs()
       setLogs(Array.isArray(data) ? data : [])
     } catch (e) {
-      setError(e?.message || 'Failed to add log')
+      handleError(e, 'Dashboard: Add Log')
     } finally {
       setIsLoading(false)
     }
@@ -217,9 +230,9 @@ export function useDashboard() {
     setLogs(logs.map(l => l.id === id ? { ...l, notes: (l.notes || '') + ' | Approved' } : l))
     try {
       await approveLogById(id)
-    } catch {
+    } catch (e) {
       setLogs(prev)
-      setError('Approve failed')
+      handleError(e, 'Dashboard: Approve Log')
     }
   }
 
@@ -228,9 +241,9 @@ export function useDashboard() {
     setLogs(logs.map(l => l.id === id ? { ...l, notes: (l.notes || '') + ' | Rejected' } : l))
     try {
       await rejectLogById(id)
-    } catch {
+    } catch (e) {
       setLogs(prev)
-      setError('Reject failed')
+      handleError(e, 'Dashboard: Reject Log')
     }
   }
 
@@ -241,6 +254,7 @@ export function useDashboard() {
     logs: filteredLogs,
     isLoading,
     error,
+    setError,
     showAddForm,
     setShowAddForm,
     newLog,
