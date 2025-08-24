@@ -2,12 +2,187 @@ import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent } from '@/shared/components/ui/card'
 import { Link } from 'react-router-dom'
 import { ArrowDownRight, Brain, Shield, Activity } from 'lucide-react'
+import { memo, useCallback, useMemo, useState, useEffect } from 'react'
+import { useHomePerformance } from './hooks/useHomePerformance'
+import { focusElement, handleCardNavigation, announceToScreenReader } from './utils/accessibility'
+
+// Skip link component for accessibility
+const SkipLink = memo(() => (
+  <a
+    href="#main-content"
+    className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-black focus:text-white focus:px-4 focus:py-2 focus:rounded"
+  >
+    Skip to main content
+  </a>
+))
+
+// Optimized navigation component
+const Navigation = memo(() => {
+  const navItems = useMemo(() => [
+    { to: '/dashboard', label: 'DASHBOARD' },
+    { to: '/about', label: 'ABOUT' },
+    { to: '/capabilities', label: 'CAPABILITIES' },
+    { to: '/insights', label: 'INSIGHTS' },
+    { to: '/contact', label: 'CONTACT', icon: ArrowDownRight }
+  ], [])
+
+  return (
+    <nav 
+      className="flex items-center gap-8 text-sm text-black"
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      {navItems.map((item) => (
+        <Link
+          key={item.to}
+          to={item.to}
+          className="hover:text-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded"
+          aria-label={item.label}
+        >
+          {item.icon ? (
+            <Button asChild variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50">
+              <span>
+                <item.icon className="h-3 w-3" aria-hidden="true" />
+                {item.label}
+              </span>
+            </Button>
+          ) : (
+            item.label
+          )}
+        </Link>
+      ))}
+    </nav>
+  )
+})
+
+// Optimized feature card component with enhanced accessibility
+const FeatureCard = memo(({ icon: Icon, title, description, index, onCardFocus }) => {
+  const handleKeyDown = useCallback((event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      // Announce the feature to screen readers
+      announceToScreenReader(`Feature: ${title}. ${description}`)
+    }
+  }, [title, description])
+
+  const handleFocus = useCallback(() => {
+    onCardFocus?.(index)
+  }, [index, onCardFocus])
+
+  return (
+    <Card 
+      className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 focus-within:ring-2 focus-within:ring-amber-500 focus-within:ring-offset-2"
+      tabIndex={0}
+      role="article"
+      aria-labelledby={`feature-title-${index}`}
+      onKeyDown={handleKeyDown}
+      onFocus={handleFocus}
+    >
+      <CardContent className="p-6">
+        <div className="flex items-center gap-3 mb-3">
+          <div 
+            className="p-2 bg-amber-100 rounded-lg"
+            aria-hidden="true"
+          >
+            <Icon className="h-5 w-5 text-amber-600" />
+          </div>
+          <h3 
+            id={`feature-title-${index}`}
+            className="font-semibold text-black"
+          >
+            {title}
+          </h3>
+        </div>
+        <p className="text-sm text-gray-600">
+          {description}
+        </p>
+      </CardContent>
+    </Card>
+  )
+})
+
+// Optimized central graphic component
+const CentralGraphic = memo(() => (
+  <div 
+    className="relative mx-auto w-64 h-64 mb-8"
+    role="img"
+    aria-label="AI Validation System Logo"
+  >
+    <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-amber-600 to-black rounded-lg overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,191,36,0.8),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(0,0,0,0.6),transparent_50%)]"></div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-white text-8xl font-bold opacity-90" aria-hidden="true">AI</div>
+      </div>
+    </div>
+    <div 
+      className="absolute -right-8 top-1/2 transform -translate-y-1/2 w-16 h-16 bg-gray-100 rounded-lg"
+      aria-hidden="true"
+    ></div>
+  </div>
+))
 
 export default function Home() {
+  const { componentRef } = useHomePerformance()
+  const [focusedCardIndex, setFocusedCardIndex] = useState(0)
+
+  // Memoize feature data to prevent unnecessary re-renders
+  const features = useMemo(() => [
+    {
+      icon: Brain,
+      title: 'AI Monitoring',
+      description: 'Real-time validation and monitoring of AI responses with advanced NLP algorithms.'
+    },
+    {
+      icon: Shield,
+      title: 'Trust & Security',
+      description: 'Multi-source fact checking and comprehensive audit trails for complete transparency.'
+    },
+    {
+      icon: Activity,
+      title: 'Live Dashboard',
+      description: 'Interactive dashboard with real-time validation scores and detailed analytics.'
+    }
+  ], [])
+
+  // Memoize the CTA button handler
+  const handleCTAClick = useCallback(() => {
+    // Analytics tracking could be added here
+    console.log('Dashboard CTA clicked')
+    announceToScreenReader('Navigating to dashboard')
+  }, [])
+
+  // Handle card focus for keyboard navigation
+  const handleCardFocus = useCallback((index) => {
+    setFocusedCardIndex(index)
+  }, [])
+
+  // Keyboard navigation for feature cards
+  useEffect(() => {
+    const handleGlobalKeyDown = (event) => {
+      if (event.target.closest('[role="article"]')) {
+        const cards = document.querySelectorAll('[role="article"]')
+        const newIndex = handleCardNavigation(event, Array.from(cards), focusedCardIndex)
+        if (newIndex !== focusedCardIndex) {
+          setFocusedCardIndex(newIndex)
+          focusElement(cards[newIndex])
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleGlobalKeyDown)
+    return () => document.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [focusedCardIndex])
+
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-amber-900 to-amber-100">
+    <div ref={componentRef} className="relative min-h-dvh w-full overflow-hidden">
+      <SkipLink />
+      
+      {/* Dynamic Background - optimized with will-change */}
+      <div 
+        className="absolute inset-0 bg-gradient-to-br from-black via-amber-900 to-amber-100"
+        aria-hidden="true"
+      >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,191,36,0.3),transparent_50%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,191,36,0.2),transparent_50%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(0,0,0,0.8),transparent_50%)]"></div>
@@ -17,49 +192,41 @@ export default function Home() {
       {/* Main White Content Area */}
       <div className="relative z-10 mx-auto mt-8 mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
         {/* Header/Navigation */}
-        <header className="flex items-center justify-between p-8 border-b border-gray-100">
-          <div className="text-sm font-medium text-black">aivsystems</div>
-          <nav className="flex items-center gap-8 text-sm text-black">
-            <Link to="/dashboard" className="hover:text-amber-600 transition-colors">DASHBOARD</Link>
-            <Link to="/about" className="hover:text-amber-600 transition-colors">ABOUT</Link>
-            <Link to="/capabilities" className="hover:text-amber-600 transition-colors">CAPABILITIES</Link>
-            <Link to="/insights" className="hover:text-amber-600 transition-colors">INSIGHTS</Link>
-            <Button asChild variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50">
-              <Link to="/contact">
-                <ArrowDownRight className="h-3 w-3" />
-                CONTACT
-              </Link>
-            </Button>
-          </nav>
+        <header 
+          className="flex items-center justify-between p-8 border-b border-gray-100"
+          role="banner"
+        >
+          <div className="text-sm font-medium text-black">
+            <span className="sr-only">AIV Systems</span>
+            aivsystems
+          </div>
+          <Navigation />
         </header>
 
         {/* Main Content */}
-        <main className="p-8">
+        <main 
+          id="main-content"
+          className="p-8"
+          role="main"
+        >
           {/* Main Headline */}
-          <div className="text-center mb-12">
+          <section className="text-center mb-12">
             <h1 className="text-6xl font-bold text-black mb-8 tracking-tight">
               AIV SYSTEMS
             </h1>
             
-            {/* Central Graphic */}
-            <div className="relative mx-auto w-64 h-64 mb-8">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-amber-600 to-black rounded-lg overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,191,36,0.8),transparent_50%)]"></div>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(0,0,0,0.6),transparent_50%)]"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-white text-8xl font-bold opacity-90">AI</div>
-                </div>
-              </div>
-              <div className="absolute -right-8 top-1/2 transform -translate-y-1/2 w-16 h-16 bg-gray-100 rounded-lg"></div>
-            </div>
+            <CentralGraphic />
             
             <h2 className="text-6xl font-bold text-black tracking-tight">
               VALIDATION
             </h2>
-          </div>
+          </section>
 
           {/* Supporting Text */}
-          <div className="flex justify-between items-end text-sm text-black">
+          <section 
+            className="flex justify-between items-end text-sm text-black"
+            aria-label="System description"
+          >
             <div className="max-w-xs">
               <p className="font-medium">
                 A <span className="font-bold">CREATIVE AI VALIDATION</span> SYSTEM
@@ -70,63 +237,42 @@ export default function Home() {
                 SETTING <span className="font-bold">AI TRUST IN MOTION</span>
               </p>
             </div>
-          </div>
+          </section>
         </main>
       </div>
 
       {/* Floating Action Cards */}
-      <div className="relative z-20 mx-auto w-[95%] max-w-6xl">
+      <section 
+        className="relative z-20 mx-auto w-[95%] max-w-6xl"
+        aria-labelledby="features-heading"
+      >
+        <h2 id="features-heading" className="sr-only">Key Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-amber-100 rounded-lg">
-                  <Brain className="h-5 w-5 text-amber-600" />
-                </div>
-                <h3 className="font-semibold text-black">AI Monitoring</h3>
-              </div>
-              <p className="text-sm text-gray-600">
-                Real-time validation and monitoring of AI responses with advanced NLP algorithms.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-amber-100 rounded-lg">
-                  <Shield className="h-5 w-5 text-amber-600" />
-                </div>
-                <h3 className="font-semibold text-black">Trust & Security</h3>
-              </div>
-              <p className="text-sm text-gray-600">
-                Multi-source fact checking and comprehensive audit trails for complete transparency.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-amber-100 rounded-lg">
-                  <Activity className="h-5 w-5 text-amber-600" />
-                </div>
-                <h3 className="font-semibold text-black">Live Dashboard</h3>
-              </div>
-              <p className="text-sm text-gray-600">
-                Interactive dashboard with real-time validation scores and detailed analytics.
-              </p>
-            </CardContent>
-          </Card>
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={feature.title}
+              icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+              index={index}
+              onCardFocus={handleCardFocus}
+            />
+          ))}
         </div>
 
         {/* CTA Section */}
         <div className="text-center mt-12">
-          <Button asChild className="bg-black text-white hover:bg-amber-600 hover:text-black transition-all duration-300 px-8 py-4 text-lg font-medium">
-            <Link to="/dashboard">Explore Dashboard</Link>
+          <Button 
+            asChild 
+            className="bg-black text-white hover:bg-amber-600 hover:text-black transition-all duration-300 px-8 py-4 text-lg font-medium focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+            onClick={handleCTAClick}
+          >
+            <Link to="/dashboard" aria-label="Navigate to dashboard">
+              Explore Dashboard
+            </Link>
           </Button>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

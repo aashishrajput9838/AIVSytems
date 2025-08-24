@@ -47,3 +47,4 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
 }
 
 
+

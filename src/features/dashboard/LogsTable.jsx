@@ -73,3 +73,4 @@ export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog
 }
 
 
+
