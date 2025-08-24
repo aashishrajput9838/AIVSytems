@@ -19,44 +19,106 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
   }, [isLoading])
 
   return (
-    <section className="mb-6 sm:mb-8">
+    <section 
+      className="mb-6 sm:mb-8"
+      aria-label="Add new log entry form"
+      aria-describedby="form-description"
+    >
       <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
         <CardContent className="p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-black mb-4">Add New Log Entry</h2>
+          <h2 
+            id="form-title"
+            className="text-lg sm:text-xl font-semibold text-black mb-4"
+          >
+            Add New Log Entry
+          </h2>
+          
+          <p id="form-description" className="sr-only">
+            Form to add a new log entry with user query and AI model response
+          </p>
           
           {isFormLoading ? (
-            <FormSkeleton fields={2} showSubmit={true} />
+            <div aria-live="polite" aria-label="Form is loading">
+              <FormSkeleton fields={2} showSubmit={true} />
+            </div>
           ) : (
-            <form onSubmit={onSubmit} className="space-y-4">
+            <form 
+              onSubmit={onSubmit} 
+              className="space-y-4"
+              aria-labelledby="form-title"
+              noValidate
+            >
               <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-black">User Query</label>
+                  <label 
+                    htmlFor="user-query-input"
+                    className="block text-sm font-medium mb-2 text-black"
+                  >
+                    User Query
+                  </label>
                   <Input
+                    id="user-query-input"
                     placeholder="Enter the user's question/prompt..."
                     value={newLog.user_query}
                     onChange={(e) => setNewLog({...newLog, user_query: e.target.value})}
                     required
                     className="bg-white border border-gray-200"
+                    aria-required="true"
+                    aria-describedby="user-query-help"
                   />
+                  <div id="user-query-help" className="sr-only">
+                    Enter the question or prompt that the user asked the AI model
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-black">Model Response</label>
+                  <label 
+                    htmlFor="model-response-input"
+                    className="block text-sm font-medium mb-2 text-black"
+                  >
+                    Model Response
+                  </label>
                   <Input
+                    id="model-response-input"
                     placeholder="Enter the AI model's response..."
                     value={newLog.model_response}
                     onChange={(e) => setNewLog({...newLog, model_response: e.target.value})}
                     required
                     className="bg-white border border-gray-200"
+                    aria-required="true"
+                    aria-describedby="model-response-help"
                   />
+                  <div id="model-response-help" className="sr-only">
+                    Enter the response that the AI model provided to the user
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
-                <Button type="submit" disabled={isLoading} className="bg-black text-white hover:bg-amber-600 hover:text-black order-2 sm:order-1">
+                <Button 
+                  type="submit" 
+                  disabled={isLoading} 
+                  className="bg-black text-white hover:bg-amber-600 hover:text-black order-2 sm:order-1"
+                  aria-label={isLoading ? 'Adding log entry...' : 'Add and validate log entry'}
+                  aria-describedby="submit-help"
+                >
                   {isLoading ? 'Adding...' : 'Add & Validate'}
                 </Button>
-                <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 text-gray-700 hover:bg-amber-50 order-1 sm:order-2">
+                <span id="submit-help" className="sr-only">
+                  Submit the form to add the new log entry and validate it
+                </span>
+                
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={onCancel} 
+                  className="border-gray-300 text-gray-700 hover:bg-amber-50 order-1 sm:order-2"
+                  aria-label="Cancel adding log entry"
+                  aria-describedby="cancel-help"
+                >
                   Cancel
                 </Button>
+                <span id="cancel-help" className="sr-only">
+                  Cancel the form and return to dashboard view
+                </span>
               </div>
             </form>
           )}
