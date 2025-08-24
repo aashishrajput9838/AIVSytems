@@ -17,7 +17,9 @@ export default function Dashboard() {
     formatTimestamp,
     approveLog,
     rejectLog,
-    
+    progress,
+    progressMessage,
+
     // ChatGPT Mode
     chatHistory,
     currentQuestion,
@@ -30,13 +32,13 @@ export default function Dashboard() {
     stopCapturing,
     onAskModel,
     onCapture,
-    
+
     // Test Management
     isRunningTests,
     testResults,
     sampleTests,
     runAllTests,
-    
+
     // UI State
     search,
     setSearch,
@@ -46,7 +48,7 @@ export default function Dashboard() {
     newLog,
     setNewLog,
     toggleAddForm,
-    
+
     // Combined functions
     handleAddLog
   } = useDashboard()
@@ -73,13 +75,14 @@ export default function Dashboard() {
         error={error}
         isLoading={isLoading}
         showAddForm={showAddForm}
-        setShowAddForm={setShowAddForm}
+        setShowAddForm={toggleAddForm} // Use toggleAddForm here
         showChatGPTMode={showChatGPTMode}
-        setShowChatGPTMode={showChatGPTMode}
-        showTests={showTests}
-        setShowTests={showTests}
+        setShowChatGPTMode={setShowChatGPTMode} // This should probably be toggleChatGPTMode
+        showTests={showTests} // This should probably be toggleTests
         onErrorRetry={handleErrorRetry}
         onErrorDismiss={handleErrorDismiss}
+        progress={progress}
+        progressMessage={progressMessage}
       >
         {/* ChatGPT Mode */}
         {showChatGPTMode && (
@@ -118,7 +121,7 @@ export default function Dashboard() {
             testResults={testResults}
           />
         )}
-        
+
         {/* Logs Table with Loading Skeleton */}
         {isLoading ? (
           <div className="space-y-4">
