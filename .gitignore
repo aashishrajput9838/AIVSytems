@@ -1,5 +1,7 @@
 ﻿node_modules/
 dist/
+dist-ssr/
+*.local
 .env*
 *.log
 npm-debug.log*
@@ -8,3 +10,6 @@ yarn-error.log*
 .vscode/
 .DS_Store
 coverage/
+# generated
+firebase-debug*.log
+codebase2/

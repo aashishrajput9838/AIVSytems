@@ -1,55 +1,25 @@
 # react-app
 
-A React application scaffolded with Vite.
+A React + Vite application.
 
-## Requirements
-- Node.js >= 18
-- npm >= 9
+## Current app structure (high level)
 
-## Getting Started
-
-- Install dependencies:
-```bash
-npm install
+```
+src/
+  app/               # App shell and router
+  features/          # Feature modules (auth, dashboard, pages, analytics, validation)
+  shared/            # Reusable UI + utilities
+  services/          # API, firebase, and AI client
+  hooks/             # Custom hooks
+  styles/            # Global CSS (Tailwind v4)
 ```
 
-- Start the dev server:
-```bash
-npm run dev
-```
+- Entry: `src/app/main.jsx`
+- Router: `src/app/router.jsx`
+- Global CSS: `src/styles/index.css`
 
-- Build for production:
-```bash
-npm run build
-```
-
-- Preview the production build:
-```bash
-npm run preview
-```
-
-## Project Structure
-- `src/`: Application source code
-- `index.html`: HTML entry
-- `vite.config.ts` or `vite.config.js`: Vite configuration
-- `public/`: Static assets (optional)
-
-## Useful Links
-- Vite Docs: https://vitejs.dev/
-- React Docs: https://react.dev/
- - Firebase: https://firebase.google.com/docs
-
-## Firebase Setup
-Create a `.env.local` in project root with:
-```
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
-VITE_FIREBASE_PROJECT_ID=...
-VITE_FIREBASE_STORAGE_BUCKET=...
-VITE_FIREBASE_MESSAGING_SENDER_ID=...
-VITE_FIREBASE_APP_ID=...
-```
-Then run:
-```
-npm run dev
-```
+## Scripts
+- dev: `npm run dev`
+- build: `npm run build`
+- preview: `npm run preview`
+- lint: `npm run lint`

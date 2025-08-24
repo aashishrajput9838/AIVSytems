@@ -1,0 +1,396 @@
+AIV SYSTEMS - AI RESPONSE VALIDATION PLATFORM - CODEBASE INDEX
+================================================================
+
+PROJECT OVERVIEW
+===============
+This is a React-based AI Response Validation System that monitors, validates, and ensures 
+the accuracy of AI model responses through advanced NLP algorithms, multi-source 
+fact-checking, and comprehensive audit trails.
+
+ARCHITECTURE & TECHNOLOGY STACK
+==============================
+
+Frontend Framework:
+- React 19.1.1 with Vite build system
+- React Router DOM 6.30.1 for client-side routing
+- Tailwind CSS 4.1.12 for styling with custom design system
+
+Backend & Database:
+- Firebase 12.1.0 for authentication and Firestore database
+- Firestore for real-time data storage and retrieval
+- Firebase Authentication with Google OAuth support
+
+UI Components:
+- Radix UI components with custom styling
+- Lucide React for icons
+- Recharts for data visualization
+- Class Variance Authority for component variants
+
+AI Integration:
+- OpenAI/Groq API integration for model responses
+- Advanced NLP algorithms for text validation
+- Multi-source fact-checking (Wikipedia, Britannica, UN Data)
+
+FILE STRUCTURE & COMPONENTS
+==========================
+
+Core Application Files:
+src/
+├── main.jsx                 # Application entry point
+├── App.jsx                  # Root component with routing layout
+├── router.jsx              # React Router configuration with protected routes
+├── AuthProvider.jsx        # Firebase authentication context
+├── Home.jsx                # Landing page with hero section
+├── Dashboard.jsx           # Main validation dashboard (1678 lines)
+└── index.css               # Global styles
+
+Authentication System:
+- AuthProvider.jsx: Context provider for Firebase auth state
+- HeaderAuth.jsx: Authentication header with login/logout
+- pages/Login.jsx: Login page with email/password and Google OAuth
+
+Core Pages:
+- Home.jsx: Landing page with AIV Systems branding
+- Dashboard.jsx: Main validation interface with comprehensive features
+- pages/About.jsx: Company information and mission
+- pages/Capabilities.jsx: System capabilities overview
+- pages/Contact.jsx: Contact form and information
+- pages/HowItWorks.jsx: Process explanation
+- pages/Insights.jsx: Analytics and data visualization
+
+UI Components:
+src/components/
+├── ui/
+│   ├── button.jsx          # Reusable button component with variants
+│   ├── card.jsx            # Card layout component
+│   ├── input.jsx           # Form input component
+│   └── table.jsx           # Data table component
+├── HeaderAuth.jsx          # Authentication header
+└── Footer.jsx              # Site footer with navigation
+
+Library & Utilities:
+src/lib/
+├── api.js                  # Firestore CRUD operations
+├── firebase.js             # Firebase configuration
+├── models.js               # AI model integration (OpenAI/Groq)
+└── utils.js                # Utility functions (cn helper)
+
+KEY FEATURES & FUNCTIONALITY
+===========================
+
+1. AI Response Validation System:
+- Multi-validator approach with weighted scoring
+- Entity recognition for different types of content
+- Factual accuracy checking via web search
+- Risk assessment and flagging system
+
+2. Validation Algorithms:
+- TF-IDF with Cosine Similarity for text comparison
+- Fuzzy matching for typo tolerance
+- Word overlap analysis for basic matching
+- Named Entity Recognition for content classification
+
+3. Dashboard Features:
+- Real-time monitoring of AI responses
+- ChatGPT Mode for automatic conversation capture
+- Test Harness with predefined validation tests
+- CSV Export functionality for data analysis
+- Search and filtering capabilities
+
+4. Data Visualization:
+- Line charts for score trends over time
+- Bar charts for score distribution
+- Pie charts for verification requirements
+- Real-time updates with Recharts
+
+5. Security & Compliance:
+- Protected routes requiring authentication
+- Firestore security rules for data access
+- Audit trails for all validation actions
+- Duplicate prevention mechanisms
+
+DESIGN SYSTEM
+============
+
+Color Scheme:
+- Primary: Black (#000000) with Amber (#f59e0b) accents
+- Background: Gradient from black through amber to light amber
+- Cards: White with backdrop blur effects
+- Status Colors: Green (success), Yellow (warning), Red (error)
+
+Typography:
+- Headings: Bold, tight tracking
+- Body: Clean, readable fonts
+- UI Elements: Consistent sizing and spacing
+
+Layout:
+- Responsive design with mobile-first approach
+- Card-based layout with hover effects
+- Consistent spacing using Tailwind utilities
+- Modern glassmorphism effects
+
+AUTHENTICATION FLOW
+==================
+
+1. Login Page (/login) - Email/password or Google OAuth
+2. Protected Routes - Dashboard requires authentication
+3. Auth Context - Global state management for user
+4. Auto-redirect - Unauthenticated users redirected to login
+
+DATA MODELS
+==========
+
+Log Entry Structure:
+{
+  id: string,
+  user_query: string,
+  model_response: string,
+  validation_score: number (0-1),
+  external_verification_required: boolean,
+  notes: string,
+  validators: array,
+  status: string,
+  created_by: string,
+  timestamp: Date,
+  source: string,
+  entity_info: object
+}
+
+Validation Results:
+{
+  validationScore: number,
+  notes: string,
+  externalVerificationRequired: boolean,
+  validators: array
+}
+
+DEVELOPMENT SETUP
+================
+
+Environment Variables Required:
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_OPENAI_API_KEY=
+VITE_OPENAI_BASE_URL=
+VITE_OPENAI_MODEL=
+VITE_OPENAI_ORG=
+
+Available Scripts:
+- npm run dev - Start development server
+- npm run build - Build for production
+- npm run preview - Preview production build
+- npm run lint - Run ESLint
+
+KEY ALGORITHMS
+=============
+
+1. Entity Recognition:
+- Person entities: Strict validation for individuals
+- Personal relationships: Manual verification required
+- Professional claims: Extra scrutiny for job titles/positions
+- Geographic entities: Standard validation for places
+- Historical events: Fact-checking against reliable sources
+
+2. Validation Scoring:
+- Weighted average of multiple validators
+- Entity-specific thresholds for different content types
+- Cross-verification bonuses for multi-source data
+- Penalty system for inconsistencies
+
+3. Similarity Calculation:
+- TF-IDF with Cosine Similarity (50% weight)
+- Fuzzy matching (30% weight)
+- Word overlap (20% weight)
+
+ANALYTICS & INSIGHTS
+===================
+
+Available Metrics:
+- Score distribution across validation buckets
+- Daily average scores with trend analysis
+- Verification requirement breakdown
+- Entity type distribution
+- Risk hotspot identification
+
+Export Capabilities:
+- CSV export for test results
+- CSV export for validation logs
+- Real-time data visualization
+
+SECURITY FEATURES
+================
+
+Firestore Rules:
+- Authentication required for all operations
+- User-based access control
+- Secure data transmission
+
+Input Validation:
+- Duplicate prevention within time windows
+- Content sanitization for user inputs
+- Rate limiting for API calls
+
+STATE MANAGEMENT
+===============
+
+React Context:
+- AuthProvider: User authentication state
+- Local state: Component-specific data
+- Firestore: Real-time data synchronization
+
+Data Flow:
+1. User input → Validation algorithms
+2. Validation results → Firestore storage
+3. Real-time updates → Dashboard display
+4. Analytics → Insights visualization
+
+DEPENDENCIES
+===========
+
+Production Dependencies:
+- @radix-ui/react-slot: ^1.2.3
+- class-variance-authority: ^0.7.1
+- clsx: ^2.1.1
+- firebase: ^12.1.0
+- lucide-react: ^0.540.0
+- react: ^19.1.1
+- react-dom: ^19.1.1
+- react-router-dom: ^6.30.1
+- recharts: ^3.1.2
+- tailwind-merge: ^3.3.1
+
+Development Dependencies:
+- @eslint/js: ^9.33.0
+- @tailwindcss/postcss: ^4.1.12
+- @types/react: ^19.1.10
+- @types/react-dom: ^19.1.7
+- @vitejs/plugin-react: ^5.0.0
+- autoprefixer: ^10.4.21
+- eslint: ^9.33.0
+- eslint-plugin-react-hooks: ^5.2.0
+- eslint-plugin-react-refresh: ^0.4.20
+- globals: ^16.3.0
+- postcss: ^8.5.6
+- tailwindcss: ^4.1.12
+- tw-animate-css: ^1.3.7
+- vite: ^7.1.2
+
+CONFIGURATION FILES
+==================
+
+- package.json: Project dependencies and scripts
+- vite.config.js: Vite build configuration with path aliases
+- tailwind.config.js: Tailwind CSS configuration
+- jsconfig.json: JavaScript path mapping
+- firebase.json: Firebase project configuration
+- firestore.rules: Firestore security rules
+- firestore.indexes.json: Database indexes
+- eslint.config.js: ESLint configuration
+- postcss.config.js: PostCSS configuration
+
+ROUTING STRUCTURE
+================
+
+Protected Routes:
+- /dashboard - Main validation dashboard (requires auth)
+
+Public Routes:
+- / - Home page
+- /about - About page
+- /capabilities - Capabilities page
+- /insights - Analytics page
+- /contact - Contact page
+- /how-it-works - Process explanation
+- /login - Authentication page
+
+COMPONENT HIERARCHY
+==================
+
+App (AuthProvider)
+├── HeaderAuth
+├── Outlet (Router)
+│   ├── Home
+│   ├── Dashboard
+│   ├── About
+│   ├── Capabilities
+│   ├── Insights
+│   ├── Contact
+│   ├── HowItWorks
+│   └── Login
+└── Footer
+
+VALIDATION WORKFLOW
+==================
+
+1. Input Capture:
+   - Manual log entry
+   - ChatGPT Mode auto-capture
+   - API integration
+
+2. Entity Recognition:
+   - Named entity extraction
+   - Content type classification
+   - Priority weighting
+
+3. Multi-Validator Processing:
+   - Error keyword detection
+   - Response length validation
+   - Sensitive content flagging
+   - Professional claims verification
+   - Personal relationship validation
+   - Factual accuracy checking
+
+4. Scoring & Assessment:
+   - Weighted average calculation
+   - Threshold evaluation
+   - Risk flagging
+   - Verification requirements
+
+5. Storage & Analytics:
+   - Firestore persistence
+   - Real-time updates
+   - Analytics computation
+   - Export capabilities
+
+PERFORMANCE CONSIDERATIONS
+=========================
+
+- Lazy loading for route components
+- Optimized re-renders with React.memo
+- Efficient state management
+- Debounced search functionality
+- Pagination for large datasets
+- Caching for validation results
+
+TESTING STRATEGY
+===============
+
+- Test harness with predefined scenarios
+- Validation algorithm testing
+- UI component testing
+- Integration testing with Firebase
+- Performance benchmarking
+- Security testing
+
+DEPLOYMENT
+==========
+
+- Vite build optimization
+- Firebase hosting configuration
+- Environment variable management
+- Security rule deployment
+- Database indexing
+- Monitoring setup
+
+This comprehensive index covers all aspects of the AIV Systems codebase, from the 
+technical architecture to the user interface design and validation algorithms. The 
+system is well-structured, feature-rich, and provides a robust foundation for AI 
+response validation and monitoring.
+
+Generated on: 2024-12-19
+Project: AIV Systems - AI Response Validation Platform
+Version: 1.0.0
