@@ -5,6 +5,7 @@ import { ArrowDownRight, Brain, Shield, Activity } from 'lucide-react'
 import { memo, useCallback, useMemo, useState, useEffect } from 'react'
 import { useHomePerformance } from './hooks/useHomePerformance'
 import { focusElement, handleCardNavigation, announceToScreenReader } from './utils/accessibility'
+import { CardSkeleton, ContentSkeleton, Skeleton } from '@/shared/components/ui'
 
 // Skip link component for accessibility
 const SkipLink = memo(() => (
@@ -125,6 +126,7 @@ const CentralGraphic = memo(() => (
 export default function Home() {
   const { componentRef } = useHomePerformance()
   const [focusedCardIndex, setFocusedCardIndex] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Memoize feature data to prevent unnecessary re-renders
   const features = useMemo(() => [
@@ -174,6 +176,15 @@ export default function Home() {
     return () => document.removeEventListener('keydown', handleGlobalKeyDown)
   }, [focusedCardIndex])
 
+  // Simulate loading for demonstration
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1500)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <div ref={componentRef} className="relative min-h-dvh w-full overflow-hidden">
       <SkipLink />
@@ -211,15 +222,27 @@ export default function Home() {
         >
           {/* Main Headline */}
           <section className="text-center mb-12">
-            <h1 className="text-6xl font-bold text-black mb-8 tracking-tight">
-              AIV SYSTEMS
-            </h1>
-            
-            <CentralGraphic />
-            
-            <h2 className="text-6xl font-bold text-black tracking-tight">
-              VALIDATION
-            </h2>
+            {isLoading ? (
+              <div className="space-y-6">
+                <Skeleton className="h-24 w-96 mx-auto" />
+                <div className="flex justify-center">
+                  <Skeleton className="h-32 w-32 rounded-full" />
+                </div>
+                <Skeleton className="h-24 w-80 mx-auto" />
+              </div>
+            ) : (
+              <>
+                <h1 className="text-6xl font-bold text-black mb-8 tracking-tight">
+                  AIV SYSTEMS
+                </h1>
+                
+                <CentralGraphic />
+                
+                <h2 className="text-6xl font-bold text-black tracking-tight">
+                  VALIDATION
+                </h2>
+              </>
+            )}
           </section>
 
           {/* Supporting Text */}
@@ -248,16 +271,24 @@ export default function Home() {
       >
         <h2 id="features-heading" className="sr-only">Key Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          {features.map((feature, index) => (
-            <FeatureCard
-              key={feature.title}
-              icon={feature.icon}
-              title={feature.title}
-              description={feature.description}
-              index={index}
-              onCardFocus={handleCardFocus}
-            />
-          ))}
+          {isLoading ? (
+            <>
+              <CardSkeleton showActions={false} />
+              <CardSkeleton showActions={false} />
+              <CardSkeleton showActions={false} />
+            </>
+          ) : (
+            features.map((feature, index) => (
+              <FeatureCard
+                key={feature.title}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                index={index}
+                onCardFocus={handleCardFocus}
+              />
+            ))
+          )}
         </div>
 
         {/* CTA Section */}

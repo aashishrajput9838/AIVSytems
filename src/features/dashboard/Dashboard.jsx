@@ -5,6 +5,7 @@ import LogsTable from './LogsTable'
 import { DashboardHeader, DashboardControls, SearchBar, ErrorDisplay } from './components'
 import DashboardErrorBoundary from './components/DashboardErrorBoundary'
 import { useDashboard } from './hooks/useDashboard'
+import { StatsSkeleton, TableSkeleton, CardSkeleton } from '@/shared/components/ui'
 
 export default function Dashboard() {
   const {
@@ -108,6 +109,13 @@ export default function Dashboard() {
               onDismiss={handleErrorDismiss}
             />
 
+            {/* Dashboard Stats Skeleton */}
+            {isLoading && (
+              <div className="mb-6">
+                <StatsSkeleton count={4} />
+              </div>
+            )}
+
             <section className="space-y-6">
               {showTests && (
                 <TestHarness
@@ -117,12 +125,21 @@ export default function Dashboard() {
                   testResults={testResults}
                 />
               )}
-              <LogsTable
-                logs={logs}
-                formatTimestamp={formatTimestamp}
-                approveLog={approveLog}
-                rejectLog={rejectLog}
-              />
+              
+              {/* Logs Table with Loading Skeleton */}
+              {isLoading ? (
+                <div className="space-y-4">
+                  <CardSkeleton showActions={false} />
+                  <TableSkeleton rows={8} columns={5} />
+                </div>
+              ) : (
+                <LogsTable
+                  logs={logs}
+                  formatTimestamp={formatTimestamp}
+                  approveLog={approveLog}
+                  rejectLog={rejectLog}
+                />
+              )}
             </section>
           </main>
         </div>
