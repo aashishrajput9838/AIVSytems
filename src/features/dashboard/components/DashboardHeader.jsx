@@ -1,4 +1,4 @@
-import useAuth from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth/AuthProvider'
 
 export default function DashboardHeader() {
   const { user } = useAuth()

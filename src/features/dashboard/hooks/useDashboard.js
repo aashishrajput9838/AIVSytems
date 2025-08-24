@@ -1,4 +1,4 @@
-import useAuth from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth/AuthProvider'
 import useLogsManagement from './useLogsManagement'
 import useChatGPTMode from './useChatGPTMode'
 import useTestManagement from './useTestManagement'
@@ -30,10 +30,11 @@ export default function useDashboard() {
     // Convenience functions that combine multiple concerns
     handleAddLog: async (e) => {
       e.preventDefault()
-      const success = await logsManagement.handleAddLog(
-        ui.newLog.user_query, 
-        ui.newLog.model_response
-      )
+      
+      // Extract form values from the current newLog state
+      const { user_query, model_response } = ui.newLog
+      
+      const success = await logsManagement.handleAddLog(user_query, model_response)
       if (success) {
         ui.toggleAddForm()
         ui.resetNewLog()

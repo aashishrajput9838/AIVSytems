@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/shared/components/ui/button'
-import useAuth from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth/AuthProvider'
 
 export default function HeaderAuth() {
   const { user, signOut } = useAuth()

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { EnhancedButton } from '@/shared/components/ui/enhanced-button'
 import { Button } from '@/shared/components/ui/button'
-import { Card, CardContent } from '@/shared/components/ui/card'
+import { EnhancedCard, EnhancedCardContent } from '@/shared/components/ui/enhanced-card'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Mail, Lock, Shield, ArrowLeft, CheckCircle } from 'lucide-react'
-import useAuth from './AuthProvider'
+import { useAuth } from './AuthProvider'
 import { AuthInput } from './components/AuthInput'
 import { AuthError, AuthSuccess } from './components/AuthError'
 import { LoadingSpinner } from './components/LoadingSpinner'
@@ -47,14 +48,19 @@ export default function Login() {
       setLocalError('')
       setSuccess(false)
       
+      console.log('Login: Attempting email sign-in...')
       await signInWithEmail(email, password)
+      
+      console.log('Login: Email sign-in successful, setting success state')
       setSuccess(true)
       
       // Show success message briefly before redirecting
       setTimeout(() => {
+        console.log('Login: Redirecting to dashboard...')
         navigate(redirectTo, { replace: true })
       }, 1000)
     } catch (err) {
+      console.error('Login: Email sign-in failed:', err)
       setLocalError(err?.message || 'Login failed')
     } finally {
       setEmailLoading(false)
@@ -67,16 +73,21 @@ export default function Login() {
       setLocalError('')
       setSuccess(false)
       
+      console.log('Login: Attempting Google sign-in...')
+      // Google sign-in now uses popup, so we can handle it directly
       await signInWithGoogle()
+      
+      console.log('Login: Google sign-in successful')
       setSuccess(true)
       
       // Show success message briefly before redirecting
       setTimeout(() => {
+        console.log('Login: Redirecting to dashboard after Google sign-in...')
         navigate(redirectTo, { replace: true })
       }, 1000)
     } catch (err) {
+      console.error('Login: Google sign-in failed:', err)
       setLocalError(err?.message || 'Google login failed')
-    } finally {
       setGoogleLoading(false)
     }
   }
@@ -91,12 +102,12 @@ export default function Login() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(0,0,0,0.6),transparent_50%)]"></div>
       </div>
       
-      <main className="relative z-10 mx-auto w-[95%] max-w-md mt-8 mb-8">
+      <main className="relative z-10 mx-auto w-[95%] max-w-md mt-8 mb-8 animate-fade-in">
         {/* Back to Home */}
-        <div className="mb-4">
+        <div className="mb-4 animate-slide-down" style={{ animationDelay: '200ms' }}>
           <Link 
             to="/" 
-            className="inline-flex items-center gap-2 text-black hover:text-amber-700 transition-colors"
+            className="inline-flex items-center gap-2 text-black hover:text-amber-700 transition-all duration-300 hover:scale-105"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Home
@@ -104,8 +115,8 @@ export default function Login() {
         </div>
 
         {/* Login Card */}
-        <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
-          <CardContent className="p-8 space-y-6">
+        <EnhancedCard className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
+          <EnhancedCardContent className="p-8 space-y-6">
             {/* Header */}
             <div className="text-center space-y-2">
               <div className="inline-flex items-center justify-center size-12 rounded-xl bg-amber-100 text-amber-700 mb-4">
@@ -202,8 +213,8 @@ export default function Login() {
             <div className="text-sm text-gray-600 text-center">
               <p>Don't have an account? Contact your administrator to get access.</p>
             </div>
-          </CardContent>
-        </Card>
+          </EnhancedCardContent>
+        </EnhancedCard>
       </main>
     </div>
   )

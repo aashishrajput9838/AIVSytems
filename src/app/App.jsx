@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom'
 import Footer from '@/shared/components/Footer'
 import HeaderAuth from '@/shared/components/HeaderAuth'
 import ErrorBoundary from '@/shared/components/ErrorBoundary'
-import { AuthProvider } from '@/features/auth/AuthProvider'
+import AuthProvider from '@/features/auth/AuthProvider'
 
 function App() {
   return (

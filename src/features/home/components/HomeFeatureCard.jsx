@@ -54,6 +54,9 @@ export default memo(function HomeFeatureCard({
   )
 })
 
+// Add display name for better debugging
+HomeFeatureCard.displayName = 'HomeFeatureCard'
+
 HomeFeatureCard.propTypes = {
   icon: PropTypes.elementType.isRequired,
   title: PropTypes.string.isRequired,

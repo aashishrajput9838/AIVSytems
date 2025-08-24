@@ -3,7 +3,7 @@ import DashboardHeader from './DashboardHeader'
 import DashboardControls from './DashboardControls'
 import SearchBar from './SearchBar'
 import ErrorDisplay from './ErrorDisplay'
-import { StatsSkeleton } from '@/shared/components/ui'
+import { EnhancedSkeleton } from '@/shared/components/ui'
 
 const DashboardLayout = memo(({
   search,
@@ -58,30 +58,31 @@ const DashboardLayout = memo(({
           </div>
         )}
         
-        {/* Loading State with Skeleton */}
+        {/* Loading State with Enhanced Skeleton */}
         {isLoading && !error && (
-          <div className="mt-6 space-y-4">
-            <StatsSkeleton />
+          <div className="mt-6 space-y-6 animate-fade-in">
+            {/* Stats Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="animate-stagger-1" style={{ animationDelay: `${i * 100}ms` }}>
+                  <EnhancedSkeleton variant="card" className="h-24" />
+                </div>
+              ))}
+            </div>
+            
+            {/* Content Skeleton */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
-                  <div className="space-y-3">
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                    <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-                  </div>
-                </div>
+              <div className="animate-stagger-3">
+                <EnhancedSkeleton variant="title" className="mb-4" />
+                <EnhancedSkeleton variant="text" className="mb-2" />
+                <EnhancedSkeleton variant="text" className="mb-2 w-5/6" />
+                <EnhancedSkeleton variant="text" className="w-4/6" />
               </div>
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
-                  <div className="space-y-3">
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                  </div>
-                </div>
+              <div className="animate-stagger-4">
+                <EnhancedSkeleton variant="title" className="mb-4" />
+                <EnhancedSkeleton variant="text" className="mb-2" />
+                <EnhancedSkeleton variant="text" className="mb-2 w-3/4" />
+                <EnhancedSkeleton variant="text" className="w-2/3" />
               </div>
             </div>
           </div>

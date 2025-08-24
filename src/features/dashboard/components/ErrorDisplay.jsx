@@ -1,5 +1,5 @@
 import ErrorAlert from '@/shared/components/ErrorAlert'
-import { ProgressIndicator, PROGRESS_STATE } from '@/shared/components/ProgressIndicator'
+import ProgressIndicator, { PROGRESS_STATE } from '@/shared/components/ProgressIndicator'
 
 export default function ErrorDisplay({ 
   error, 

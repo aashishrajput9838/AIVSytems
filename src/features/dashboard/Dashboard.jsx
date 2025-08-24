@@ -5,66 +5,49 @@ import LogsTable from './LogsTable'
 import DashboardLayout from './components/DashboardLayout'
 import DashboardErrorBoundary from './components/DashboardErrorBoundary'
 import useDashboard from './hooks/useDashboard'
-import { TableSkeleton, CardSkeleton } from '@/shared/components/ui'
+import { EnhancedSkeleton, CardSkeleton, TableSkeleton } from '@/shared/components/ui'
 
 export default function Dashboard() {
   const {
-    // Logs Management
-    logs,
-    isLoading,
-    error,
-    setError,
-    formatTimestamp,
-    approveLog,
-    rejectLog,
-    progress,
-    progressMessage,
-
-    // ChatGPT Mode
-    chatHistory,
-    currentQuestion,
-    setCurrentQuestion,
-    currentResponse,
-    setCurrentResponse,
-    isCapturing,
-    isAsking,
-    startCapturing,
-    stopCapturing,
-    onAskModel,
-    onCapture,
-
-    // Test Management
-    isRunningTests,
-    testResults,
-    sampleTests,
-    runAllTests,
-
-    // UI State
     search,
     setSearch,
+    error,
+    isLoading,
+    logs,
+    handleAddLog,
+    handleDeleteLog,
+    handleUpdateLog,
+    handleTestLog,
+    isTestMode,
+    setIsTestMode,
+    testResults,
+    clearTestResults,
+    // Add missing UI state and functions
     showAddForm,
     showChatGPTMode,
     showTests,
     newLog,
-    setNewLog,
     toggleAddForm,
-
-    // Combined functions
-    handleAddLog
+    toggleChatGPTMode,
+    toggleTests,
+    updateNewLog,
+    resetNewLog,
+    // Add missing logs management functions
+    formatTimestamp,
+    approveLog,
+    rejectLog
   } = useDashboard()
 
-  const handleErrorRetry = () => {
-    // Reload logs on retry
-    window.location.reload()
-  }
-
-  const handleErrorDismiss = () => {
-    // Clear error state
-    setError('')
-  }
-
-  const handleAddFormCancel = () => {
-    toggleAddForm()
+  // Create a wrapper function that matches the expected setNewLog signature
+  const handleSetNewLog = (updatedLog) => {
+    // updateNewLog expects (field, value) but AddLogForm calls it with an object
+    // So we need to handle both cases
+    if (typeof updatedLog === 'object' && updatedLog !== null) {
+      // If it's an object, update the entire newLog state
+      Object.entries(updatedLog).forEach(([field, value]) => {
+        updateNewLog(field, value)
+      })
+    }
   }
 
   return (
@@ -74,68 +57,58 @@ export default function Dashboard() {
         setSearch={setSearch}
         error={error}
         isLoading={isLoading}
+        logs={logs}
+        onAddLog={handleAddLog}
+        onDeleteLog={handleDeleteLog}
+        onUpdateLog={handleUpdateLog}
+        onTestLog={handleTestLog}
+        isTestMode={isTestMode}
+        setIsTestMode={setIsTestMode}
+        testResults={testResults}
+        clearTestResults={clearTestResults}
+        // Add missing UI state
         showAddForm={showAddForm}
-        setShowAddForm={toggleAddForm} // Use toggleAddForm here
+        setShowAddForm={toggleAddForm}
         showChatGPTMode={showChatGPTMode}
-        setShowChatGPTMode={setShowChatGPTMode} // This should probably be toggleChatGPTMode
-        showTests={showTests} // This should probably be toggleTests
-        onErrorRetry={handleErrorRetry}
-        onErrorDismiss={handleErrorDismiss}
-        progress={progress}
-        progressMessage={progressMessage}
+        setShowChatGPTMode={toggleChatGPTMode}
+        showTests={showTests}
+        setShowTests={toggleTests}
       >
-        {/* ChatGPT Mode */}
-        {showChatGPTMode && (
-          <ChatGPTMode
-            isCapturing={isCapturing}
-            startCapturing={startCapturing}
-            stopCapturing={stopCapturing}
-            currentQuestion={currentQuestion}
-            setCurrentQuestion={setCurrentQuestion}
-            currentResponse={currentResponse}
-            setCurrentResponse={setCurrentResponse}
-            isAsking={isAsking}
-            onAskModel={onAskModel}
-            onCapture={onCapture}
-            chatHistory={chatHistory}
-          />
-        )}
-
-        {/* Add Log Form */}
+        {/* Only show components when their respective modes are active */}
+        {showChatGPTMode && <ChatGPTMode />}
+        
         {showAddForm && (
-          <AddLogForm
-            isLoading={isLoading}
-            newLog={newLog}
-            setNewLog={setNewLog}
+          <AddLogForm 
             onSubmit={handleAddLog}
-            onCancel={handleAddFormCancel}
+            newLog={newLog}
+            setNewLog={handleSetNewLog}
+            onCancel={toggleAddForm}
+            isFormLoading={isLoading}
+            isLoading={isLoading}
           />
         )}
-
-        {/* Test Harness */}
+        
         {showTests && (
           <TestHarness
-            sampleTests={sampleTests}
-            runAllTests={runAllTests}
-            isRunningTests={isRunningTests}
-            testResults={testResults}
-          />
-        )}
-
-        {/* Logs Table with Loading Skeleton */}
-        {isLoading ? (
-          <div className="space-y-4">
-            <CardSkeleton showActions={false} />
-            <TableSkeleton rows={8} columns={5} />
-          </div>
-        ) : (
-          <LogsTable
             logs={logs}
-            formatTimestamp={formatTimestamp}
-            approveLog={approveLog}
-            rejectLog={rejectLog}
+            onTest={handleTestLog}
+            isTestMode={isTestMode}
+            setIsTestMode={setIsTestMode}
+            testResults={testResults}
+            clearTestResults={clearTestResults}
           />
         )}
+        
+        <LogsTable
+          logs={logs}
+          onDelete={handleDeleteLog}
+          onUpdate={handleUpdateLog}
+          onTest={handleTestLog}
+          isLoading={isLoading}
+          formatTimestamp={formatTimestamp}
+          approveLog={approveLog}
+          rejectLog={rejectLog}
+        />
       </DashboardLayout>
     </DashboardErrorBoundary>
   )

@@ -1,83 +1,111 @@
 import { useEffect, useRef } from 'react'
+import { safePreload, createLazyLoadObserver } from '@/shared/utils/performance'
 
 /**
- * Custom hook for performance monitoring and optimization of the Home component
+ * Optimized performance monitoring hook for the Home component
  */
 export const useHomePerformance = () => {
   const componentRef = useRef(null)
-  const renderTimeRef = useRef(null)
+  const observerRef = useRef(null)
+  const hasLoggedRef = useRef(false)
 
+  // Performance monitoring - only run once per mount with reduced overhead
   useEffect(() => {
-    // Performance monitoring
+    if (hasLoggedRef.current) return
+
     const startTime = performance.now()
-    renderTimeRef.current = startTime
-
-    // Intersection Observer for lazy loading
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Add will-change for smooth animations when element comes into view
-            entry.target.style.willChange = 'transform, opacity'
-            
-            // Remove will-change after animation completes
-            setTimeout(() => {
-              if (entry.target.style.willChange) {
-                entry.target.style.willChange = 'auto'
-              }
-            }, 300)
-          }
-        })
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '50px'
+    
+    // Use requestIdleCallback for non-critical performance logging
+    const logPerformance = () => {
+      if (!hasLoggedRef.current) {
+        const endTime = performance.now()
+        const duration = endTime - startTime
+        
+        // Only log if render time is significant (>100ms) in development
+        if (process.env.NODE_ENV === 'development' && duration > 100) {
+          console.warn(`Home component render time: ${duration.toFixed(2)}ms - Consider optimization`)
+        }
+        hasLoggedRef.current = true
       }
-    )
+    }
 
-    // Observe feature cards for performance optimization
-    const featureCards = document.querySelectorAll('[role="article"]')
-    featureCards.forEach(card => observer.observe(card))
+    // Use requestIdleCallback if available, otherwise setTimeout with longer delay
+    if (window.requestIdleCallback) {
+      requestIdleCallback(logPerformance, { timeout: 2000 })
+    } else {
+      setTimeout(logPerformance, 200)
+    }
+  }, [])
 
-    // Cleanup
-    return () => {
-      observer.disconnect()
-      const endTime = performance.now()
-      const renderDuration = endTime - renderTimeRef.current
+  // Lazy loading for feature cards - optimized to run only once
+  useEffect(() => {
+    if (observerRef.current) return
+
+    const observer = createLazyLoadObserver((target) => {
+      // Add will-change for smooth animations when element comes into view
+      target.style.willChange = 'transform, opacity'
       
-      // Log performance metrics in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Home component render time: ${renderDuration.toFixed(2)}ms`)
+      // Remove will-change after animation completes
+      setTimeout(() => {
+        if (target.style.willChange) {
+          target.style.willChange = 'auto'
+        }
+      }, 300)
+    })
+
+    if (observer) {
+      observerRef.current = observer
+      
+      // Observe feature cards with a small delay to ensure DOM is ready
+      const observeCards = () => {
+        const featureCards = document.querySelectorAll('[role="article"]')
+        featureCards.forEach(card => observer.observe(card))
+      }
+
+      // Use requestIdleCallback for better performance
+      if (window.requestIdleCallback) {
+        requestIdleCallback(observeCards, { timeout: 1000 })
+      } else {
+        setTimeout(observeCards, 100)
+      }
+
+      return () => {
+        observer.disconnect()
       }
     }
   }, [])
 
-  // Preload critical resources
+  // Preload dashboard route - optimized to run only once
   useEffect(() => {
-    // Preload dashboard route for faster navigation
+    let hasPreloaded = false
+
     const preloadDashboard = () => {
-      const link = document.createElement('link')
-      link.rel = 'prefetch'
-      link.href = '/dashboard'
-      document.head.appendChild(link)
+      if (hasPreloaded) return
+      hasPreloaded = true
+      safePreload('/dashboard')
     }
 
-    // Preload on user interaction or after a delay
+    // Preload on user interaction with debouncing
+    let interactionTimeout = null
     const handleUserInteraction = () => {
-      preloadDashboard()
-      document.removeEventListener('mousemove', handleUserInteraction)
-      document.removeEventListener('touchstart', handleUserInteraction)
+      if (interactionTimeout) {
+        clearTimeout(interactionTimeout)
+      }
+      interactionTimeout = setTimeout(preloadDashboard, 1000)
     }
 
-    document.addEventListener('mousemove', handleUserInteraction)
-    document.addEventListener('touchstart', handleUserInteraction)
+    document.addEventListener('mousemove', handleUserInteraction, { passive: true })
+    document.addEventListener('touchstart', handleUserInteraction, { passive: true })
 
-    // Fallback preload after 3 seconds
-    const timeoutId = setTimeout(preloadDashboard, 3000)
+    // Fallback preload after 10 seconds instead of 5
+    const timeoutId = setTimeout(preloadDashboard, 10000)
 
     return () => {
       document.removeEventListener('mousemove', handleUserInteraction)
       document.removeEventListener('touchstart', handleUserInteraction)
+      if (interactionTimeout) {
+        clearTimeout(interactionTimeout)
+      }
       clearTimeout(timeoutId)
     }
   }, [])

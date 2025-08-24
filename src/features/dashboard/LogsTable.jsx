@@ -5,7 +5,19 @@ import { Card, CardContent } from '@/shared/components/ui/card'
 import { TableSkeleton } from '@/shared/components/ui'
 import { exportLogsToCsv } from './utils'
 
-export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog }) {
+export default function LogsTable({ logs = [], formatTimestamp, approveLog, rejectLog }) {
+  // Safety check for formatTimestamp function
+  const safeFormatTimestamp = formatTimestamp || ((ts) => {
+    if (!ts) return '-'
+    if (typeof ts === 'string') return ts
+    if (ts?.seconds) return new Date(ts.seconds * 1000).toLocaleString()
+    const d = new Date(ts)
+    return Number.isNaN(d.getTime()) ? String(ts) : d.toLocaleString()
+  })
+
+  // Safety check for logs array
+  const safeLogs = Array.isArray(logs) ? logs : []
+
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
       <CardContent className="p-4 sm:p-6">
@@ -17,7 +29,7 @@ export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog
             Logs
           </h2>
           <Button 
-            onClick={() => exportLogsToCsv(logs)} 
+            onClick={() => exportLogsToCsv(safeLogs)} 
             variant="outline" 
             className="border-gray-300 text-gray-700 hover:bg-amber-50 w-full sm:w-auto text-sm"
             aria-label="Export logs to CSV file"
@@ -31,7 +43,7 @@ export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog
           </span>
         </div>
         
-        {logs.length === 0 ? (
+        {safeLogs.length === 0 ? (
           <div 
             className="text-center py-6 sm:py-8"
             aria-live="polite"
@@ -63,16 +75,16 @@ export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {logs.map((log, index) => (
+                {safeLogs.map((log, index) => (
                   <TableRow 
-                    key={log.id} 
+                    key={log.id || index} 
                     className="border-gray-100 hover:bg-amber-50/40"
                     role="row"
-                    aria-label={`Log entry ${index + 1} from ${formatTimestamp(log.timestamp)}`}
+                    aria-label={`Log entry ${index + 1} from ${safeFormatTimestamp(log.timestamp)}`}
                   >
                     <TableCell className="text-gray-600" role="cell">
-                      <time dateTime={log.timestamp} aria-label={`Timestamp: ${formatTimestamp(log.timestamp)}`}>
-                        {formatTimestamp(log.timestamp)}
+                      <time dateTime={log.timestamp} aria-label={`Timestamp: ${safeFormatTimestamp(log.timestamp)}`}>
+                        {safeFormatTimestamp(log.timestamp)}
                       </time>
                     </TableCell>
                     <TableCell className="text-black" role="cell">
@@ -132,10 +144,11 @@ export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog
                     <TableCell className="flex gap-2" role="cell">
                       <Button 
                         size="sm" 
-                        onClick={() => approveLog(log.id)} 
+                        onClick={() => approveLog && approveLog(log.id)} 
                         className="bg-black text-white hover:bg-amber-600 hover:text-black"
                         aria-label={`Approve log entry ${index + 1}`}
                         aria-describedby="approve-help"
+                        disabled={!approveLog}
                       >
                         <Check className="h-4 w-4 mr-1" aria-hidden="true" /> 
                         Approve
@@ -147,9 +160,10 @@ export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog
                       <Button 
                         size="sm" 
                         variant="destructive" 
-                        onClick={() => rejectLog(log.id)}
+                        onClick={() => rejectLog && rejectLog(log.id)}
                         aria-label={`Reject log entry ${index + 1}`}
                         aria-describedby="reject-help"
+                        disabled={!rejectLog}
                       >
                         <X className="h-4 w-4 mr-1" aria-hidden="true" /> 
                         Reject

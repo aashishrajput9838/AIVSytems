@@ -4,15 +4,18 @@ import { Input } from '@/shared/components/ui/input'
 import { Card, CardContent } from '@/shared/components/ui/card'
 import { FormSkeleton } from '@/shared/components/ui'
 
-export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onCancel }) {
-  const [isFormLoading, setIsFormLoading] = useState(false)
+export default function AddLogForm({ isLoading, isFormLoading, newLog, setNewLog, onSubmit, onCancel }) {
+  const [localFormLoading, setLocalFormLoading] = useState(false)
+
+  // Use the passed isFormLoading prop or fall back to local state
+  const formLoading = isFormLoading !== undefined ? isFormLoading : localFormLoading
 
   // Simulate form loading for demonstration
   useEffect(() => {
     if (isLoading) {
-      setIsFormLoading(true)
+      setLocalFormLoading(true)
       const timer = setTimeout(() => {
-        setIsFormLoading(false)
+        setLocalFormLoading(false)
       }, 2000)
       return () => clearTimeout(timer)
     }
@@ -37,7 +40,7 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
             Form to add a new log entry with user query and AI model response
           </p>
           
-          {isFormLoading ? (
+          {formLoading ? (
             <div aria-live="polite" aria-label="Form is loading">
               <FormSkeleton fields={2} showSubmit={true} />
             </div>

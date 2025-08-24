@@ -1,11 +1,9 @@
-import { Button } from '@/shared/components/ui/button'
-import { Card, CardContent } from '@/shared/components/ui/card'
+import { EnhancedButton, EnhancedCard, EnhancedCardContent, EnhancedSkeleton } from '@/shared/components/ui'
 import { Link } from 'react-router-dom'
 import { ArrowDownRight, Brain, Shield, Activity } from 'lucide-react'
 import { memo, useCallback, useMemo, useState, useEffect } from 'react'
 import { useHomePerformance } from './hooks/useHomePerformance'
 import { focusElement, handleCardNavigation, announceToScreenReader } from './utils/accessibility'
-import { CardSkeleton, ContentSkeleton, Skeleton } from '@/shared/components/ui'
 
 // Skip link component for accessibility
 const SkipLink = memo(() => (
@@ -21,6 +19,7 @@ const SkipLink = memo(() => (
 const Navigation = memo(() => {
   const navItems = useMemo(() => [
     { to: '/dashboard', label: 'DASHBOARD' },
+    { to: '/demo', label: 'DEMO' },
     { to: '/about', label: 'ABOUT' },
     { to: '/capabilities', label: 'CAPABILITIES' },
     { to: '/insights', label: 'INSIGHTS' },
@@ -37,16 +36,16 @@ const Navigation = memo(() => {
         <Link
           key={item.to}
           to={item.to}
-          className="hover:text-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded px-2 py-1"
+          className="hover:text-amber-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded px-2 py-1 hover:scale-105"
           aria-label={item.label}
         >
           {item.icon ? (
-            <Button asChild variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50 text-xs sm:text-sm">
+            <EnhancedButton asChild variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50 text-xs sm:text-sm">
               <span>
                 <item.icon className="h-3 w-3" aria-hidden="true" />
                 {item.label}
               </span>
-            </Button>
+            </EnhancedButton>
           ) : (
             item.label
           )}
@@ -71,15 +70,16 @@ const FeatureCard = memo(({ icon: Icon, title, description, index, onCardFocus }
   }, [index, onCardFocus])
 
   return (
-    <Card 
-      className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 focus-within:ring-2 focus-within:ring-amber-500 focus-within:ring-offset-2"
+    <EnhancedCard 
+      variant="animated"
+      className="bg-white/95 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl focus-within:ring-2 focus-within:ring-amber-500 focus-within:ring-offset-2"
       tabIndex={0}
       role="article"
       aria-labelledby={`feature-title-${index}`}
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
     >
-      <CardContent className="p-4 sm:p-6">
+      <EnhancedCardContent className="p-4 sm:p-6">
         <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
           <div 
             className="p-1.5 sm:p-2 bg-amber-100 rounded-lg flex-shrink-0"
@@ -97,8 +97,8 @@ const FeatureCard = memo(({ icon: Icon, title, description, index, onCardFocus }
         <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
           {description}
         </p>
-      </CardContent>
-    </Card>
+      </EnhancedCardContent>
+    </EnhancedCard>
   )
 })
 
@@ -224,11 +224,11 @@ export default function Home() {
         <section className="text-center mb-8 sm:mb-12">
           {isLoading ? (
             <div className="space-y-4 sm:space-y-6">
-              <Skeleton className="h-16 w-64 sm:h-24 sm:w-96 mx-auto" />
+              <EnhancedSkeleton variant="title" className="h-16 w-64 sm:h-24 sm:w-96 mx-auto" />
               <div className="flex justify-center">
-                <Skeleton className="h-20 w-20 sm:h-32 sm:w-32 rounded-full" />
+                <EnhancedSkeleton variant="avatar" className="h-20 w-20 sm:h-32 sm:w-32" />
               </div>
-              <Skeleton className="h-16 w-56 sm:h-24 sm:w-80 mx-auto" />
+              <EnhancedSkeleton variant="text" className="h-16 w-56 sm:h-24 sm:w-80 mx-auto" />
             </div>
           ) : (
             <>
@@ -273,9 +273,9 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8 px-4 sm:px-0">
           {isLoading ? (
             <>
-              <CardSkeleton showActions={false} />
-              <CardSkeleton showActions={false} />
-              <CardSkeleton showActions={false} />
+              <EnhancedSkeleton variant="card" className="h-48" />
+              <EnhancedSkeleton variant="card" className="h-48" />
+              <EnhancedSkeleton variant="card" className="h-48" />
             </>
           ) : (
             features.map((feature, index) => (
@@ -293,7 +293,7 @@ export default function Home() {
 
         {/* CTA Section */}
         <div className="text-center mt-8 sm:mt-12 px-4">
-          <Button 
+          <EnhancedButton 
             asChild 
             className="bg-black text-white hover:bg-amber-600 hover:text-black transition-all duration-300 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 w-full sm:w-auto"
             onClick={handleCTAClick}
@@ -301,7 +301,7 @@ export default function Home() {
             <Link to="/dashboard" aria-label="Navigate to dashboard">
               Explore Dashboard
             </Link>
-          </Button>
+          </EnhancedButton>
         </div>
       </section>
     </div>

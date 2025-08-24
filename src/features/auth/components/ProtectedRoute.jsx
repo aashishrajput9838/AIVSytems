@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Navigate, useLocation } from 'react-router-dom'
-import useAuth from '../AuthProvider'
+import { useAuth } from '../AuthProvider'
 import { AuthLoadingScreen } from './AuthLoadingScreen'
 
 export const ProtectedRoute = ({
@@ -9,16 +9,27 @@ export const ProtectedRoute = ({
   requireAuth = true,
   redirectTo = '/login'
 }) => {
-  const { user, loading } = useAuth()
+  const { user, loading, isInitialized } = useAuth()
   const location = useLocation()
 
-  // Show loading screen while checking authentication
-  if (loading) {
+  // Debug logging
+  console.log('ProtectedRoute:', {
+    requireAuth,
+    loading,
+    isInitialized,
+    user: user ? user.email : 'No user',
+    currentPath: location.pathname
+  })
+
+  // Show loading screen while auth is initializing
+  if (!isInitialized || loading) {
+    console.log('ProtectedRoute: Loading... (initializing or loading)')
     return <AuthLoadingScreen />
   }
 
   // If auth is required and user is not authenticated, redirect to login
   if (requireAuth && !user) {
+    console.log('ProtectedRoute: Redirecting to login - no user')
     return (
       <Navigate 
         to={redirectTo} 
@@ -30,10 +41,12 @@ export const ProtectedRoute = ({
 
   // If auth is not required and user is authenticated, redirect to dashboard
   if (!requireAuth && user) {
+    console.log('ProtectedRoute: Redirecting to dashboard - user already logged in')
     return <Navigate to="/dashboard" replace />
   }
 
   // User is authenticated and can access the route
+  console.log('ProtectedRoute: Allowing access')
   return <>{children}</>
 }
 
