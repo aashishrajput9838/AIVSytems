@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import PropTypes from 'prop-types'
 import { auth } from '@/services/firebase/firebase'
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import { googleProvider } from '@/services/firebase/firebase'
@@ -84,4 +85,8 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   return useContext(AuthContext)
+}
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired
 }

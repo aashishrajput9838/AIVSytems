@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import { cn } from "@/shared/utils/cn";
 
 const Input = React.forwardRef(function Input(
@@ -21,5 +22,19 @@ const Input = React.forwardRef(function Input(
     />
   );
 });
+
+Input.propTypes = {
+  className: PropTypes.string,
+  type: PropTypes.string,
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  required: PropTypes.bool,
+  disabled: PropTypes.bool
+}
+
+Input.defaultProps = {
+  type: "text"
+}
 
 export { Input };

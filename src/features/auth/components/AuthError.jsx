@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { AlertCircle, X, RefreshCw } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 
@@ -65,6 +66,18 @@ export const AuthError = ({
   )
 }
 
+AuthError.propTypes = {
+  error: PropTypes.string.isRequired,
+  severity: PropTypes.oneOf(['error', 'warning', 'info']),
+  onRetry: PropTypes.func,
+  onDismiss: PropTypes.func,
+  className: PropTypes.string
+}
+
+AuthError.defaultProps = {
+  severity: 'error'
+}
+
 export const AuthSuccess = ({
   message,
   className
@@ -80,4 +93,9 @@ export const AuthSuccess = ({
       <p className="text-sm font-medium">{message}</p>
     </div>
   )
+}
+
+AuthSuccess.propTypes = {
+  message: PropTypes.string.isRequired,
+  className: PropTypes.string
 }

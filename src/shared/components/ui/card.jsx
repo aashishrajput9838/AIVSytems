@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import { cn } from "@/shared/utils/cn";
 
 function Card({ className, ...props }) {
@@ -22,6 +23,16 @@ function CardContent({ className, ...props }) {
       {...props}
     />
   );
+}
+
+Card.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node
+}
+
+CardContent.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node
 }
 
 export { Card, CardContent };

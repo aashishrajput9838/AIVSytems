@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { LoadingSpinner } from './LoadingSpinner'
 import { Shield } from 'lucide-react'
 
@@ -48,4 +49,12 @@ export const AuthSkeleton = () => {
       <div className="h-11 bg-gray-200 rounded-lg"></div>
     </div>
   )
+}
+
+AuthLoadingScreen.propTypes = {
+  message: PropTypes.string
+}
+
+AuthLoadingScreen.defaultProps = {
+  message: 'Checking authentication...'
 }

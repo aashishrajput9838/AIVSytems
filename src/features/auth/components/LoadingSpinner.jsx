@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 
@@ -38,6 +39,18 @@ export const LoadingSpinner = ({
   )
 }
 
+LoadingSpinner.propTypes = {
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  variant: PropTypes.oneOf(['default', 'primary', 'white']),
+  className: PropTypes.string,
+  text: PropTypes.string
+}
+
+LoadingSpinner.defaultProps = {
+  size: 'md',
+  variant: 'default'
+}
+
 export const LoadingOverlay = ({
   children,
   loading
@@ -52,4 +65,9 @@ export const LoadingOverlay = ({
       </div>
     </div>
   )
+}
+
+LoadingOverlay.propTypes = {
+  children: PropTypes.node.isRequired,
+  loading: PropTypes.bool.isRequired
 }

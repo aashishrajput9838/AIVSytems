@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react'
+import PropTypes from 'prop-types'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 
@@ -85,3 +86,23 @@ export const AuthInput = forwardRef(
 )
 
 AuthInput.displayName = 'AuthInput'
+
+AuthInput.propTypes = {
+  label: PropTypes.string,
+  icon: PropTypes.elementType,
+  error: PropTypes.string,
+  loading: PropTypes.bool,
+  showPasswordToggle: PropTypes.bool,
+  helperText: PropTypes.string,
+  className: PropTypes.string,
+  type: PropTypes.string,
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+  required: PropTypes.bool,
+  disabled: PropTypes.bool
+}
+
+AuthInput.defaultProps = {
+  type: 'text'
+}

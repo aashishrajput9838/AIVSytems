@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react"
+import PropTypes from "prop-types"
 import { Slot } from "@radix-ui/react-slot"
 import { cva } from "class-variance-authority";
 
@@ -51,6 +52,21 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props} />
   );
+}
+
+Button.propTypes = {
+  className: PropTypes.string,
+  variant: PropTypes.oneOf(['default', 'destructive', 'outline', 'secondary', 'ghost', 'link']),
+  size: PropTypes.oneOf(['default', 'sm', 'lg', 'icon']),
+  asChild: PropTypes.bool,
+  children: PropTypes.node,
+  onClick: PropTypes.func,
+  type: PropTypes.string,
+  disabled: PropTypes.bool
+}
+
+Button.defaultProps = {
+  asChild: false
 }
 
 export { Button, buttonVariants }

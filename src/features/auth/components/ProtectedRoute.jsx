@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../AuthProvider'
 import { AuthLoadingScreen } from './AuthLoadingScreen'
@@ -38,4 +39,19 @@ export const ProtectedRoute = ({
 
 export const PublicRoute = ({ children }) => {
   return <ProtectedRoute requireAuth={false}>{children}</ProtectedRoute>
+}
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+  requireAuth: PropTypes.bool,
+  redirectTo: PropTypes.string
+}
+
+ProtectedRoute.defaultProps = {
+  requireAuth: true,
+  redirectTo: '/login'
+}
+
+PublicRoute.propTypes = {
+  children: PropTypes.node.isRequired
 }
