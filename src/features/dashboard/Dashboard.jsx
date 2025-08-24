@@ -61,8 +61,8 @@ export default function Dashboard() {
     <DashboardErrorBoundary>
       <div className="relative min-h-dvh w-full overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-black via-amber-900 to-amber-100" />
-        <div className="relative z-10 mx-auto mt-8 mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
-          <main className="p-8">
+        <div className="relative z-10 mx-auto mt-4 sm:mt-6 lg:mt-8 mb-4 sm:mb-6 lg:mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
+          <main className="p-4 sm:p-6 lg:p-8">
             <DashboardHeader />
             
             <DashboardControls

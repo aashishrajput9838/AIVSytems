@@ -29,7 +29,7 @@ const Navigation = memo(() => {
 
   return (
     <nav 
-      className="flex items-center gap-8 text-sm text-black"
+      className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 lg:gap-8 text-xs sm:text-sm text-black"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -37,11 +37,11 @@ const Navigation = memo(() => {
         <Link
           key={item.to}
           to={item.to}
-          className="hover:text-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded"
+          className="hover:text-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 rounded px-2 py-1"
           aria-label={item.label}
         >
           {item.icon ? (
-            <Button asChild variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50">
+            <Button asChild variant="ghost" className="flex items-center gap-1 text-black hover:text-amber-600 hover:bg-amber-50 text-xs sm:text-sm">
               <span>
                 <item.icon className="h-3 w-3" aria-hidden="true" />
                 {item.label}
@@ -79,22 +79,22 @@ const FeatureCard = memo(({ icon: Icon, title, description, index, onCardFocus }
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
     >
-      <CardContent className="p-6">
-        <div className="flex items-center gap-3 mb-3">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
           <div 
-            className="p-2 bg-amber-100 rounded-lg"
+            className="p-1.5 sm:p-2 bg-amber-100 rounded-lg flex-shrink-0"
             aria-hidden="true"
           >
-            <Icon className="h-5 w-5 text-amber-600" />
+            <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
           </div>
           <h3 
             id={`feature-title-${index}`}
-            className="font-semibold text-black"
+            className="font-semibold text-black text-sm sm:text-base"
           >
             {title}
           </h3>
         </div>
-        <p className="text-sm text-gray-600">
+        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
           {description}
         </p>
       </CardContent>
@@ -201,10 +201,10 @@ export default function Home() {
       </div>
 
       {/* Main White Content Area */}
-      <div className="relative z-10 mx-auto mt-8 mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
+      <div className="relative z-10 mx-auto mt-4 sm:mt-8 mb-4 sm:mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
         {/* Header/Navigation */}
         <header 
-          className="flex items-center justify-between p-8 border-b border-gray-100"
+          className="flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 lg:p-8 border-b border-gray-100 space-y-4 sm:space-y-0"
           role="banner"
         >
           <div className="text-sm font-medium text-black">
@@ -217,45 +217,45 @@ export default function Home() {
         {/* Main Content */}
         <main 
           id="main-content"
-          className="p-8"
+          className="p-4 sm:p-6 lg:p-8"
           role="main"
         >
-          {/* Main Headline */}
-          <section className="text-center mb-12">
-            {isLoading ? (
-              <div className="space-y-6">
-                <Skeleton className="h-24 w-96 mx-auto" />
-                <div className="flex justify-center">
-                  <Skeleton className="h-32 w-32 rounded-full" />
-                </div>
-                <Skeleton className="h-24 w-80 mx-auto" />
+                  {/* Main Headline */}
+        <section className="text-center mb-8 sm:mb-12">
+          {isLoading ? (
+            <div className="space-y-4 sm:space-y-6">
+              <Skeleton className="h-16 w-64 sm:h-24 sm:w-96 mx-auto" />
+              <div className="flex justify-center">
+                <Skeleton className="h-20 w-20 sm:h-32 sm:w-32 rounded-full" />
               </div>
-            ) : (
-              <>
-                <h1 className="text-6xl font-bold text-black mb-8 tracking-tight">
-                  AIV SYSTEMS
-                </h1>
-                
-                <CentralGraphic />
-                
-                <h2 className="text-6xl font-bold text-black tracking-tight">
-                  VALIDATION
-                </h2>
-              </>
-            )}
-          </section>
+              <Skeleton className="h-16 w-56 sm:h-24 sm:w-80 mx-auto" />
+            </div>
+          ) : (
+            <>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-4 sm:mb-6 lg:mb-8 tracking-tight px-4">
+                AIV SYSTEMS
+              </h1>
+              
+              <CentralGraphic />
+              
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black tracking-tight px-4">
+                VALIDATION
+              </h2>
+            </>
+          )}
+        </section>
 
           {/* Supporting Text */}
           <section 
-            className="flex justify-between items-end text-sm text-black"
+            className="flex flex-col sm:flex-row justify-between items-center sm:items-end text-sm text-black space-y-4 sm:space-y-0 px-4"
             aria-label="System description"
           >
-            <div className="max-w-xs">
+            <div className="max-w-xs text-center sm:text-left">
               <p className="font-medium">
                 A <span className="font-bold">CREATIVE AI VALIDATION</span> SYSTEM
               </p>
             </div>
-            <div className="max-w-xs text-right">
+            <div className="max-w-xs text-center sm:text-right">
               <p className="font-medium">
                 SETTING <span className="font-bold">AI TRUST IN MOTION</span>
               </p>
@@ -270,7 +270,7 @@ export default function Home() {
         aria-labelledby="features-heading"
       >
         <h2 id="features-heading" className="sr-only">Key Features</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8 px-4 sm:px-0">
           {isLoading ? (
             <>
               <CardSkeleton showActions={false} />
@@ -292,10 +292,10 @@ export default function Home() {
         </div>
 
         {/* CTA Section */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-8 sm:mt-12 px-4">
           <Button 
             asChild 
-            className="bg-black text-white hover:bg-amber-600 hover:text-black transition-all duration-300 px-8 py-4 text-lg font-medium focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+            className="bg-black text-white hover:bg-amber-600 hover:text-black transition-all duration-300 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-medium focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 w-full sm:w-auto"
             onClick={handleCTAClick}
           >
             <Link to="/dashboard" aria-label="Navigate to dashboard">

@@ -19,16 +19,16 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
   }, [isLoading])
 
   return (
-    <section className="mb-8">
+    <section className="mb-6 sm:mb-8">
       <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
-        <CardContent className="p-6">
-          <h2 className="text-xl font-semibold text-black mb-4">Add New Log Entry</h2>
+        <CardContent className="p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-black mb-4">Add New Log Entry</h2>
           
           {isFormLoading ? (
             <FormSkeleton fields={2} showSubmit={true} />
           ) : (
             <form onSubmit={onSubmit} className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium mb-2 text-black">User Query</label>
                   <Input
@@ -50,11 +50,11 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
                   />
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button type="submit" disabled={isLoading} className="bg-black text-white hover:bg-amber-600 hover:text-black">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button type="submit" disabled={isLoading} className="bg-black text-white hover:bg-amber-600 hover:text-black order-2 sm:order-1">
                   {isLoading ? 'Adding...' : 'Add & Validate'}
                 </Button>
-                <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 text-gray-700 hover:bg-amber-50">
+                <Button type="button" variant="outline" onClick={onCancel} className="border-gray-300 text-gray-700 hover:bg-amber-50 order-1 sm:order-2">
                   Cancel
                 </Button>
               </div>

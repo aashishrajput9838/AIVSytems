@@ -8,20 +8,21 @@ import { exportLogsToCsv } from './utils'
 export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog }) {
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-black">Logs</h2>
-          <Button onClick={() => exportLogsToCsv(logs)} variant="outline" className="border-gray-300 text-gray-700 hover:bg-amber-50">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4">
+          <h2 className="text-lg sm:text-xl font-semibold text-black">Logs</h2>
+          <Button onClick={() => exportLogsToCsv(logs)} variant="outline" className="border-gray-300 text-gray-700 hover:bg-amber-50 w-full sm:w-auto text-sm">
             <Download className="h-4 w-4 mr-2" /> Export Logs CSV
           </Button>
         </div>
         {logs.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500 mb-4">No logs available</p>
+          <div className="text-center py-6 sm:py-8">
+            <p className="text-gray-500 mb-4 text-sm sm:text-base">No logs available</p>
             <TableSkeleton rows={5} columns={8} />
           </div>
         ) : (
-          <Table>
+          <div className="overflow-x-auto">
+            <Table>
             <TableHeader>
               <TableRow className="border-gray-200">
                 <TableHead className="text-black">Timestamp</TableHead>
@@ -74,6 +75,7 @@ export default function LogsTable({ logs, formatTimestamp, approveLog, rejectLog
               ))}
             </TableBody>
           </Table>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -38,22 +38,22 @@ TableSkeleton.propTypes = {
 // Card skeleton with title, description, and actions
 export const CardSkeleton = ({ showActions = true, className }) => {
   return (
-    <div className={cn('p-6 border rounded-lg', className)}>
-      <div className="space-y-4">
+    <div className={cn('p-4 sm:p-6 border rounded-lg', className)}>
+      <div className="space-y-3 sm:space-y-4">
         {/* Title */}
-        <Skeleton className="h-6 w-3/4" />
+        <Skeleton className="h-5 sm:h-6 w-3/4" />
         
         {/* Description */}
         <div className="space-y-2">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
+          <Skeleton className="h-3 sm:h-4 w-full" />
+          <Skeleton className="h-3 sm:h-4 w-2/3" />
         </div>
         
         {/* Actions */}
         {showActions && (
-          <div className="flex gap-2 pt-2">
-            <Skeleton className="h-9 w-20" />
-            <Skeleton className="h-9 w-24" />
+          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+            <Skeleton className="h-8 sm:h-9 w-full sm:w-20" />
+            <Skeleton className="h-8 sm:h-9 w-full sm:w-24" />
           </div>
         )}
       </div>
@@ -71,17 +71,17 @@ export const FormSkeleton = ({ fields = 3, showSubmit = true, className }) => {
   return (
     <div className={className}>
       {Array.from({ length: fields }).map((_, i) => (
-        <div key={i} className="mb-4">
+        <div key={i} className="mb-3 sm:mb-4">
           {/* Label */}
-          <Skeleton className="h-4 w-20 mb-2" />
+          <Skeleton className="h-3 sm:h-4 w-16 sm:w-20 mb-2" />
           {/* Input */}
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-9 sm:h-10 w-full" />
         </div>
       ))}
       
       {showSubmit && (
         <div className="pt-2">
-          <Skeleton className="h-11 w-32" />
+          <Skeleton className="h-10 sm:h-11 w-full sm:w-32" />
         </div>
       )}
     </div>
@@ -116,11 +116,11 @@ NavigationSkeleton.propTypes = {
 // Dashboard stats skeleton
 export const StatsSkeleton = ({ count = 4, className }) => {
   return (
-    <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-4', className)}>
+    <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4', className)}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="p-4 border rounded-lg">
-          <Skeleton className="h-4 w-16 mb-2" />
-          <Skeleton className="h-8 w-20" />
+        <div key={i} className="p-3 sm:p-4 border rounded-lg">
+          <Skeleton className="h-3 sm:h-4 w-12 sm:w-16 mb-2" />
+          <Skeleton className="h-6 sm:h-8 w-16 sm:w-20" />
         </div>
       ))}
     </div>
