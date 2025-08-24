@@ -2,16 +2,7 @@ import React, { forwardRef } from 'react'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 
-interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string
-  icon?: React.ComponentType<{ className?: string }>
-  error?: string
-  loading?: boolean
-  showPasswordToggle?: boolean
-  helperText?: string
-}
-
-export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
+export const AuthInput = forwardRef(
   ({ 
     label, 
     icon: Icon, 

@@ -2,13 +2,6 @@ import React from 'react'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 
-interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'default' | 'primary' | 'white'
-  className?: string
-  text?: string
-}
-
 const sizeClasses = {
   sm: 'h-4 w-4',
   md: 'h-6 w-6',
@@ -21,7 +14,7 @@ const variantClasses = {
   white: 'text-white'
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+export const LoadingSpinner = ({
   size = 'md',
   variant = 'default',
   className,
@@ -45,7 +38,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   )
 }
 
-export const LoadingOverlay: React.FC<{ children: React.ReactNode; loading: boolean }> = ({
+export const LoadingOverlay = ({
   children,
   loading
 }) => {

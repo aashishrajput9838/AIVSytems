@@ -2,11 +2,7 @@ import React from 'react'
 import { LoadingSpinner } from './LoadingSpinner'
 import { Shield } from 'lucide-react'
 
-interface AuthLoadingScreenProps {
-  message?: string
-}
-
-export const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({ 
+export const AuthLoadingScreen = ({ 
   message = 'Checking authentication...' 
 }) => {
   return (
@@ -44,7 +40,7 @@ export const AuthLoadingScreen: React.FC<AuthLoadingScreenProps> = ({
   )
 }
 
-export const AuthSkeleton: React.FC = () => {
+export const AuthSkeleton = () => {
   return (
     <div className="animate-pulse">
       <div className="h-10 bg-gray-200 rounded-lg mb-4"></div>

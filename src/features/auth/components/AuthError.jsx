@@ -2,14 +2,6 @@ import React from 'react'
 import { AlertCircle, X, RefreshCw } from 'lucide-react'
 import { cn } from '@/shared/utils/cn'
 
-interface AuthErrorProps {
-  error: string
-  severity?: 'error' | 'warning' | 'info'
-  onRetry?: () => void
-  onDismiss?: () => void
-  className?: string
-}
-
 const severityClasses = {
   error: 'bg-red-50 border-red-200 text-red-800',
   warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
@@ -22,7 +14,7 @@ const severityIcons = {
   info: AlertCircle
 }
 
-export const AuthError: React.FC<AuthErrorProps> = ({
+export const AuthError = ({
   error,
   severity = 'error',
   onRetry,
@@ -73,7 +65,7 @@ export const AuthError: React.FC<AuthErrorProps> = ({
   )
 }
 
-export const AuthSuccess: React.FC<{ message: string; className?: string }> = ({
+export const AuthSuccess = ({
   message,
   className
 }) => {

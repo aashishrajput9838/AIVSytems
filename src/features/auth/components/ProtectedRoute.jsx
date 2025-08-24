@@ -3,13 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../AuthProvider'
 import { AuthLoadingScreen } from './AuthLoadingScreen'
 
-interface ProtectedRouteProps {
-  children: React.ReactNode
-  requireAuth?: boolean
-  redirectTo?: string
-}
-
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+export const ProtectedRoute = ({
   children,
   requireAuth = true,
   redirectTo = '/login'
@@ -42,6 +36,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   return <>{children}</>
 }
 
-export const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const PublicRoute = ({ children }) => {
   return <ProtectedRoute requireAuth={false}>{children}</ProtectedRoute>
 }
