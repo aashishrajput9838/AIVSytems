@@ -1,46 +1,82 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/shared/components/ui/button'
-import { Input } from '@/shared/components/ui/input'
 import { Card, CardContent } from '@/shared/components/ui/card'
-import { auth, googleProvider } from '@/services/firebase/firebase'
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Mail, Lock, Shield, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, Shield, ArrowLeft, CheckCircle } from 'lucide-react'
+import { useAuth } from './AuthProvider'
+import { AuthInput } from './components/AuthInput'
+import { AuthError, AuthSuccess } from './components/AuthError'
+import { LoadingSpinner } from './components/LoadingSpinner'
 
 export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const redirectTo = location.state?.from || '/dashboard'
+  const { signInWithEmail, signInWithGoogle, authError, clearError } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+  const [localError, setLocalError] = useState('')
+  const [emailLoading, setEmailLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
+
+  // Clear errors when component mounts or when auth error changes
+  useEffect(() => {
+    if (authError) {
+      setLocalError(authError)
+    }
+  }, [authError])
+
+  const clearErrors = () => {
+    setLocalError('')
+    clearError()
+  }
 
   async function handleEmailLogin(e) {
     e.preventDefault()
+    if (!email || !password) {
+      setLocalError('Please fill in all fields')
+      return
+    }
+
     try {
-      setLoading(true)
-      setError('')
-      await signInWithEmailAndPassword(auth, email, password)
-      navigate(redirectTo, { replace: true })
+      setEmailLoading(true)
+      setLocalError('')
+      setSuccess(false)
+      
+      await signInWithEmail(email, password)
+      setSuccess(true)
+      
+      // Show success message briefly before redirecting
+      setTimeout(() => {
+        navigate(redirectTo, { replace: true })
+      }, 1000)
     } catch (err) {
-      setError(err?.message || 'Login failed')
+      setLocalError(err?.message || 'Login failed')
     } finally {
-      setLoading(false)
+      setEmailLoading(false)
     }
   }
 
   async function handleGoogleLogin() {
     try {
-      setLoading(true)
-      setError('')
-      await signInWithPopup(auth, googleProvider)
-      navigate(redirectTo, { replace: true })
+      setGoogleLoading(true)
+      setLocalError('')
+      setSuccess(false)
+      
+      await signInWithGoogle()
+      setSuccess(true)
+      
+      // Show success message briefly before redirecting
+      setTimeout(() => {
+        navigate(redirectTo, { replace: true })
+      }, 1000)
     } catch (err) {
-      setError(err?.message || 'Google login failed')
+      setLocalError(err?.message || 'Google login failed')
     } finally {
-      setLoading(false)
+      setGoogleLoading(false)
     }
   }
 
@@ -80,49 +116,60 @@ export default function Login() {
               </p>
             </div>
 
+            {/* Success Message */}
+            {success && (
+              <AuthSuccess 
+                message="Login successful! Redirecting..." 
+                className="mb-4"
+              />
+            )}
+
             {/* Error Message */}
-            {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
-                {error}
-              </div>
+            {localError && (
+              <AuthError 
+                error={localError}
+                onDismiss={clearErrors}
+                className="mb-4"
+              />
             )}
 
             {/* Login Form */}
             <form className="grid gap-4" onSubmit={handleEmailLogin}>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-black">Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-white border border-gray-200"
-                  />
-                </div>
-              </div>
+              <AuthInput
+                type="email"
+                label="Email"
+                icon={Mail}
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={emailLoading || googleLoading}
+                error={localError && !email ? 'Email is required' : ''}
+              />
               
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-black">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input 
-                    type="password" 
-                    placeholder="Enter your password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-white border border-gray-200"
-                  />
-                </div>
-              </div>
+              <AuthInput
+                type="password"
+                label="Password"
+                icon={Lock}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                showPasswordToggle
+                disabled={emailLoading || googleLoading}
+                error={localError && !password ? 'Password is required' : ''}
+              />
               
               <Button 
                 type="submit" 
-                disabled={loading}
-                className="bg-black text-white hover:bg-amber-600 hover:text-black"
+                disabled={emailLoading || googleLoading}
+                className="bg-black text-white hover:bg-amber-600 hover:text-black h-11"
               >
-                {loading ? 'Signing in…' : 'Sign in'}
+                {emailLoading ? (
+                  <LoadingSpinner size="sm" variant="white" text="Signing in..." />
+                ) : (
+                  'Sign in'
+                )}
               </Button>
             </form>
 
@@ -140,10 +187,14 @@ export default function Login() {
             <Button 
               variant="outline" 
               onClick={handleGoogleLogin} 
-              disabled={loading}
-              className="border-gray-300 text-gray-700 hover:bg-amber-50"
+              disabled={emailLoading || googleLoading}
+              className="border-gray-300 text-gray-700 hover:bg-amber-50 h-11"
             >
-              Continue with Google
+              {googleLoading ? (
+                <LoadingSpinner size="sm" variant="default" text="Connecting..." />
+              ) : (
+                'Continue with Google'
+              )}
             </Button>
 
             {/* Help Text */}

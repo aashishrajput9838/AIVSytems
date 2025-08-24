@@ -80,12 +80,84 @@ declare module 'lucide-react' {
   export const Brain: React.FC<IconProps>
   export const Shield: React.FC<IconProps>
   export const Activity: React.FC<IconProps>
+  export const Loader2: React.FC<IconProps>
+  export const AlertCircle: React.FC<IconProps>
+  export const X: React.FC<IconProps>
+  export const RefreshCw: React.FC<IconProps>
+  export const Eye: React.FC<IconProps>
+  export const EyeOff: React.FC<IconProps>
+  export const Mail: React.FC<IconProps>
+  export const Lock: React.FC<IconProps>
+  export const ArrowLeft: React.FC<IconProps>
+  export const CheckCircle: React.FC<IconProps>
 }
 
 // CSS Modules
 declare module '*.module.css' {
   const classes: { [key: string]: string }
   export default classes
+}
+
+// Auth Components
+declare module '@/features/auth/components/LoadingSpinner' {
+  interface LoadingSpinnerProps {
+    size?: 'sm' | 'md' | 'lg'
+    variant?: 'default' | 'primary' | 'white'
+    className?: string
+    text?: string
+  }
+  export const LoadingSpinner: React.FC<LoadingSpinnerProps>
+  export const LoadingOverlay: React.FC<{ children: React.ReactNode; loading: boolean }>
+}
+
+declare module '@/features/auth/components/AuthError' {
+  interface AuthErrorProps {
+    error: string
+    severity?: 'error' | 'warning' | 'info'
+    onRetry?: () => void
+    onDismiss?: () => void
+    className?: string
+  }
+  export const AuthError: React.FC<AuthErrorProps>
+  export const AuthSuccess: React.FC<{ message: string; className?: string }>
+}
+
+declare module '@/features/auth/components/AuthInput' {
+  interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    label?: string
+    icon?: React.ComponentType<{ className?: string }>
+    error?: string
+    loading?: boolean
+    showPasswordToggle?: boolean
+    helperText?: string
+  }
+  export const AuthInput: React.ForwardRefExoticComponent<AuthInputProps & React.RefAttributes<HTMLInputElement>>
+}
+
+declare module '@/features/auth/components/AuthLoadingScreen' {
+  interface AuthLoadingScreenProps {
+    message?: string
+  }
+  export const AuthLoadingScreen: React.FC<AuthLoadingScreenProps>
+  export const AuthSkeleton: React.FC
+}
+
+declare module '@/features/auth/components/ProtectedRoute' {
+  interface ProtectedRouteProps {
+    children: React.ReactNode
+    requireAuth?: boolean
+    redirectTo?: string
+  }
+  export const ProtectedRoute: React.FC<ProtectedRouteProps>
+  export const PublicRoute: React.FC<{ children: React.ReactNode }>
+}
+
+declare module '@/features/auth/components' {
+  export * from '@/features/auth/components/LoadingSpinner'
+  export * from '@/features/auth/components/AuthError'
+  export * from '@/features/auth/components/AuthInput'
+  export * from '@/features/auth/components/AuthLoadingScreen'
+  export * from '@/features/auth/components/ProtectedRoute'
 }
 
 // Allow JavaScript files to be imported
