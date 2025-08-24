@@ -20,15 +20,15 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
 
   return (
     <section 
-      className="mb-6 sm:mb-8"
+      className="section-lg"
       aria-label="Add new log entry form"
       aria-describedby="form-description"
     >
-      <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
-        <CardContent className="p-4 sm:p-6">
+      <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl hover-lift interactive">
+        <CardContent className="card-lg">
           <h2 
             id="form-title"
-            className="text-lg sm:text-xl font-semibold text-black mb-4"
+            className="text-heading-2 text-black margin-b-md"
           >
             Add New Log Entry
           </h2>
@@ -44,15 +44,15 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
           ) : (
             <form 
               onSubmit={onSubmit} 
-              className="space-y-4"
+              className="form-lg"
               aria-labelledby="form-title"
               noValidate
             >
               <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-                <div>
+                <div className="layout-stack-sm">
                   <label 
                     htmlFor="user-query-input"
-                    className="block text-sm font-medium mb-2 text-black"
+                    className="text-body font-medium text-black"
                   >
                     User Query
                   </label>
@@ -62,7 +62,7 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
                     value={newLog.user_query}
                     onChange={(e) => setNewLog({...newLog, user_query: e.target.value})}
                     required
-                    className="bg-white border border-gray-200"
+                    className="bg-white border border-gray-200 focus-ring"
                     aria-required="true"
                     aria-describedby="user-query-help"
                   />
@@ -70,10 +70,10 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
                     Enter the question or prompt that the user asked the AI model
                   </div>
                 </div>
-                <div>
+                <div className="layout-stack-sm">
                   <label 
                     htmlFor="model-response-input"
-                    className="block text-sm font-medium mb-2 text-black"
+                    className="text-body font-medium text-black"
                   >
                     Model Response
                   </label>
@@ -83,7 +83,7 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
                     value={newLog.model_response}
                     onChange={(e) => setNewLog({...newLog, model_response: e.target.value})}
                     required
-                    className="bg-white border border-gray-200"
+                    className="bg-white border border-gray-200 focus-ring"
                     aria-required="true"
                     aria-describedby="model-response-help"
                   />
@@ -92,11 +92,11 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="layout-row-md flex-col sm:flex-row">
                 <Button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="bg-black text-white hover:bg-amber-600 hover:text-black order-2 sm:order-1"
+                  className="bg-black text-white hover:bg-amber-600 hover:text-black focus-ring interactive order-2 sm:order-1"
                   aria-label={isLoading ? 'Adding log entry...' : 'Add and validate log entry'}
                   aria-describedby="submit-help"
                 >
@@ -110,7 +110,7 @@ export default function AddLogForm({ isLoading, newLog, setNewLog, onSubmit, onC
                   type="button" 
                   variant="outline" 
                   onClick={onCancel} 
-                  className="border-gray-300 text-gray-700 hover:bg-amber-50 order-1 sm:order-2"
+                  className="border-gray-300 text-gray-700 hover:bg-amber-50 focus-ring interactive order-1 sm:order-2"
                   aria-label="Cancel adding log entry"
                   aria-describedby="cancel-help"
                 >

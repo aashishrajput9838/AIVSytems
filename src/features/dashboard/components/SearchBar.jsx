@@ -4,20 +4,20 @@ import { Search } from 'lucide-react'
 
 export default function SearchBar({ search, setSearch }) {
   return (
-    <section className="mb-6" aria-label="Search logs">
-      <div className="flex gap-2 items-center">
+    <section className="section-md" aria-label="Search logs">
+      <div className="layout-row-sm items-center">
         <Input 
           placeholder="Search queries or responses..." 
           value={search} 
           onChange={(e) => setSearch(e.target.value)} 
-          className="bg-white border border-gray-200" 
+          className="bg-white border border-gray-200 focus-ring" 
           aria-label="Search logs by user queries or model responses"
           aria-describedby="search-description"
           role="searchbox"
         />
         <Button 
           variant="outline" 
-          className="border-gray-300 text-gray-700 hover:bg-amber-50"
+          className="border-gray-300 text-gray-700 hover:bg-amber-50 focus-ring interactive"
           aria-label="Search logs"
           aria-describedby="search-button-description"
         >

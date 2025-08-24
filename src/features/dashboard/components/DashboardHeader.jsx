@@ -5,27 +5,27 @@ export default function DashboardHeader() {
 
   return (
     <header 
-      className="mb-8"
+      className="section-md"
       role="banner"
       aria-labelledby="dashboard-title"
     >
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="layout-row-lg items-center justify-between">
+        <div className="layout-stack-sm">
           <h1 
             id="dashboard-title"
-            className="text-4xl font-extrabold tracking-tight text-black mb-2"
+            className="text-display-3 text-black"
           >
             AI Response Validation Dashboard
           </h1>
           <p 
-            className="text-gray-600"
+            className="text-body text-gray-600"
             aria-label={`Welcome back, ${user?.email || 'User'}`}
           >
             Welcome back, {user?.email || 'User'} • Monitor and validate AI responses in real-time
           </p>
         </div>
         <div 
-          className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs text-amber-700"
+          className="layout-row-sm items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-caption text-amber-700"
           role="status"
           aria-label="System status: Live monitoring active"
         >
