@@ -2,26 +2,23 @@ import TestHarness from './TestHarness'
 import ChatGPTMode from './ChatGPTMode'
 import AddLogForm from './AddLogForm'
 import LogsTable from './LogsTable'
-import { DashboardHeader, DashboardControls, SearchBar, ErrorDisplay } from './components'
+import DashboardLayout from './components/DashboardLayout'
 import DashboardErrorBoundary from './components/DashboardErrorBoundary'
 import useDashboard from './hooks/useDashboard'
-import { StatsSkeleton, TableSkeleton, CardSkeleton } from '@/shared/components/ui'
+import { TableSkeleton, CardSkeleton } from '@/shared/components/ui'
 
 export default function Dashboard() {
   const {
-    // State
-    search,
-    setSearch,
+    // Logs Management
     logs,
     isLoading,
     error,
     setError,
-    showAddForm,
-    setShowAddForm,
-    newLog,
-    setNewLog,
-    showChatGPTMode,
-    setShowChatGPTMode,
+    formatTimestamp,
+    approveLog,
+    rejectLog,
+    
+    // ChatGPT Mode
     chatHistory,
     currentQuestion,
     setCurrentQuestion,
@@ -29,22 +26,29 @@ export default function Dashboard() {
     setCurrentResponse,
     isCapturing,
     isAsking,
-    showTests,
-    setShowTests,
-    isRunningTests,
-    testResults,
-    sampleTests,
-    
-    // Functions
-    formatTimestamp,
-    runAllTests,
     startCapturing,
     stopCapturing,
     onAskModel,
     onCapture,
-    handleAddLog,
-    approveLog,
-    rejectLog
+    
+    // Test Management
+    isRunningTests,
+    testResults,
+    sampleTests,
+    runAllTests,
+    
+    // UI State
+    search,
+    setSearch,
+    showAddForm,
+    showChatGPTMode,
+    showTests,
+    newLog,
+    setNewLog,
+    toggleAddForm,
+    
+    // Combined functions
+    handleAddLog
   } = useDashboard()
 
   const handleErrorRetry = () => {
@@ -57,93 +61,79 @@ export default function Dashboard() {
     setError('')
   }
 
+  const handleAddFormCancel = () => {
+    toggleAddForm()
+  }
+
   return (
     <DashboardErrorBoundary>
-      <div className="relative min-h-dvh w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-amber-900 to-amber-100" />
-        <div className="relative z-10 mx-auto mt-4 sm:mt-6 lg:mt-8 mb-4 sm:mb-6 lg:mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
-          <main className="p-4 sm:p-6 lg:p-8">
-            <DashboardHeader />
-            
-            <DashboardControls
-              showChatGPTMode={showChatGPTMode}
-              setShowChatGPTMode={setShowChatGPTMode}
-              showAddForm={showAddForm}
-              setShowAddForm={setShowAddForm}
-              showTests={showTests}
-              setShowTests={setShowTests}
-            />
+      <DashboardLayout
+        search={search}
+        setSearch={setSearch}
+        error={error}
+        isLoading={isLoading}
+        showAddForm={showAddForm}
+        setShowAddForm={setShowAddForm}
+        showChatGPTMode={showChatGPTMode}
+        setShowChatGPTMode={showChatGPTMode}
+        showTests={showTests}
+        setShowTests={showTests}
+        onErrorRetry={handleErrorRetry}
+        onErrorDismiss={handleErrorDismiss}
+      >
+        {/* ChatGPT Mode */}
+        {showChatGPTMode && (
+          <ChatGPTMode
+            isCapturing={isCapturing}
+            startCapturing={startCapturing}
+            stopCapturing={stopCapturing}
+            currentQuestion={currentQuestion}
+            setCurrentQuestion={setCurrentQuestion}
+            currentResponse={currentResponse}
+            setCurrentResponse={setCurrentResponse}
+            isAsking={isAsking}
+            onAskModel={onAskModel}
+            onCapture={onCapture}
+            chatHistory={chatHistory}
+          />
+        )}
 
-            {showChatGPTMode && (
-              <ChatGPTMode
-                isCapturing={isCapturing}
-                startCapturing={startCapturing}
-                stopCapturing={stopCapturing}
-                currentQuestion={currentQuestion}
-                setCurrentQuestion={setCurrentQuestion}
-                currentResponse={currentResponse}
-                setCurrentResponse={setCurrentResponse}
-                isAsking={isAsking}
-                onAskModel={onAskModel}
-                onCapture={onCapture}
-                chatHistory={chatHistory}
-              />
-            )}
+        {/* Add Log Form */}
+        {showAddForm && (
+          <AddLogForm
+            isLoading={isLoading}
+            newLog={newLog}
+            setNewLog={setNewLog}
+            onSubmit={handleAddLog}
+            onCancel={handleAddFormCancel}
+          />
+        )}
 
-            {showAddForm && (
-              <AddLogForm
-                isLoading={isLoading}
-                newLog={newLog}
-                setNewLog={setNewLog}
-                onSubmit={handleAddLog}
-                onCancel={() => setShowAddForm(false)}
-              />
-            )}
-
-            <SearchBar search={search} setSearch={setSearch} />
-            
-            <ErrorDisplay 
-              error={error} 
-              isLoading={isLoading} 
-              onRetry={handleErrorRetry}
-              onDismiss={handleErrorDismiss}
-            />
-
-            {/* Dashboard Stats Skeleton */}
-            {isLoading && (
-              <div className="mb-6">
-                <StatsSkeleton count={4} />
-              </div>
-            )}
-
-            <section className="space-y-6">
-              {showTests && (
-                <TestHarness
-                  sampleTests={sampleTests}
-                  runAllTests={runAllTests}
-                  isRunningTests={isRunningTests}
-                  testResults={testResults}
-                />
-              )}
-              
-              {/* Logs Table with Loading Skeleton */}
-              {isLoading ? (
-                <div className="space-y-4">
-                  <CardSkeleton showActions={false} />
-                  <TableSkeleton rows={8} columns={5} />
-                </div>
-              ) : (
-                <LogsTable
-                  logs={logs}
-                  formatTimestamp={formatTimestamp}
-                  approveLog={approveLog}
-                  rejectLog={rejectLog}
-                />
-              )}
-            </section>
-          </main>
-        </div>
-      </div>
+        {/* Test Harness */}
+        {showTests && (
+          <TestHarness
+            sampleTests={sampleTests}
+            runAllTests={runAllTests}
+            isRunningTests={isRunningTests}
+            testResults={testResults}
+          />
+        )}
+        
+        {/* Logs Table with Loading Skeleton */}
+        {isLoading ? (
+          <div className="space-y-4">
+            <CardSkeleton showActions={false} />
+            <TableSkeleton rows={8} columns={5} />
+          </div>
+        ) : (
+          <LogsTable
+            logs={logs}
+            formatTimestamp={formatTimestamp}
+            approveLog={approveLog}
+            rejectLog={rejectLog}
+          />
+        )}
+      </DashboardLayout>
     </DashboardErrorBoundary>
   )
 }
