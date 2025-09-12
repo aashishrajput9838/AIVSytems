@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { Loader2 } from 'lucide-react'
+import { askModel } from '@/services/ai/models'
 import { Button } from '@/shared/components/ui/button'
 import { Input } from '@/shared/components/ui/input'
 import { Card, CardContent } from '@/shared/components/ui/card'
@@ -6,6 +8,8 @@ import { FormSkeleton } from '@/shared/components/ui'
 
 export default function AddLogForm({ isLoading, isFormLoading, newLog, setNewLog, onSubmit, onCancel }) {
   const [localFormLoading, setLocalFormLoading] = useState(false)
+  const [isAsking, setIsAsking] = useState(false)
+  const [askError, setAskError] = useState('')
 
   // Use the passed isFormLoading prop or fall back to local state
   const formLoading = isFormLoading !== undefined ? isFormLoading : localFormLoading
@@ -85,11 +89,49 @@ export default function AddLogForm({ isLoading, isFormLoading, newLog, setNewLog
                     placeholder="Enter the AI model's response..."
                     value={newLog.model_response}
                     onChange={(e) => setNewLog({...newLog, model_response: e.target.value})}
-                    required
+                    // make optional; we now auto-generate if empty
                     className="bg-white border border-gray-200 focus-ring"
                     aria-required="true"
                     aria-describedby="model-response-help"
                   />
+                  <div className="flex gap-2 mt-2">
+                    <Button 
+                      type="button"
+                      onClick={async () => {
+                        if (!newLog.user_query?.trim() || isAsking) return
+                        try {
+                          setIsAsking(true)
+                          setAskError('')
+                          const answer = await askModel(newLog.user_query.trim())
+                          setNewLog({ ...newLog, model_response: answer || '' })
+                        } catch (e) {
+                          setAskError('Failed to fetch model response. Please try again.')
+                        } finally {
+                          setIsAsking(false)
+                        }
+                      }}
+                      disabled={!newLog.user_query?.trim() || isAsking}
+                      className="bg-black text-white hover:bg-amber-600 hover:text-black focus-ring"
+                      aria-label="Ask model to generate a response"
+                    >
+                      {isAsking ? (
+                        <span className="inline-flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Asking…
+                        </span>
+                      ) : 'Ask Model'}
+                    </Button>
+                  </div>
+                  {isAsking && !askError && (
+                    <div className="mt-2 text-sm text-gray-600 inline-flex items-center gap-2" aria-live="polite">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Model is generating...
+                    </div>
+                  )}
+                  {askError && (
+                    <div role="alert" className="mt-2 text-sm text-red-600">
+                      {askError}
+                    </div>
+                  )}
                   <div id="model-response-help" className="sr-only">
                     Enter the response that the AI model provided to the user
                   </div>
@@ -98,12 +140,12 @@ export default function AddLogForm({ isLoading, isFormLoading, newLog, setNewLog
               <div className="layout-row-md flex-col sm:flex-row">
                 <Button 
                   type="submit" 
-                  disabled={isLoading} 
+                  disabled={isLoading || isAsking} 
                   className="bg-black text-white hover:bg-amber-600 hover:text-black focus-ring interactive order-2 sm:order-1"
-                  aria-label={isLoading ? 'Adding log entry...' : 'Add and validate log entry'}
+                  aria-label={isLoading || isAsking ? 'Processing...' : 'Add and validate log entry'}
                   aria-describedby="submit-help"
                 >
-                  {isLoading ? 'Adding...' : 'Add & Validate'}
+                  {isLoading || isAsking ? 'Processing…' : 'Add & Validate'}
                 </Button>
                 <span id="submit-help" className="sr-only">
                   Submit the form to add the new log entry and validate it

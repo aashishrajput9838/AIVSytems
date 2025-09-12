@@ -1,0 +1,36 @@
+@startuml AI Response Validation System - Simple Flowchart
+
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam roundcorner 15
+
+title Figure 1: AI Response Validation System Flowchart
+
+start
+
+:User Input Query;
+:AI Model Response;
+
+:Run 7 Validators;
+note right: • Error keywords check\n• Response length check\n• Sensitive keywords check\n• Professional claims check\n• Personal relationship check\n• Personal characteristic check\n• Factual accuracy check
+
+:Calculate Validation Score;
+note right: Weighted average\nof all validators
+
+if (External verification required?) then (yes)
+  :Manual Review Needed;
+  :Store in Database;
+  :User Approves/Rejects;
+else (no)
+  :Auto-approve;
+  :Store in Database;
+endif
+
+:Display in Dashboard;
+note right: Show validation results\nwith scores and status
+
+stop
+
+@enduml

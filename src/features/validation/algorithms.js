@@ -414,7 +414,7 @@ export const searchWeb = async (query) => {
   }
 };
 
-// Advanced similarity calculation using TF-IDF, Cosine similarity, and fuzzy matching
+// Advanced similarity calculation using Semantic Analysis, Word Overlap, and Fuzzy Matching
 export const calculateSimilarity = (str1, str2) => {
   // Tokenize and normalize text
   const tokenize = (text) => {
@@ -456,79 +456,116 @@ export const calculateSimilarity = (str1, str2) => {
 
   if (tokens1.length === 0 || tokens2.length === 0) return 0;
 
-  // Method 1: TF-IDF with Cosine Similarity
-  const tfidfCosineSimilarity = () => {
-    // Create vocabulary (unique tokens from both texts)
-    const vocabulary = [...new Set([...tokens1, ...tokens2])];
-    
-    // Calculate TF (Term Frequency) for each document
-    const calculateTF = (tokens) => {
-      const tf = {};
-      tokens.forEach(token => {
-        tf[token] = (tf[token] || 0) + 1;
-      });
-      // Normalize by document length
-      Object.keys(tf).forEach(token => {
-        tf[token] = tf[token] / tokens.length;
-      });
-      return tf;
+  // Method 1: Semantic Vector Similarity (using character n-grams)
+  const semanticSimilarity = () => {
+    // Create character n-gram vectors
+    const createNGrams = (text, n = 3) => {
+      const ngrams = new Map();
+      for (let i = 0; i <= text.length - n; i++) {
+        const gram = text.substr(i, n);
+        ngrams.set(gram, (ngrams.get(gram) || 0) + 1);
+      }
+      return ngrams;
     };
 
-    const tf1 = calculateTF(tokens1);
-    const tf2 = calculateTF(tokens2);
+    const ngrams1 = createNGrams(str1.toLowerCase());
+    const ngrams2 = createNGrams(str2.toLowerCase());
 
-    // Calculate IDF (Inverse Document Frequency)
-    const calculateIDF = () => {
-      const idf = {};
-      vocabulary.forEach(token => {
-        let docsWithToken = 0;
-        if (tf1[token]) docsWithToken++;
-        if (tf2[token]) docsWithToken++;
-        idf[token] = Math.log(2 / docsWithToken);
-      });
-      return idf;
-    };
+    // Calculate Jaccard similarity for n-grams
+    const allGrams = new Set([...ngrams1.keys(), ...ngrams2.keys()]);
+    let intersection = 0;
+    let union = 0;
 
-    const idf = calculateIDF();
+    allGrams.forEach(gram => {
+      const count1 = ngrams1.get(gram) || 0;
+      const count2 = ngrams2.get(gram) || 0;
+      intersection += Math.min(count1, count2);
+      union += Math.max(count1, count2);
+    });
 
-    // Calculate TF-IDF vectors
-    const tfidf1 = vocabulary.map(token => (tf1[token] || 0) * idf[token]);
-    const tfidf2 = vocabulary.map(token => (tf2[token] || 0) * idf[token]);
-
-    // Calculate Cosine Similarity
-    const dotProduct = tfidf1.reduce((sum, val, i) => sum + val * tfidf2[i], 0);
-    const magnitude1 = Math.sqrt(tfidf1.reduce((sum, val) => sum + val * val, 0));
-    const magnitude2 = Math.sqrt(tfidf2.reduce((sum, val) => sum + val * val, 0));
-    
-    if (magnitude1 === 0 || magnitude2 === 0) return 0;
-    return dotProduct / (magnitude1 * magnitude2);
+    return union > 0 ? intersection / union : 0;
   };
 
-  // Method 2: Enhanced Word Overlap
+  // Method 2: Enhanced Word Overlap with Semantic Matching
   const wordOverlapSimilarity = () => {
-    const common = tokens1.filter(w1 => 
-      tokens2.some(w2 => w1 === w2 || w1.includes(w2) || w2.includes(w1))
+    // Exact match
+    const exactMatches = tokens1.filter(w1 => tokens2.includes(w1));
+    
+    // Partial match (substring matching)
+    const partialMatches = tokens1.filter(w1 => 
+      tokens2.some(w2 => w1.includes(w2) || w2.includes(w1))
     );
+    
+    // Semantic similarity for remaining words
+    const semanticMatches = tokens1.filter(w1 => 
+      !tokens2.includes(w1) && tokens2.some(w2 => {
+        const similarity = calculateWordSimilarity(w1, w2);
+        return similarity > 0.7;
+      })
+    );
+
+    const totalMatches = exactMatches.length + (partialMatches.length * 0.8) + (semanticMatches.length * 0.6);
     const total = Math.max(tokens1.length, tokens2.length);
-    return total > 0 ? common.length / total : 0;
+    
+    return total > 0 ? totalMatches / total : 0;
+  };
+
+  // Method 3: Word-level similarity calculation
+  const calculateWordSimilarity = (word1, word2) => {
+    if (word1 === word2) return 1.0;
+    
+    // Levenshtein distance
+    const distance = levenshteinDistance(word1, word2);
+    const maxLength = Math.max(word1.length, word2.length);
+    
+    return maxLength > 0 ? 1 - (distance / maxLength) : 0;
+  };
+
+  // Levenshtein distance calculation
+  const levenshteinDistance = (str1, str2) => {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    
+    return matrix[str2.length][str1.length];
   };
 
   // Calculate similarity scores
-  const tfidfScore = tfidfCosineSimilarity();
+  const semanticScore = semanticSimilarity();
   const overlapScore = wordOverlapSimilarity();
 
-  // Weighted combination
+  // Weighted combination (removed TF-IDF weight)
   const weights = {
-    tfidf: 0.7,
+    semantic: 0.7,
     overlap: 0.3
   };
 
   const finalScore = (
-    tfidfScore * weights.tfidf +
+    semanticScore * weights.semantic +
     overlapScore * weights.overlap
   );
 
-  console.log(`🔍 Similarity Scores - TF-IDF: ${tfidfScore.toFixed(3)}, Overlap: ${overlapScore.toFixed(3)}, Final: ${finalScore.toFixed(3)}`);
+  console.log(`🔍 Similarity Scores - Semantic: ${semanticScore.toFixed(3)}, Overlap: ${overlapScore.toFixed(3)}, Final: ${finalScore.toFixed(3)}`);
 
   return Math.min(1.0, Math.max(0.0, finalScore));
 };

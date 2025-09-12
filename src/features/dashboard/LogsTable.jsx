@@ -1,11 +1,15 @@
 import { Button } from '@/shared/components/ui/button'
+import { ConfirmDialog } from '@/shared/components/ui'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/components/ui/table'
-import { Check, X, Download } from 'lucide-react'
+import { Check, X, Download, Trash2 } from 'lucide-react'
 import { Card, CardContent } from '@/shared/components/ui/card'
 import { TableSkeleton } from '@/shared/components/ui'
 import { exportLogsToCsv } from './utils'
 
-export default function LogsTable({ logs = [], formatTimestamp, approveLog, rejectLog }) {
+import { useState } from 'react'
+
+export default function LogsTable({ logs = [], formatTimestamp, approveLog, rejectLog, onDelete }) {
+  const [dialogState, setDialogState] = useState({ open: false, targetId: null })
   // Safety check for formatTimestamp function
   const safeFormatTimestamp = formatTimestamp || ((ts) => {
     if (!ts) return '-'
@@ -171,6 +175,21 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
                       <span id="reject-help" className="sr-only">
                         Reject this log entry as invalid
                       </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onDelete && setDialogState({ open: true, targetId: log.id })}
+                        aria-label={`Delete log entry ${index + 1}`}
+                        aria-describedby="delete-help"
+                        disabled={!onDelete}
+                        className="border-gray-300 text-gray-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" aria-hidden="true" />
+                        Delete
+                      </Button>
+                      <span id="delete-help" className="sr-only">
+                        Permanently delete this log entry
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -179,6 +198,20 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
           </div>
         )}
       </CardContent>
+      <ConfirmDialog
+        open={dialogState.open}
+        title="Delete Log"
+        description="Delete this log permanently? This cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onCancel={() => setDialogState({ open: false, targetId: null })}
+        onConfirm={async () => {
+          if (onDelete && dialogState.targetId) {
+            await onDelete(dialogState.targetId)
+          }
+          setDialogState({ open: false, targetId: null })
+        }}
+      />
     </Card>
   )
 }

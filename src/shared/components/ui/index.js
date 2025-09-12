@@ -42,6 +42,7 @@ export {
   ProfileSkeleton 
 } from './skeletons'
 export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from './table'
+export { default as ConfirmDialog } from './confirm-dialog'
 // Note: ProgressIndicator is exported from its original location to avoid circular dependencies
 // export { default as ProgressIndicator } from '../ProgressIndicator'
 // Note: These components are exported from their original locations to avoid circular dependencies

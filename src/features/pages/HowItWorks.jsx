@@ -125,7 +125,7 @@ export default function HowItWorks() {
               <FeatureCard
                 icon={Brain}
                 title="Advanced NLP"
-                description="TF-IDF, Cosine similarity, and fuzzy matching algorithms for precise text comparison and validation."
+                description="Semantic analysis, character n-grams, and fuzzy matching algorithms for precise text comparison and validation."
               />
               <FeatureCard
                 icon={ShieldCheck}

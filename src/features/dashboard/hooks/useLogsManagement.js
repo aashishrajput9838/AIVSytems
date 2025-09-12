@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer } from 'react'
-import { getLogs, approveLogById, rejectLogById, addLog } from '@/services/api/logs'
+import { getLogs, approveLogById, rejectLogById, addLog, deleteLogById } from '@/services/api/logs'
 import { validateResponse, extractEntities } from '@/features/validation/algorithms'
 import { handleApiError, logError } from '@/shared/utils/errorHandling'
 
@@ -142,8 +142,8 @@ export default function useLogsManagement(user) {
   }, [logs])
 
   const handleAddLog = useCallback(async (userQuery, modelResponse) => {
-    if (!userQuery.trim() || !modelResponse.trim()) {
-      const validationError = handleApiError(new Error('Please fill in both user query and model response'), {
+    if (!userQuery?.trim()) {
+      const validationError = handleApiError(new Error('Please enter a user query'), {
         context: 'validation',
         category: 'validation',
         severity: 'low'
@@ -260,6 +260,33 @@ export default function useLogsManagement(user) {
     }
   }, [logs, handleError, updateProgress])
 
+  const deleteLog = useCallback(async (id) => {
+    const prev = logs
+    const toDelete = logs.find(l => l.id === id)
+    if (!toDelete) {
+      const notFoundError = handleApiError(new Error('Log not found'), {
+        context: 'delete_log',
+        category: 'client',
+        severity: 'medium'
+      })
+      dispatch({ type: actionTypes.SET_ERROR, payload: notFoundError })
+      return
+    }
+
+    // Optimistic update: remove locally
+    dispatch({ type: actionTypes.FETCH_SUCCESS, payload: logs.filter(l => l.id !== id) })
+
+    try {
+      updateProgress(50, 'Deleting log...')
+      await deleteLogById(id)
+      updateProgress(100, 'Log deleted successfully')
+    } catch (e) {
+      // Revert on failure
+      dispatch({ type: actionTypes.FETCH_SUCCESS, payload: prev })
+      handleError(e, 'Logs Management: Delete Log')
+    }
+  }, [logs, handleError, updateProgress])
+
   const refreshLogs = useCallback(async () => {
     try {
       dispatch({ type: actionTypes.FETCH_START })
@@ -297,6 +324,7 @@ export default function useLogsManagement(user) {
     handleAddLog,
     approveLog,
     rejectLog,
+    deleteLog,
     refreshLogs,
     setError
   }

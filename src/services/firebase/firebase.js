@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
+import { initializeFirestore } from 'firebase/firestore'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -25,7 +25,10 @@ console.log('Firebase Config:', {
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
 console.log('Firebase App initialized:', app.name)
 
-export const db = getFirestore(app)
+export const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+  ignoreUndefinedProperties: true,
+})
 console.log('Firestore initialized')
 
 export const auth = getAuth(app)

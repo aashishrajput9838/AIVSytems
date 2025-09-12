@@ -1,0 +1,5 @@
+5. Final Similarity Score:
+
+FSS = (Semantic_Score × 0.7) + (Overlap_Score × 0.3)
+
+Where FSS combines semantic analysis and enhanced word overlap methods with weights 0.7 and 0.3

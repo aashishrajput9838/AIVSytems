@@ -1,0 +1,128 @@
+Research Papers Database
+========================
+
+1. Citation: Robertson Nogues, A. (2025). Automating injustice: a critical analysis of AI-assisted recruitment processes from a disability justice perspective. AI & Society. https://doi.org/10.1007/s00146-025-02581-7
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02581-7
+
+Introduction: AI-assisted recruitment tools, instead of eliminating bias, often reinforce systemic inequalities and ableist practices that disadvantage marginalized groups. This study critiques their opaque decision-making and calls for equity-focused, transparent, and ethical alternatives in hiring.
+
+---
+
+2. Citation: Sivakaminathan, S., Musi, E. ChatGPT is a gender bias echo-chamber in HR recruitment: an NLP analysis and framework to uncover the language roots of bias. AI & Soc (2025). https://doi.org/10.1007/s00146-025-02564-8
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02564-8
+
+Introduction: AI in recruitment, particularly ChatGPT, reflects and amplifies gender biases from job descriptions into resume screening. This study shows AI favors gender-coded traits, risking reinforcement of inequality, and offers strategies to mitigate such bias.
+
+---
+
+3. Citation: Gholiagha, S., Neyer, J., Sienknecht, M. et al. From annotation to reflection: how participatory AI training enhances critical thinking. AI & Soc (2025). https://doi.org/10.1007/s00146-025-02539-9
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02539-9
+
+Introduction: Instead of undermining critical thinking, involving students in annotating texts for AI training fosters reflection and deeper learning. This study shows how participatory, reflexive pedagogy empowers students to critically engage with AI's cultural and political dimensions in higher education.
+
+---
+
+4. Citation: Brady, C. (2025). Ignoring the otherness of generative AI: At what cost to our own humanity? AI & Society. https://doi.org/10.1007/s00146-025-02552-y
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02552-y
+
+Introduction: Generative AI's chat-based interface, while driving its popularity, embeds assumptions of intelligence and dialogue that users must accept. This study argues such metaphors risk normalizing toxic interactions with AI, potentially eroding the quality of human-to-human communication.
+
+---
+
+5. Citation: Han, Z., & Zeng, Y. (2025). Between the devil and the angel: confronting the symbiotic risks of artificial intelligence. AI & Society. https://doi.org/10.1007/s00146-025-02519-z
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02519-z
+
+Introduction: Science fiction frames AI through two extremes: the Frankenstein Complex, where technology rebels against humanity, and the Asimovian Narrative, where AI remains controllable and idealized. Both shape public perceptions by reinforcing polarized views of AI.
+
+---
+
+6. Citation: Zientara, P. (2025). Minds without bodies: what AI can learn from chronic illness. AI & Society. https://doi.org/10.1007/s00146-025-02553-x
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02553-x
+
+Introduction: People living with Crohn's disease navigate daily life through survival strategies that current AI ignores. This piece argues that true intelligence must account for embodied, constrained experiences rather than abstract pattern recognition.
+
+---
+
+7. Citation: Author, A. (2025). Generative bias: widespread, unexpected, and uninterpretable biases in generative models and their implications. AI & Society. https://doi.org/10.1007/s00146-025-02533-1
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02533-1
+
+Introduction: Generative models not only replicate human biases but also create new, hard-to-interpret biases that can harm marginalized communities. This study shows existing debiasing strategies are insufficient and calls for new approaches to address these moral and epistemic risks.
+
+---
+
+8. Citation: Shin, D. (2025). Automating epistemology: how AI reconfigures truth, authority, and verification. AI & Society. https://doi.org/10.1007/s00146-025-02560-y
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02560-y
+
+Introduction: AI systems reshape how truth is produced and validated, embedding biases and institutional logics that affect trust and democracy. This work introduces "algorithmic truth," highlighting its risks and urging reflexive, participatory oversight of algorithmic verification.
+
+---
+
+9. Citation: Ray, P. When brussels tries to tell AI how to think. AI & Soc (2025). https://doi.org/10.1007/s00146-025-02528-y
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02528-y
+
+Introduction: The EU's Artificial Intelligence Act aims to regulate AI under the banner of "trustworthy AI," but analyses of its co-regulation, explainability, and conformity checks reveal a complex, fragile system more prone to misfires than delivering clear solutions.
+
+---
+
+10. Citation: Sass, R. (2025). Reconceptualizing AI literacy to address the risks of AI agents: A citizen science approach. AI & Society. https://doi.org/10.1007/s00146-025-02529-x
+
+URL: https://link.springer.com/article/10.1007/s00146-025-02529-x
+
+Introduction: While expert guidelines envision AI fostering fairness and wellbeing, the rise of autonomous AI agents—used in customer service, drug discovery, and finance—poses serious risks. Beyond bias and data misuse, their incompetence and failures, seen in flawed voice agents and misleading chatbots, highlight the fragility of this optimism.
+
+---
+
+11. Citation: Zhou, M., Abhishek, V., Derdenger, T., Kim, J., & Srinivasan, K. (2024). Bias in Generative AI. arXiv preprint arXiv:2403.02726.
+
+URL: https://arxiv.org/abs/2403.02726
+
+Introduction: This study analyzed images generated by three popular generative AI tools—Midjourney, Stable Diffusion, and DALL·E 2—to investigate potential biases. The findings revealed systematic gender and racial biases, with AI generators exhibiting bias against women and African Americans, while women were depicted as younger and happier, and men appeared older and more neutral.
+
+---
+
+12. Citation: Foka, A. (2024). She Works, He Works: A Curious Exploration of Gender Bias in AI-Generated Imagery. arXiv preprint arXiv:2407.18524.
+
+URL: https://arxiv.org/abs/2407.18524
+
+Introduction: This paper examines gender bias in AI-generated imagery of construction workers, highlighting discrepancies in the portrayal of male and female figures. The analysis reveals that AI models tend to sexualize female figures while portraying male figures as more authoritative and competent, underscoring AI's potential to mirror and perpetuate societal biases.
+
+---
+
+13. Citation: Fang, X., Che, S., Mao, M., Zhang, H., Zhao, M., & Zhao, X. (2023). Bias of AI-Generated Content: An Examination of News Produced by Large Language Models. Scientific Reports, 13(1), 55686.
+
+URL: https://www.nature.com/articles/s41598-024-55686-2
+
+Introduction: This study investigates the bias in AI-generated content produced by seven large language models, including ChatGPT and LLaMA. By comparing AI-generated news articles with those from The New York Times and Reuters, the research reveals substantial gender and racial biases in AI-generated content, with notable discrimination against females and individuals of the Black race.
+
+---
+
+14. Citation: Laurito, W., Davis, B., Grietzer, P., Gavenčiak, T., Böhm, A., & Kulveit, J. (2024). AI AI Bias: Large Language Models Favor Their Own Generated Content. arXiv preprint arXiv:2407.12856.
+
+URL: https://arxiv.org/abs/2407.12856
+
+Introduction: This study explores whether large language models (LLMs) exhibit bias towards AI-generated content over human-authored text. Through binary-choice scenarios, the research finds a consistent tendency for LLM-based AIs to prefer content generated by AI, suggesting potential implicit discrimination against human-generated content.
+
+---
+
+15. Citation: Zhu, T., Weissburg, I., Zhang, K., & Wang, W. Y. (2024). Human Bias in the Face of AI: The Role of Human Judgment in AI Generated Text Evaluation. arXiv preprint arXiv:2410.03723.
+
+URL: https://arxiv.org/abs/2410.03723
+
+Introduction: This study examines how human biases influence the perception of AI versus human-generated content. Through experiments involving text rephrasing, news summarization, and persuasive writing, the research reveals that human raters overwhelmingly favor content labeled as "Human Generated," even when the labels are deliberately swapped, highlighting the limitations of human judgment in interacting with AI.
+
+---
+
+Total: 15 Research Papers with URLs
+
+Generated on: 2024-12-19
+Project: AIV Systems - AI Response Validation Platform
+Version: 1.0.0

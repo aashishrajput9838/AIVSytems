@@ -1,6 +1,7 @@
 import { useAuth } from '@/features/auth/AuthProvider'
 import useLogsManagement from './useLogsManagement'
 import useChatGPTMode from './useChatGPTMode'
+import { askModel } from '@/services/ai/models'
 import useTestManagement from './useTestManagement'
 import useDashboardUI from './useDashboardUI'
 
@@ -33,13 +34,26 @@ export default function useDashboard() {
       
       // Extract form values from the current newLog state
       const { user_query, model_response } = ui.newLog
-      
-      const success = await logsManagement.handleAddLog(user_query, model_response)
+      // Auto-generate model response if empty
+      const response = (model_response && model_response.trim().length > 0)
+        ? model_response
+        : await (async () => {
+            try {
+              return await askModel(user_query)
+            } catch {
+              return ''
+            }
+          })()
+
+      const success = await logsManagement.handleAddLog(user_query, response)
       if (success) {
         ui.toggleAddForm()
         ui.resetNewLog()
       }
       return success
+    },
+    handleDeleteLog: async (id) => {
+      await logsManagement.deleteLog(id)
     }
   }
 }
