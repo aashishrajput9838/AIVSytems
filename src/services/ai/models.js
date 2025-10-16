@@ -1,49 +1,54 @@
-export async function askModel(question) {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-  const baseUrl = import.meta.env.VITE_OPENAI_BASE_URL || 'https://api.groq.com/openai/v1'
-  const model = import.meta.env.VITE_OPENAI_MODEL || 'llama-3.1-8b-instant'
-  const organization = import.meta.env.VITE_OPENAI_ORG
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
+export async function askModel(question) {
+  // Use Gemini API key if available, otherwise fall back to OpenAI API key
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_OPENAI_API_KEY
+  const model = import.meta.env.VITE_OPENAI_MODEL || 'gemini-1.5-flash-002'
+
+  // Debug logging
+  console.log('API Configuration:', {
+    apiKey: apiKey ? `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 5)}` : 'NOT SET',
+    model,
+    hasGeminiKey: !!import.meta.env.VITE_GEMINI_API_KEY,
+    hasOpenAIKey: !!import.meta.env.VITE_OPENAI_API_KEY
+  })
+
+  // Validate API key
   if (!apiKey) {
     // Fallback mock for local/dev without API key
     return `I'm a mock assistant. You asked: "${question}".`
   }
 
-  // retry with exponential backoff on 429/5xx
-  const maxRetries = 3
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    const resp = await fetch(`${baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        ...(organization ? { 'OpenAI-Organization': organization } : {}),
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: 'You are a helpful assistant. Answer concisely.' },
-          { role: 'user', content: question },
-        ],
-        temperature: 0.3,
-      }),
-    })
+  // Check if API key has the correct format (Gemini keys start with "AIza")
+  // Only validate if we're actually using the Gemini key
+  if (import.meta.env.VITE_GEMINI_API_KEY && apiKey === import.meta.env.VITE_GEMINI_API_KEY && !apiKey.startsWith('AIza')) {
+    throw new Error('Invalid Gemini API Key format. Gemini API keys should start with "AIza".')
+  }
 
-    if (resp.ok) {
-      const data = await resp.json()
-      return data?.choices?.[0]?.message?.content?.trim() || ''
+  try {
+    // Initialize the Google Generative AI client
+    const genAI = new GoogleGenerativeAI(apiKey)
+    const geminiModel = genAI.getGenerativeModel({ model: model })
+
+    // Generate content using the SDK
+    const result = await geminiModel.generateContent(question)
+    const response = await result.response
+    const text = response.text()
+    
+    return text || 'Sorry, I could not generate a response.'
+  } catch (error) {
+    console.error('Gemini API Error:', error)
+    
+    // Handle specific errors
+    if (error.message && error.message.includes('API_KEY_INVALID')) {
+      throw new Error('Invalid API Key: Please check your Gemini API key.')
     }
-
-    // Rate limit or transient error: retry
-    if (resp.status === 429 || (resp.status >= 500 && resp.status < 600)) {
-      if (attempt < maxRetries) {
-        const retryAfter = Number(resp.headers.get('retry-after')) || (2 ** attempt) * 1000
-        await new Promise(r => setTimeout(r, retryAfter))
-        continue
-      }
+    
+    if (error.message && error.message.includes('429')) {
+      throw new Error('API quota exceeded. Please check your API plan and billing details.')
     }
-
-    const text = await resp.text().catch(() => '')
-    throw new Error(`Model request failed: ${resp.status} ${text}`)
+    
+    // Handle other errors
+    throw new Error(`Model request failed: ${error.message || 'Unknown error'}`)
   }
 }
