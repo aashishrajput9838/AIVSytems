@@ -12,10 +12,7 @@
     "type-check:watch": "tsc --noEmit --watch"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@emailjs/browser": "^4.4.1",
-=======
->>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
