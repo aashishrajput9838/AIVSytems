@@ -1,0 +1,50 @@
+@startuml AI Reasoning Validation System - Simple Flowchart
+
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam roundcorner 15
+
+title AI Reasoning Validation System - Simple Overview
+
+' Start
+start
+:User Input Query;
+:AI Model Response;
+
+' Main Validation Process
+:Run Validation Algorithms;
+note right: 7 validation checks:\n• Error keywords\n• Response length\n• Sensitive content\n• Professional claims\n• Personal relationships\n• Personal characteristics\n• Factual accuracy
+
+' Score Calculation
+:Calculate Validation Score;
+note right: Weighted average\nof all validators
+
+' Decision Point
+if (External Verification Required?) then (yes)
+  :Manual Review Needed;
+  :Store in Database;
+  :Display in Dashboard;
+  :User Reviews & Approves/Rejects;
+else (no)
+  :Auto-approve;
+  :Store in Database;
+  :Display in Dashboard;
+endif
+
+' Dashboard Features
+:View Results in Dashboard;
+fork
+  :Logs Table;
+fork again
+  :Analytics Charts;
+fork again
+  :Test Interface;
+fork again
+  :Real-time Testing;
+end fork
+
+stop
+
+@enduml

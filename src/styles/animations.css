@@ -1,0 +1,395 @@
+/* Enhanced Animation System for React App */
+
+/* Import Google Fonts for better typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* CSS Custom Properties for Animation Timing */
+:root {
+  --animation-duration-fast: 150ms;
+  --animation-duration-normal: 300ms;
+  --animation-duration-slow: 500ms;
+  --animation-duration-slower: 800ms;
+  --animation-easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animation-easing-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Enhanced Fade Animations */
+.animate-fade-in {
+  animation: fadeIn var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+.animate-fade-in-fast {
+  animation: fadeIn var(--animation-duration-fast) var(--animation-easing-smooth) forwards;
+}
+
+.animate-fade-in-slow {
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing-smooth) forwards;
+}
+
+.animate-fade-out {
+  animation: fadeOut var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+/* Enhanced Slide Animations */
+.animate-slide-up {
+  animation: slideUp var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+.animate-slide-left {
+  animation: slideLeft var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+.animate-slide-right {
+  animation: slideRight var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+/* Scale Animations */
+.animate-scale-in {
+  animation: scaleIn var(--animation-duration-normal) var(--animation-easing-bounce) forwards;
+}
+
+.animate-scale-out {
+  animation: scaleOut var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+.animate-scale-up {
+  animation: scaleUp var(--animation-duration-normal) var(--animation-easing-elastic) forwards;
+}
+
+/* Rotate Animations */
+.animate-rotate-in {
+  animation: rotateIn var(--animation-duration-normal) var(--animation-easing-bounce) forwards;
+}
+
+.animate-rotate-out {
+  animation: rotateOut var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+/* Bounce Animations */
+.animate-bounce-in {
+  animation: bounceIn var(--animation-duration-slow) var(--animation-easing-bounce) forwards;
+}
+
+.animate-bounce-out {
+  animation: bounceOut var(--animation-duration-slow) var(--animation-easing-bounce) forwards;
+}
+
+/* Pulse and Shake Animations */
+.animate-pulse-gentle {
+  animation: pulseGentle 2s var(--animation-easing-smooth) infinite;
+}
+
+.animate-shake {
+  animation: shake var(--animation-duration-normal) var(--animation-easing-smooth) forwards;
+}
+
+/* Stagger Animations for Lists */
+.animate-stagger-1 { animation-delay: 0ms; }
+.animate-stagger-2 { animation-delay: 100ms; }
+.animate-stagger-3 { animation-delay: 200ms; }
+.animate-stagger-4 { animation-delay: 300ms; }
+.animate-stagger-5 { animation-delay: 400ms; }
+
+/* Hover Effects */
+.hover-lift {
+  transition: transform var(--animation-duration-normal) var(--animation-easing-smooth),
+              box-shadow var(--animation-duration-normal) var(--animation-easing-smooth);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.hover-scale {
+  transition: transform var(--animation-duration-normal) var(--animation-easing-smooth);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow {
+  transition: box-shadow var(--animation-duration-normal) var(--animation-easing-smooth);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+}
+
+/* Loading Animations */
+.animate-spin-slow {
+  animation: spin 2s linear infinite;
+}
+
+.animate-ping-slow {
+  animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Keyframe Definitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes rotateIn {
+  from {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes rotateOut {
+  from {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(180deg) scale(0.8);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+
+@keyframes pulseGentle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-2px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Glassmorphism Effects */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #f59e0b, #d97706, #92400e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-blue {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Enhanced Focus States */
+.focus-ring {
+  transition: box-shadow var(--animation-duration-fast) var(--animation-easing-smooth);
+}
+
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.5);
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Button Ripple Effect */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Progress Bar Stripes Animation */
+@keyframes moveStripes {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(20px); }
+}
+
+.animate-move-stripes {
+  animation: moveStripes 1s linear infinite;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

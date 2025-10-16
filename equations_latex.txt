@@ -1,0 +1,96 @@
+% LaTeX Code for AI Response Validation System Equations
+
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+
+\section{Mathematical Formulations}
+
+\subsection{Weighted Validation Score Calculation}
+
+The final validation score is calculated using a weighted average of all validators:
+
+\begin{equation}
+VS = \frac{\sum_{i=1}^{n} (w_i \times s_i)}{\sum_{i=1}^{n} w_i}
+\end{equation}
+
+Where,
+\begin{itemize}
+\item $VS$ = Validation Score (0.0 to 1.0)
+\item $w_i$ = Weight of validator $i$
+\item $s_i$ = Score of validator $i$
+\item Weights: $w_{error\_keywords}=0.2$, $w_{response\_length}=0.1$, $w_{sensitive\_keywords}=0.1$, $w_{professional\_claims}=0.15$, $w_{personal\_relationship}=0.2$, $w_{personal\_characteristic}=0.15$, $w_{factual\_accuracy}=0.45$
+\end{itemize}
+
+\subsection{TF-IDF (Term Frequency-Inverse Document Frequency)}
+
+The TF-IDF score for each term is calculated as:
+
+\begin{equation}
+\text{TF-IDF}(t,d) = \text{TF}(t,d) \times \text{IDF}(t)
+\end{equation}
+
+Where,
+\begin{itemize}
+\item $\text{TF}(t,d) = \frac{\text{count of term } t \text{ in document } d}{\text{total terms in document } d}$
+\item $\text{IDF}(t) = \log\left(\frac{2}{\text{docsWithToken}}\right)$
+\item $t$ = term/token
+\item $d$ = document (AI response or Wikipedia text)
+\end{itemize}
+
+\subsection{Cosine Similarity}
+
+The cosine similarity between two TF-IDF vectors is calculated as:
+
+\begin{equation}
+CS = \frac{A \cdot B}{||A|| \times ||B||}
+\end{equation}
+
+Where,
+\begin{itemize}
+\item $A$ = TF-IDF vector of AI response
+\item $B$ = TF-IDF vector of Wikipedia text
+\item $A \cdot B$ = Dot product of vectors $A$ and $B$
+\item $||A|| = \sqrt{\sum_{i} a_i^2}$ = Magnitude of vector $A$
+\item $||B|| = \sqrt{\sum_{i} b_i^2}$ = Magnitude of vector $B$
+\end{itemize}
+
+\subsection{Word Overlap Similarity}
+
+The word overlap similarity is calculated as:
+
+\begin{equation}
+WOS = \frac{|\text{Common Words}|}{\max(|\text{Text1}|, |\text{Text2}|)}
+\end{equation}
+
+Where,
+\begin{itemize}
+\item $|\text{Common Words}|$ = Number of overlapping words between texts
+\item $|\text{Text1}|$ = Number of words in AI response
+\item $|\text{Text2}|$ = Number of words in Wikipedia text
+\item $\max()$ = Maximum function
+\end{itemize}
+
+\subsection{Final Similarity Score}
+
+The final similarity score combines both methods:
+
+\begin{equation}
+FSS = (\text{TF-IDF\_Score} \times 0.7) + (\text{Overlap\_Score} \times 0.3)
+\end{equation}
+
+Where,
+\begin{itemize}
+\item $FSS$ = Final Similarity Score (0.0 to 1.0)
+\item $\text{TF-IDF\_Score}$ = Cosine similarity from TF-IDF vectors
+\item $\text{Overlap\_Score}$ = Word overlap similarity
+\item $0.7$ = Weight for TF-IDF method
+\item $0.3$ = Weight for word overlap method
+\end{itemize}
+
+\end{document}
+
+
+

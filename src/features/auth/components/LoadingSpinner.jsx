@@ -1,0 +1,73 @@
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Loader2 } from 'lucide-react'
+import { cn } from '@/shared/utils/cn'
+
+const sizeClasses = {
+  sm: 'h-4 w-4',
+  md: 'h-6 w-6',
+  lg: 'h-8 w-8'
+}
+
+const variantClasses = {
+  default: 'text-gray-600',
+  primary: 'text-amber-600',
+  white: 'text-white'
+}
+
+export const LoadingSpinner = ({
+  size = 'md',
+  variant = 'default',
+  className,
+  text
+}) => {
+  return (
+    <div className={cn('flex items-center justify-center gap-2', className)}>
+      <Loader2 
+        className={cn(
+          'animate-spin',
+          sizeClasses[size],
+          variantClasses[variant]
+        )} 
+      />
+      {text && (
+        <span className={cn('text-sm', variantClasses[variant])}>
+          {text}
+        </span>
+      )}
+    </div>
+  )
+}
+
+LoadingSpinner.propTypes = {
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  variant: PropTypes.oneOf(['default', 'primary', 'white']),
+  className: PropTypes.string,
+  text: PropTypes.string
+}
+
+LoadingSpinner.defaultProps = {
+  size: 'md',
+  variant: 'default'
+}
+
+export const LoadingOverlay = ({
+  children,
+  loading
+}) => {
+  if (!loading) return <>{children}</>
+
+  return (
+    <div className="relative">
+      {children}
+      <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <LoadingSpinner size="lg" text="Loading..." />
+      </div>
+    </div>
+  )
+}
+
+LoadingOverlay.propTypes = {
+  children: PropTypes.node.isRequired,
+  loading: PropTypes.bool.isRequired
+}

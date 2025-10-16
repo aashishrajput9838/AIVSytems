@@ -1,0 +1,53 @@
+Equations:
+
+1. Weighted Validation Score Calculation:
+
+VS = (Σ(wi × si)) / (Σwi)
+
+Where,
+• VS = Validation Score (0.0 to 1.0)
+• wi = Weight of validator i
+• si = Score of validator i
+• Weights: error_keywords=0.2, response_length=0.1, sensitive_keywords=0.1, professional_claims=0.15, personal_relationship=0.2, personal_characteristic=0.15, factual_accuracy=0.45
+
+2. Semantic Similarity (Character N-gram Jaccard):
+
+SS = |Intersection| / |Union|
+
+Where,
+• |Intersection| = Number of common n-grams between texts
+• |Union| = Total unique n-grams in both texts
+• n-gram = Character sequences of length n (typically n=3)
+
+3. Enhanced Word Overlap Similarity:
+
+EWOS = (Exact_Match + Partial_Match × 0.8 + Semantic_Match × 0.6) / max(|Text1|, |Text2|)
+
+Where,
+• Exact_Match = Number of identical words
+• Partial_Match = Number of substring matches
+• Semantic_Match = Number of similar words (Levenshtein distance < 0.3)
+• |Text1| = Number of words in AI response
+• |Text2| = Number of words in Wikipedia text
+
+4. Levenshtein Distance:
+
+LD = Minimum number of single-character edits required to change one string into another
+
+Where,
+• Single-character edits = insertions, deletions, or substitutions
+• Word similarity = 1 - (LD / max(word1_length, word2_length))
+
+5. Final Similarity Score:
+
+FSS = (Semantic_Score × 0.7) + (Overlap_Score × 0.3)
+
+Where,
+• FSS = Final Similarity Score (0.0 to 1.0)
+• Semantic_Score = Jaccard similarity from character n-grams
+• Overlap_Score = Enhanced word overlap similarity
+• 0.7 = Weight for semantic method
+• 0.3 = Weight for word overlap method
+
+
+
