@@ -2,7 +2,7 @@
 
 A React + Vite application.
 
-## Current app structure (high level)
+## Organized app structure (high level)
 
 ```
 src/
@@ -12,11 +12,22 @@ src/
   services/          # API, firebase, and AI client
   hooks/             # Custom hooks
   styles/            # Global CSS (Tailwind v4)
+
+docs/
+  diagrams/          # Diagram files
+  guides/            # Development guides
+  project/           # Project documentation
+  research/          # Research documents
+  summaries/         # Implementation summaries
+
+scripts/
+  test/             # Test scripts
 ```
 
 - Entry: `src/app/main.jsx`
 - Router: `src/app/router.jsx`
 - Global CSS: `src/styles/index.css`
+- Documentation: `docs/` directory (see `docs/project/ORGANIZED_STRUCTURE.md` for full details)
 
 ## Scripts
 - dev: `npm run dev`

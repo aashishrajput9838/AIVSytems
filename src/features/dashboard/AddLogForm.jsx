@@ -105,7 +105,15 @@ export default function AddLogForm({ isLoading, isFormLoading, newLog, setNewLog
                           const answer = await askModel(newLog.user_query.trim())
                           setNewLog({ ...newLog, model_response: answer || '' })
                         } catch (e) {
-                          setAskError('Failed to fetch model response. Please try again.')
+                          console.error('Ask model error:', e)
+                          // Provide more specific error messages for different error types
+                          let errorMessage = e.message || 'Failed to fetch model response. Please try again.'
+                          if (errorMessage.includes('Invalid API Key')) {
+                            errorMessage += ' Please check your API key in the .env file.'
+                          } else if (errorMessage.includes('quota')) {
+                            errorMessage += ' Visit your API provider\'s billing page to check your plan and billing details.'
+                          }
+                          setAskError(errorMessage)
                         } finally {
                           setIsAsking(false)
                         }

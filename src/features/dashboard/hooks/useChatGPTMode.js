@@ -121,7 +121,16 @@ export default function useChatGPTMode(user, onLogAdded) {
       const ans = await askModel(currentQuestion.trim())
       dispatch({ type: actionTypes.ASK_SUCCESS, payload: ans })
     } catch (e) {
-      handleError(e, 'ChatGPT Mode: Ask Model')
+      console.error('Ask model error:', e)
+      // Provide more specific error messages for different error types
+      let errorMessage = e.message || 'Failed to get response. Please try again.'
+      if (errorMessage.includes('Invalid API Key')) {
+        errorMessage += ' Please check your API key in the .env file.'
+      } else if (errorMessage.includes('quota')) {
+        errorMessage += ' Visit your API provider\'s billing page to check your plan and billing details.'
+      }
+      handleError(new Error(errorMessage), 'ChatGPT Mode: Ask Model')
+      dispatch({ type: actionTypes.ASK_ERROR, payload: errorMessage })
     }
   }, [currentQuestion, isAsking, handleError])
 

@@ -67,10 +67,18 @@ export const useValidation = () => {
       return { modelResponse, logEntry };
 
     } catch (err) {
-      setError(err?.message || 'Model request failed');
-      return null;
+      console.error('Ask model error:', err)
+      // Provide more specific error messages for different error types
+      let errorMessage = err?.message || 'Model request failed'
+      if (errorMessage.includes('Invalid API Key')) {
+        errorMessage += '. Please check your API key in the .env file.'
+      } else if (errorMessage.includes('quota')) {
+        errorMessage += '. Check your API provider\'s billing details'
+      }
+      setError(errorMessage)
+      return null
     } finally {
-      setIsValidating(false);
+      setIsValidating(false)
     }
   }, [validateAndLog]);
 

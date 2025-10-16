@@ -40,8 +40,16 @@ export default function useDashboard() {
         : await (async () => {
             try {
               return await askModel(user_query)
-            } catch {
-              return ''
+            } catch (error) {
+              console.error('Ask model error:', error)
+              // Return a more informative error message
+              let errorMessage = 'Sorry, I couldn\'t generate a response at this time.'
+              if (error.message.includes('Invalid API Key')) {
+                errorMessage += ' (Invalid API Key - please check your .env file)'
+              } else if (error.message.includes('quota')) {
+                errorMessage += ' (API quota exceeded - check your billing details)'
+              }
+              return errorMessage
             }
           })()
 
