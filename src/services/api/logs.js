@@ -4,12 +4,23 @@ import { collection, getDocs, orderBy, query, doc, updateDoc, addDoc, serverTime
 const COLLECTION = 'logs'
 
 export async function getLogs() {
+  // Check if db is available
+  if (!db) {
+    console.error('Firestore not available - configuration invalid')
+    return []
+  }
+  
   const logsQuery = query(collection(db, COLLECTION), orderBy('timestamp', 'desc'))
   const snapshot = await getDocs(logsQuery)
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
 }
 
 export async function approveLogById(id) {
+  // Check if db is available
+  if (!db) {
+    throw new Error('Firestore not available - configuration invalid')
+  }
+  
   const ref = doc(db, COLLECTION, id)
   await updateDoc(ref, {
     notes: 'Approved',
@@ -18,6 +29,11 @@ export async function approveLogById(id) {
 }
 
 export async function rejectLogById(id) {
+  // Check if db is available
+  if (!db) {
+    throw new Error('Firestore not available - configuration invalid')
+  }
+  
   const ref = doc(db, COLLECTION, id)
   await updateDoc(ref, {
     notes: 'Rejected',
@@ -26,6 +42,11 @@ export async function rejectLogById(id) {
 }
 
 export async function addLog(entry) {
+  // Check if db is available
+  if (!db) {
+    throw new Error('Firestore not available - configuration invalid')
+  }
+  
   await addDoc(collection(db, COLLECTION), {
     ...entry,
     timestamp: entry.timestamp || serverTimestamp(),
@@ -34,6 +55,11 @@ export async function addLog(entry) {
 }
 
 export async function deleteLogById(id) {
+  // Check if db is available
+  if (!db) {
+    throw new Error('Firestore not available - configuration invalid')
+  }
+  
   const ref = doc(db, COLLECTION, id)
   await deleteDoc(ref)
 }

@@ -20,6 +20,11 @@ export default function Login() {
   async function handleEmailLogin(e) {
     e.preventDefault()
     try {
+      // Check if auth is available
+      if (!auth) {
+        throw new Error('Authentication service not available')
+      }
+      
       setLoading(true)
       setError('')
       await signInWithEmailAndPassword(auth, email, password)
@@ -33,6 +38,11 @@ export default function Login() {
 
   async function handleGoogleLogin() {
     try {
+      // Check if auth and googleProvider are available
+      if (!auth || !googleProvider) {
+        throw new Error('Google authentication service not available')
+      }
+      
       setLoading(true)
       setError('')
       await signInWithPopup(auth, googleProvider)
@@ -119,7 +129,7 @@ export default function Login() {
               
               <Button 
                 type="submit" 
-                disabled={loading}
+                disabled={loading || !auth}
                 className="bg-black text-white hover:bg-amber-600 hover:text-black"
               >
                 {loading ? 'Signing in…' : 'Sign in'}
@@ -140,7 +150,7 @@ export default function Login() {
             <Button 
               variant="outline" 
               onClick={handleGoogleLogin} 
-              disabled={loading}
+              disabled={loading || !auth || !googleProvider}
               className="border-gray-300 text-gray-700 hover:bg-amber-50"
             >
               Continue with Google
@@ -156,5 +166,3 @@ export default function Login() {
     </div>
   )
 }
-
-

@@ -33,6 +33,14 @@ export default function AuthProvider({ children }) {
         console.log('Initializing Firebase Auth...')
         initializationRef.current = true
         
+        // Check if auth is available
+        if (!auth) {
+          console.error('Firebase Auth not available - configuration invalid')
+          setLoading(false)
+          setIsInitialized(true)
+          return
+        }
+        
         // Configure Firebase auth persistence
         await setPersistence(auth, browserLocalPersistence)
         console.log('Firebase persistence configured')
@@ -67,6 +75,11 @@ export default function AuthProvider({ children }) {
 
   const signInWithEmail = async (email, password) => {
     try {
+      // Check if auth is available
+      if (!auth) {
+        throw new Error('Authentication service not available')
+      }
+      
       console.log('Attempting email sign-in for:', email)
       setAuthError('')
       setLoading(true)
@@ -93,6 +106,11 @@ export default function AuthProvider({ children }) {
 
   const signInWithGoogle = async () => {
     try {
+      // Check if auth and googleProvider are available
+      if (!auth || !googleProvider) {
+        throw new Error('Google authentication service not available')
+      }
+      
       console.log('Attempting Google sign-in...')
       setAuthError('')
       setLoading(true)
@@ -129,6 +147,11 @@ export default function AuthProvider({ children }) {
 
   const signOutUser = async () => {
     try {
+      // Check if auth is available
+      if (!auth) {
+        throw new Error('Authentication service not available')
+      }
+      
       console.log('Signing out user...')
       setAuthError('')
       await signOut(auth)
