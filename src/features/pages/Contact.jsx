@@ -2,8 +2,11 @@ import { Input } from '@/shared/components/ui/input'
 import { Button } from '@/shared/components/ui/button'
 import { Card, CardContent } from '@/shared/components/ui/card'
 import { Mail, Phone, MapPin, Send } from 'lucide-react'
+<<<<<<< HEAD
 import { useState } from 'react'
 import emailjs from '@emailjs/browser'
+=======
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
 
 function ContactCard({ icon: Icon, title, description }) {
   const IconComp = Icon
@@ -23,6 +26,7 @@ function ContactCard({ icon: Icon, title, description }) {
 }
 
 export default function Contact() {
+<<<<<<< HEAD
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -77,6 +81,8 @@ export default function Contact() {
     }
   }
 
+=======
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
   return (
     <div className="relative min-h-dvh w-full overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-black via-amber-900 to-amber-100">
@@ -93,10 +99,17 @@ export default function Contact() {
               Get In Touch
             </div>
             <h1 className="max-w-3xl text-4xl font-extrabold tracking-tight text-black sm:text-5xl md:text-6xl">
+<<<<<<< HEAD
               Contact Me
             </h1>
             <p className="max-w-2xl text-balance text-base text-gray-600 sm:text-lg">
               Have questions about our AI validation system? I'd love to hear from you.
+=======
+              Contact Us
+            </h1>
+            <p className="max-w-2xl text-balance text-base text-gray-600 sm:text-lg">
+              Have questions about our AI validation system? We'd love to hear from you.
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
             </p>
           </section>
 
@@ -106,32 +119,51 @@ export default function Contact() {
               <ContactCard
                 icon={Mail}
                 title="Email"
+<<<<<<< HEAD
                 description="aspirinexar@gmail.com"
+=======
+                description="support@aivalidationsystem.com"
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
               />
               <ContactCard
                 icon={Phone}
                 title="Phone"
+<<<<<<< HEAD
                 description="+91 9319977285"
+=======
+                description="+1 (555) 123-4567"
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
               />
               <ContactCard
                 icon={MapPin}
                 title="Location"
+<<<<<<< HEAD
                 description="Knowledge Park III, Greater Noida, Uttar Pradesh"
+=======
+                description="San Francisco, CA"
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
               />
             </div>
           </section>
 
           <section className="space-y-8 py-8">
             <div className="text-center">
+<<<<<<< HEAD
               <h2 className="text-3xl font-bold text-black mb-4">Send me a Message</h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Fill out the form below and I'll get back to you as soon as possible.
+=======
+              <h2 className="text-3xl font-bold text-black mb-4">Send us a Message</h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Fill out the form below and we'll get back to you as soon as possible.
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
               </p>
             </div>
             
             <div className="max-w-2xl mx-auto">
               <Card className="group relative overflow-hidden rounded-2xl border-0 bg-white/95 backdrop-blur-sm shadow-xl">
                 <CardContent className="p-6">
+<<<<<<< HEAD
                   {submitStatus === 'success' && (
                     <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
                       Thank you for your message! I'll get back to you soon.
@@ -143,21 +175,30 @@ export default function Contact() {
                     </div>
                   )}
                   <form onSubmit={handleSubmit} className="grid gap-4">
+=======
+                  <form className="grid gap-4">
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
                         <label className="block text-sm font-medium mb-2 text-black">Name</label>
                         <Input 
+<<<<<<< HEAD
                           name="name"
                           value={formData.name}
                           onChange={handleChange}
                           placeholder="Your name" 
                           className="bg-white border border-gray-200"
                           required
+=======
+                          placeholder="Your name" 
+                          className="bg-white border border-gray-200"
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
                         />
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-2 text-black">Email</label>
                         <Input 
+<<<<<<< HEAD
                           name="email"
                           value={formData.email}
                           onChange={handleChange}
@@ -165,12 +206,18 @@ export default function Contact() {
                           type="email" 
                           className="bg-white border border-gray-200"
                           required
+=======
+                          placeholder="Your email" 
+                          type="email" 
+                          className="bg-white border border-gray-200"
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
                         />
                       </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2 text-black">Message</label>
                       <textarea
+<<<<<<< HEAD
                         name="message"
                         value={formData.message}
                         onChange={handleChange}
@@ -192,6 +239,15 @@ export default function Contact() {
                           Send Message
                         </>
                       )}
+=======
+                        placeholder="Your message"
+                        className="min-h-28 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
+                      />
+                    </div>
+                    <Button className="bg-black text-white hover:bg-amber-600 hover:text-black">
+                      <Send className="h-4 w-4 mr-2" />
+                      Send Message
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
                     </Button>
                   </form>
                 </CardContent>
@@ -202,4 +258,8 @@ export default function Contact() {
       </div>
     </div>
   )
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7e95df96e768249ff74e07574266072025e4fd20
