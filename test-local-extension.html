@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Local Extension</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .chat-container {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .user {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        .assistant {
+            background-color: #f5f5f5;
+            border-left: 4px solid #4caf50;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Local Extension</h1>
+    <p>This page simulates an AI chat interface for testing the AIV Local Validator extension.</p>
+    
+    <div class="chat-container">
+        <div id="chat-messages">
+            <!-- Messages will be added here -->
+        </div>
+    </div>
+    
+    <div>
+        <input type="text" id="user-input" placeholder="Type your question here..." style="width: 70%; padding: 10px;">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    
+    <div>
+        <button onclick="addSampleConversation()">Add Sample Conversation</button>
+        <button onclick="clearChat()">Clear Chat</button>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Add user message
+                addMessage('user', message);
+                
+                // Clear input
+                input.value = '';
+                
+                // Simulate AI response after a short delay
+                setTimeout(() => {
+                    const responses = [
+                        "Tom and Jerry is a famous animated cartoon series created by William Hanna and Joseph Barbera in 1940. It features a cat named Tom and a mouse named Jerry who are constantly in conflict with each other.",
+                        "The Eiffel Tower is a famous landmark in Paris, France. It was built by Gustave Eiffel for the 1889 World's Fair and stands at 330 meters tall.",
+                        "Artificial intelligence is a branch of computer science that aims to create software or machines that exhibit human-like intelligence. This can include learning from experience, understanding natural language, and solving problems."
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addMessage('assistant', randomResponse);
+                }, 1000);
+            }
+        }
+        
+        function addMessage(role, text) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            messageDiv.setAttribute('data-message-author-role', role);
+            messageDiv.textContent = text;
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function addSampleConversation() {
+            clearChat();
+            
+            // Add a sample conversation
+            addMessage('user', 'What is Tom and Jerry?');
+            setTimeout(() => {
+                addMessage('assistant', 'Tom and Jerry is a famous animated cartoon series created by William Hanna and Joseph Barbera in 1940. It features a cat named Tom and a mouse named Jerry who are constantly in conflict with each other.');
+            }, 500);
+            
+            setTimeout(() => {
+                addMessage('user', 'Tell me about the Eiffel Tower');
+                setTimeout(() => {
+                    addMessage('assistant', 'The Eiffel Tower is a famous landmark in Paris, France. It was built by Gustave Eiffel for the 1889 World\'s Fair and stands at 330 meters tall.');
+                }, 500);
+            }, 1500);
+        }
+        
+        function clearChat() {
+            document.getElementById('chat-messages').innerHTML = '';
+        }
+        
+        // Allow sending message with Enter key
+        document.getElementById('user-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
