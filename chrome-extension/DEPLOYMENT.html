@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Free Deployment Guide - AIV Systems Chrome Extension</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .header {
+      background-color: #4F46E5;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    h1, h2, h3 {
+      color: #1F2937;
+    }
+    .header h1 {
+      color: white;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .step {
+      display: flex;
+      margin-bottom: 15px;
+    }
+    .step-number {
+      background-color: #4F46E5;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .code {
+      background-color: #1F2937;
+      color: #F9FAFB;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    .tip {
+      background-color: #EFF6FF;
+      border-left: 4px solid #4F46E5;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    .free-tier {
+      background-color: #ECFDF5;
+      border: 1px solid #D1FAE5;
+      border-radius: 4px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    ul, ol {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    a {
+      color: #4F46E5;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Free Deployment Guide</h1>
+    <p>Deploy your AIV Systems Chrome Extension and Backend for Free</p>
+  </div>
+  
+  <div class="card">
+    <h2>Overview</h2>
+    <p>This guide shows you how to deploy your AIV Systems Chrome Extension and backend services completely free using Firebase's generous free tier.</p>
+    
+    <div class="free-tier">
+      <h3>.Firebase Free Tier Benefits</h3>
+      <ul>
+        <li><strong>Cloud Functions:</strong> 125K invocations/month</li>
+        <li><strong>Firestore:</strong> 1GB storage, 50K reads/day</li>
+        <li><strong>Hosting:</strong> 10GB storage, 360MB/day bandwidth</li>
+        <li><strong>Authentication:</strong> 50K monthly active users</li>
+        <li><strong>No credit card required</strong></li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>Step-by-Step Deployment</h2>
+    
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <h3>Create Firebase Project</h3>
+        <ol>
+          <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+          <li>Click "Create a project"</li>
+          <li>Enter project name (e.g., "aiv-system")</li>
+          <li>Disable Google Analytics to stay on free tier</li>
+          <li>Click "Create project"</li>
+        </ol>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <h3>Install Firebase Tools</h3>
+        <div class="code">
+          npm install -g firebase-tools
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">3</div>
+      <div class="step-content">
+        <h3>Login and Initialize</h3>
+        <div class="code">
+          firebase login<br>
+          firebase init
+        </div>
+        <p>When prompted, select:</p>
+        <ul>
+          <li>Firestore</li>
+          <li>Functions</li>
+          <li>Hosting</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">4</div>
+      <div class="step-content">
+        <h3>Deploy Your Services</h3>
+        <div class="code">
+          firebase deploy
+        </div>
+        <p>This will deploy all services at once. You can also deploy individually:</p>
+        <div class="code">
+          firebase deploy --only functions<br>
+          firebase deploy --only firestore<br>
+          firebase deploy --only hosting
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>Chrome Extension Deployment</h2>
+    <p>For the Chrome Extension, you have several free options:</p>
+    
+    <h3>Option 1: Manual Installation (Always Free)</h3>
+    <ol>
+      <li>Zip the chrome-extension folder</li>
+      <li>Users can download and install manually:
+        <ul>
+          <li>Go to <code>chrome://extensions</code></li>
+          <li>Enable "Developer mode"</li>
+          <li>Click "Load unpacked"</li>
+          <li>Select the extension folder</li>
+        </ul>
+      </li>
+    </ol>
+    
+    <h3>Option 2: GitHub Repository (Always Free)</h3>
+    <ol>
+      <li>Create a GitHub repository</li>
+      <li>Push your chrome-extension folder</li>
+      <li>Users can download the repository and install manually</li>
+    </ol>
+    
+    <div class="tip">
+      <strong>Tip:</strong> For public distribution, there's a one-time $5 fee for the Chrome Web Store Developer account. 
+      This is a one-time fee and allows you to publish extensions that anyone can install with one click.
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>AIV System Frontend Deployment</h2>
+    <p>Deploy your React frontend using Firebase Hosting:</p>
+    
+    <div class="step">
+      <div class="step-number">1</div>
+      <div class="step-content">
+        <h3>Build Your React App</h3>
+        <div class="code">
+          npm run build
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="step-number">2</div>
+      <div class="step-content">
+        <h3>Deploy to Firebase Hosting</h3>
+        <div class="code">
+          firebase deploy --only hosting
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>Cost Optimization Tips</h2>
+    <ul>
+      <li><strong>Stay Within Free Limits:</strong> Monitor usage in Firebase Console</li>
+      <li><strong>Optimize Functions:</strong> Minimize execution time and calls</li>
+      <li><strong>Efficient Queries:</strong> Use indexes and limit data retrieval</li>
+      <li><strong>Cache Data:</strong> Implement caching where possible</li>
+    </ul>
+    
+    <div class="tip">
+      <strong>Monitoring Tip:</strong> Set up billing alerts even on the free tier to prevent 
+      accidental charges if you exceed free limits.
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2>Scaling Beyond Free Tier</h2>
+    <p>If your application grows beyond the free tier limits:</p>
+    <ul>
+      <li>Firebase Pay-as-you-go is very affordable</li>
+      <li>Most applications stay within free limits</li>
+      <li>First $200 monthly credit for new Google Cloud projects</li>
+    </ul>
+  </div>
+  
+  <div class="card">
+    <h2>Need Help?</h2>
+    <p>For issues or questions:</p>
+    <ul>
+      <li>Check the Firebase documentation</li>
+      <li>Review the troubleshooting section in your project files</li>
+      <li>Open an issue on your GitHub repository</li>
+    </ul>
+  </div>
+</body>
+</html>

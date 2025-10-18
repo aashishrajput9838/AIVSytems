@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Message Filtering Test</title>
+</head>
+<body>
+    <h1>Message Filtering Test</h1>
+    
+    <div id="test-messages">
+        <div data-message-author-role="assistant">
+            <p>This is a real AI response that should be captured.</p>
+        </div>
+        
+        <div data-message-author-role="assistant">
+            <p>Cookie Preferences</p>
+        </div>
+        
+        <div data-message-author-role="assistant">
+            <p>Settings</p>
+        </div>
+        
+        <div data-message-author-role="assistant">
+            <p>Help</p>
+        </div>
+        
+        <div data-message-author-role="assistant">
+            <p>This is another real AI response with more content that should be captured.</p>
+        </div>
+        
+        <div data-message-author-role="user">
+            <p>User question to the AI.</p>
+        </div>
+        
+        <div data-message-author-role="assistant">
+            <p>Privacy</p>
+        </div>
+        
+        <div data-message-author-role="assistant">
+            <p>This is a longer AI response that contains real information and should definitely be captured for validation.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Test the filtering logic
+        const testMessages = [
+            { role: 'assistant', content: 'This is a real AI response that should be captured.' },
+            { role: 'assistant', content: 'Cookie Preferences' },
+            { role: 'assistant', content: 'Settings' },
+            { role: 'assistant', content: 'Help' },
+            { role: 'assistant', content: 'This is another real AI response with more content that should be captured.' },
+            { role: 'user', content: 'User question to the AI.' },
+            { role: 'assistant', content: 'Privacy' },
+            { role: 'assistant', content: 'This is a longer AI response that contains real information and should definitely be captured for validation.' },
+            { role: 'assistant', content: 'Terms' },
+            { role: 'assistant', content: 'Short' }
+        ];
+        
+        // Simple filtering function (similar to what we use in content.js and background.js)
+        function shouldSkipMessage(data) {
+            if (!data || !data.content) return true;
+            
+            // Skip very short messages
+            if (data.content.length < 5) return true;
+            
+            // Skip common UI elements and cookie messages
+            const skipPatterns = [
+                'Cookie Preferences',
+                'Cookies',
+                'Settings',
+                'Help',
+                'Terms',
+                'Privacy',
+                'Login',
+                'Sign in',
+                'Send message',
+                'New chat',
+                'Clear chat',
+                'Upgrade',
+                'Pro',
+                'Menu',
+                'Close',
+                'Cancel',
+                'Save',
+                'Delete',
+                'Edit',
+                'Copy',
+                'Share',
+                'Like',
+                'Dislike',
+                'Feedback',
+                'Report',
+                'Download',
+                'Upload',
+                'Search',
+                'Filter',
+                'Sort',
+                'View',
+                'Refresh',
+                'Reload'
+            ];
+            
+            // Check if content matches any skip patterns (case insensitive)
+            const lowerText = data.content.toLowerCase();
+            for (const pattern of skipPatterns) {
+                if (lowerText.includes(pattern.toLowerCase())) {
+                    // Only skip if the text is short and matches exactly or is mostly the pattern
+                    if (data.content.length < 30 || 
+                        (data.content.length < pattern.length + 10 && 
+                         lowerText.replace(/[^a-z0-9]/g, '').includes(pattern.toLowerCase().replace(/[^a-z0-9]/g, '')))) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+        
+        console.log('Testing message filtering:');
+        testMessages.forEach((message, index) => {
+            const shouldSkip = shouldSkipMessage(message);
+            console.log(`Message ${index + 1}: "${message.content}" - ${shouldSkip ? 'SKIPPED' : 'CAPTURED'}`);
+        });
+        
+        // Test the extension by sending messages
+        setTimeout(() => {
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                testMessages.forEach((message, index) => {
+                    if (!shouldSkipMessage(message)) {
+                        chrome.runtime.sendMessage({
+                            action: 'captureInteraction',
+                            data: {
+                                ...message,
+                                timestamp: new Date().toISOString(),
+                                url: window.location.href,
+                                platform: 'test'
+                            }
+                        }, (response) => {
+                            if (chrome.runtime.lastError) {
+                                console.error('Error sending message:', chrome.runtime.lastError);
+                            } else {
+                                console.log('Response for message', index + 1, ':', response);
+                            }
+                        });
+                    }
+                });
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

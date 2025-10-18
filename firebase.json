@@ -2,7 +2,8 @@
   "functions": [
     {
       "source": "functions",
-      "codebase": "default"
+      "codebase": "default",
+      "runtime": "nodejs22"
     },
     {
       "source": "codebase2",
@@ -21,5 +22,23 @@
     "location": "nam5",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5004
+    },
+    "firestore": {
+      "port": 8082
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4004
+    },
+    "hub": {
+      "port": 4404
+    },
+    "logging": {
+      "port": 4504
+    }
   }
 }

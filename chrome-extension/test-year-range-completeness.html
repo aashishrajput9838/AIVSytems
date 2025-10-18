@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Year Range Completeness</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    
+    .response-container {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    
+    .incomplete {
+      color: #f00;
+      font-style: italic;
+    }
+    
+    .complete {
+      color: #090;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Year Range Completeness</h1>
+  
+  <div class="response-container">
+    <div id="response1" class="incomplete">Adolf Hitler (1889–1</div>
+  </div>
+  
+  <div class="response-container">
+    <div id="response2" class="complete">Adolf Hitler (1889–1945) was a German politician who was the leader of the Nazi Party and Chancellor of Germany from 1933 to 1945.</div>
+  </div>
+  
+  <script>
+    // Simulate the isCompleteResponse function
+    function isCompleteResponse(content, element) {
+      if (!content) {
+        return false;
+      }
+      
+      // If content is very short, it's likely still streaming
+      if (content.length < 15) {
+        console.log('Content too short to be complete');
+        return false;
+      }
+      
+      // Check if content ends with common incomplete sentence patterns
+      const trimmedContent = content.trim();
+      const lastChar = trimmedContent.charAt(trimmedContent.length - 1);
+      
+      // If it ends with a dash or incomplete punctuation, it might still be streaming
+      if (lastChar === '-' || lastChar === ',' || lastChar === ';' || 
+          (lastChar === '.' && trimmedContent.endsWith('...')) ||
+          lastChar === '+' || lastChar === '=' || lastChar === '*' || lastChar === '/' ||
+          lastChar === '(' || lastChar === '[' || lastChar === '{' ||
+          lastChar === '<' || lastChar === '"' || lastChar === "'") {
+        console.log('Content ends with incomplete punctuation or operator');
+        return false;
+      }
+      
+      // Check for incomplete year ranges (e.g., "1889–1")
+      if (trimmedContent.match(/\d{4}[\u2013\u2014]\d?$/)) {
+        console.log('Content ends with incomplete year range');
+        return false;
+      }
+      
+      console.log('Response appears to be complete');
+      return true;
+    }
+    
+    // Test the function
+    document.addEventListener('DOMContentLoaded', function() {
+      const response1 = document.getElementById('response1');
+      const response2 = document.getElementById('response2');
+      
+      console.log('Response 1 complete:', isCompleteResponse(response1.textContent, response1));
+      console.log('Response 2 complete:', isCompleteResponse(response2.textContent, response2));
+    });
+  </script>
+</body>
+</html>

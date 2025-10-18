@@ -2,58 +2,50 @@
 let lastChatsHash = "";
 let processedPairs = new Set();
 
-// Improved content extraction to avoid capturing UI elements
+// Improved content extraction to avoid capturing UI elements and get full content
 function captureChats() {
   let chats = [];
   
-  // More specific selectors to avoid UI elements
-  const messageSelectors = [
-    "div[data-message-author-role]", // General selector
-    "div[role='presentation']", // Some platforms use this
-    ".text-base" // Common class for messages
+  // More comprehensive selectors to capture all message types
+  const selectors = [
+    // Primary selectors for different platforms
+    "div[data-message-author-role]",
+    "div[role='presentation']",
+    ".text-base",
+    ".markdown",
+    ".prose",
+    ".message",
+    ".chat-message"
   ];
   
-  // Try each selector
-  for (const selector of messageSelectors) {
+  // Try each selector set
+  for (const selector of selectors) {
     const elements = document.querySelectorAll(selector);
     if (elements.length > 0) {
       elements.forEach(el => {
+        // Get role information
         let role = el.getAttribute("data-message-author-role");
-        // Fallback for platforms that don't use data attributes
+        
+        // Fallback role detection
         if (!role) {
-          // Check if it's a user message (usually on the right)
-          if (el.style.alignSelf === "flex-end" || el.classList.contains("user")) {
+          // Check common class names for role detection
+          if (el.classList.contains("user") || el.classList.contains("human") || 
+              el.getAttribute("data-author") === "user") {
             role = "user";
-          } 
-          // Check if it's an assistant message (usually on the left)
-          else if (el.style.alignSelf === "flex-start" || el.classList.contains("assistant")) {
+          } else if (el.classList.contains("assistant") || el.classList.contains("bot") ||
+                     el.getAttribute("data-author") === "assistant") {
             role = "assistant";
           }
         }
         
-        // Extract text content, avoiding UI elements
-        let text = "";
-        // Look for paragraph tags or direct text content
-        const paragraphs = el.querySelectorAll("p");
-        if (paragraphs.length > 0) {
-          text = Array.from(paragraphs).map(p => p.textContent.trim()).join("\n");
-        } else {
-          // Fallback to direct text content, but filter out common UI text
-          text = el.textContent.trim();
-          // Filter out common UI elements
-          const uiElements = ["Use voice mode", "Stop generating", "Regenerate response", "Like", "Dislike"];
-          if (uiElements.some(ui => text.includes(ui))) {
-            return; // Skip this element
-          }
-        }
+        // Extract text content more thoroughly
+        let text = extractTextContent(el);
         
         if (role && text && text.length > 0) {
           // Additional filtering to avoid capturing UI text
-          const filteredText = text
-            .replace(/\n{3,}/g, "\n\n") // Remove excessive newlines
-            .trim();
-            
-          if (filteredText.length > 0) {
+          const filteredText = filterUIText(text);
+          
+          if (filteredText.length > 0 && !isUIElement(filteredText)) {
             chats.push({ 
               role, 
               text: filteredText,
@@ -62,7 +54,11 @@ function captureChats() {
           }
         }
       });
-      break; // Use the first selector that finds elements
+      
+      // If we found valid chats, break the loop
+      if (chats.length > 0) {
+        break;
+      }
     }
   }
   
@@ -77,6 +73,74 @@ function captureChats() {
     // Process conversation pairs
     processConversationPairs(chats);
   }
+}
+
+// Enhanced text extraction function
+function extractTextContent(element) {
+  // Method 1: Look for paragraph tags first (most reliable)
+  const paragraphs = element.querySelectorAll("p");
+  if (paragraphs.length > 0) {
+    return Array.from(paragraphs).map(p => p.textContent.trim()).join("\n\n");
+  }
+  
+  // Method 2: Look for preformatted text (code blocks)
+  const preElements = element.querySelectorAll("pre");
+  if (preElements.length > 0) {
+    return Array.from(preElements).map(pre => pre.textContent.trim()).join("\n\n");
+  }
+  
+  // Method 3: Look for divs with text content
+  const textDivs = element.querySelectorAll("div");
+  if (textDivs.length > 0) {
+    const textContents = Array.from(textDivs)
+      .map(div => div.textContent.trim())
+      .filter(text => text.length > 0);
+    if (textContents.length > 0) {
+      return textContents.join("\n\n");
+    }
+  }
+  
+  // Method 4: Direct text content with better cleaning
+  let text = element.textContent || element.innerText || "";
+  return text.trim();
+}
+
+// Filter out UI elements and clean text
+function filterUIText(text) {
+  // Remove excessive whitespace
+  text = text.replace(/\n{3,}/g, "\n\n").trim();
+  
+  // Remove common UI artifacts
+  const uiPatterns = [
+    /\b(Use voice mode|Stop generating|Regenerate response|Like|Dislike|Copy)\b/gi,
+    /\d+\s*(like|dislike)/gi,
+    /\b(send|clear|submit)\b/gi
+  ];
+  
+  uiPatterns.forEach(pattern => {
+    text = text.replace(pattern, "");
+  });
+  
+  return text.trim();
+}
+
+// Check if text is likely a UI element
+function isUIElement(text) {
+  const uiIndicators = [
+    "Use voice mode",
+    "Stop generating",
+    "Regenerate response",
+    "Like",
+    "Dislike",
+    "Copy",
+    "send",
+    "clear",
+    "submit"
+  ];
+  
+  return uiIndicators.some(indicator => 
+    text.toLowerCase().includes(indicator.toLowerCase())
+  );
 }
 
 // Process conversation pairs and validate responses locally
