@@ -583,18 +583,18 @@ class AIVValidationService {
         externalVerificationRequired = true;
         validators.push({
           name: "sensitive_keywords",
-          pass: true,
-          score: 0.5,
+          pass: false, // This should be false since sensitive keywords are a security concern
+          score: 0.2,
           details: "Contains sensitive keywords",
-          severity: "warn",
+          severity: "critical",
         });
-        messages.push("[warn] Sensitive terms in user query");
+        messages.push("[critical] Sensitive terms in user query");
         console.log(`[AIV Validation] Added sensitive_keywords validator (fail)`);
       } else {
         validators.push({
           name: "sensitive_keywords",
           pass: true,
-          score: 0.9,
+          score: 0.95,
           details: "No sensitive keywords detected",
           severity: "info",
         });
@@ -602,7 +602,7 @@ class AIVValidationService {
       }
     }
 
-    // Validator 3.5: Check for professional claims in responses
+    // Validator 4: Check for professional claims in responses
     if (modelResponse) {
       const professionalKeywords = ["teacher", "professor", "doctor", "engineer", "lawyer", "manager", "director", "ceo", "president", "minister", "university", "college", "school", "hospital", "company", "corporation"];
       const hasProfessionalClaims = professionalKeywords.some(keyword => 
@@ -634,16 +634,18 @@ class AIVValidationService {
         validators.push({
           name: "professional_claims",
           pass: true,
-          score: 0.9,
+          score: 0.95,
           details: "No professional claims detected",
           severity: "info",
         });
       }
     }
 
-    // Validator 3.6: Check for personal relationship validation questions
+    // Validator 5 & 6: Check for personal relationship and characteristic validation questions
     const entityInfo = extractEntities(userQuery);
     console.log(`[AIV Validation] Entity info for query "${userQuery}":`, entityInfo);
+    
+    // Personal relationship validation
     if (entityInfo.entityType === "Personal Relationship" && entityInfo.isPersonalValidation) {
       externalVerificationRequired = true;
       validators.push({
@@ -664,7 +666,22 @@ class AIVValidationService {
         severity: "info",
       });
       console.log(`[AIV Validation] Added personal_relationship_validation validator (pass)`);
-    } else if (entityInfo.entityType === "Personal Characteristic" && entityInfo.isPersonalValidation) {
+    } else {
+      // Only add default validator if we haven't added any personal validation yet
+      if (!validators.some(v => v.name === "personal_relationship_validation")) {
+        validators.push({
+          name: "personal_relationship_validation",
+          pass: true,
+          score: 0.95,
+          details: "No personal relationship validation detected",
+          severity: "info",
+        });
+        console.log(`[AIV Validation] Added default personal_relationship_validation validator (pass)`);
+      }
+    }
+    
+    // Personal characteristic validation
+    if (entityInfo.entityType === "Personal Characteristic" && entityInfo.isPersonalValidation) {
       externalVerificationRequired = true;
       validators.push({
         name: "personal_characteristic_validation",
@@ -685,17 +702,20 @@ class AIVValidationService {
       });
       console.log(`[AIV Validation] Added personal_characteristic_validation validator (pass)`);
     } else {
-      validators.push({
-        name: "personal_relationship_validation",
-        pass: true,
-        score: 0.9,
-        details: "No personal validation detected",
-        severity: "info",
-      });
-      console.log(`[AIV Validation] Added default personal_relationship_validation validator (pass)`);
+      // Only add default validator if we haven't added any personal validation yet
+      if (!validators.some(v => v.name === "personal_characteristic_validation")) {
+        validators.push({
+          name: "personal_characteristic_validation",
+          pass: true,
+          score: 0.95,
+          details: "No personal characteristic validation detected",
+          severity: "info",
+        });
+        console.log(`[AIV Validation] Added default personal_characteristic_validation validator (pass)`);
+      }
     }
 
-    // Validator 4: Web Search Factual Validation
+    // Validator 7: Web Search Factual Validation
     try {
       const factualScore = await validateFactualAccuracy(userQuery, modelResponse);
       const factualValidator = {

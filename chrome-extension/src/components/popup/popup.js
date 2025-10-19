@@ -370,7 +370,35 @@ function displayConversationPairs(pairs, validationResults) {
             <ul>
         `;
         
-        validation.validators.forEach(validator => {
+        // Sort validators to ensure consistent display order
+        const sortedValidators = [...validation.validators].sort((a, b) => {
+          const order = [
+            'error_keywords',
+            'response_length',
+            'sensitive_keywords',
+            'professional_claims',
+            'personal_relationship_validation',
+            'personal_characteristic_validation',
+            'factual_accuracy'
+          ];
+          
+          const indexA = order.indexOf(a.name);
+          const indexB = order.indexOf(b.name);
+          
+          // If both are in our order list, sort by that order
+          if (indexA !== -1 && indexB !== -1) {
+            return indexA - indexB;
+          }
+          
+          // If only one is in our order list, it comes first
+          if (indexA !== -1) return -1;
+          if (indexB !== -1) return 1;
+          
+          // If neither is in our order list, sort alphabetically
+          return a.name.localeCompare(b.name);
+        });
+        
+        sortedValidators.forEach(validator => {
           const score = typeof validator.score === 'number' ? (validator.score * 100).toFixed(1) + '%' : 'N/A';
           pairsHTML += `<li>${validator.name.replace(/_/g, ' ')}: ${score} ${validator.pass ? 'Pass' : 'Fail'}</li>`;
         });
@@ -386,10 +414,13 @@ function displayConversationPairs(pairs, validationResults) {
           <div class="validation-criteria">
             <strong>Validation Criteria:</strong>
             <ul>
+              <li>Error Keywords: ${validation.errorKeywords !== undefined ? (typeof validation.errorKeywords === 'number' ? (validation.errorKeywords * 100).toFixed(1) + '%' : (validation.errorKeywords ? '✓ Pass' : '✗ Fail')) : (validation.error_keywords !== undefined ? (typeof validation.error_keywords === 'number' ? (validation.error_keywords * 100).toFixed(1) + '%' : (validation.error_keywords ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
+              <li>Response Length: ${validation.responseLength !== undefined ? (typeof validation.responseLength === 'number' ? (validation.responseLength * 100).toFixed(1) + '%' : (validation.responseLength ? '✓ Pass' : '✗ Fail')) : (validation.response_length !== undefined ? (typeof validation.response_length === 'number' ? (validation.response_length * 100).toFixed(1) + '%' : (validation.response_length ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
+              <li>Sensitive Keywords: ${validation.sensitiveKeywords !== undefined ? (typeof validation.sensitiveKeywords === 'number' ? (validation.sensitiveKeywords * 100).toFixed(1) + '%' : (validation.sensitiveKeywords ? '✓ Pass' : '✗ Fail')) : (validation.sensitive_keywords !== undefined ? (typeof validation.sensitive_keywords === 'number' ? (validation.sensitive_keywords * 100).toFixed(1) + '%' : (validation.sensitive_keywords ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
+              <li>Professional Claims: ${validation.professionalClaims !== undefined ? (typeof validation.professionalClaims === 'number' ? (validation.professionalClaims * 100).toFixed(1) + '%' : (validation.professionalClaims ? '✓ Pass' : '✗ Fail')) : (validation.professional_claims !== undefined ? (typeof validation.professional_claims === 'number' ? (validation.professional_claims * 100).toFixed(1) + '%' : (validation.professional_claims ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
+              <li>Personal Relationship: ${validation.personalRelationship !== undefined ? (typeof validation.personalRelationship === 'number' ? (validation.personalRelationship * 100).toFixed(1) + '%' : (validation.personalRelationship ? '✓ Pass' : '✗ Fail')) : (validation.personal_relationship !== undefined ? (typeof validation.personal_relationship === 'number' ? (validation.personal_relationship * 100).toFixed(1) + '%' : (validation.personal_relationship ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
+              <li>Personal Characteristic: ${validation.personalCharacteristic !== undefined ? (typeof validation.personalCharacteristic === 'number' ? (validation.personalCharacteristic * 100).toFixed(1) + '%' : (validation.personalCharacteristic ? '✓ Pass' : '✗ Fail')) : (validation.personal_characteristic !== undefined ? (typeof validation.personal_characteristic === 'number' ? (validation.personal_characteristic * 100).toFixed(1) + '%' : (validation.personal_characteristic ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
               <li>Factual Accuracy: ${validation.factualAccuracy !== undefined ? (typeof validation.factualAccuracy === 'number' ? (validation.factualAccuracy * 100).toFixed(1) + '%' : (validation.factualAccuracy ? '✓ Pass' : '✗ Fail')) : (validation.factual_accuracy !== undefined ? (typeof validation.factual_accuracy === 'number' ? (validation.factual_accuracy * 100).toFixed(1) + '%' : (validation.factual_accuracy ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
-              <li>Source Reliability: ${validation.sourceReliability !== undefined ? (typeof validation.sourceReliability === 'number' ? (validation.sourceReliability * 100).toFixed(1) + '%' : (validation.sourceReliability ? '✓ Pass' : '✗ Fail')) : (validation.source_reliability !== undefined ? (typeof validation.source_reliability === 'number' ? (validation.source_reliability * 100).toFixed(1) + '%' : (validation.source_reliability ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
-              <li>Logical Consistency: ${validation.logicalConsistency !== undefined ? (typeof validation.logicalConsistency === 'number' ? (validation.logicalConsistency * 100).toFixed(1) + '%' : (validation.logicalConsistency ? '✓ Pass' : '✗ Fail')) : (validation.logical_consistency !== undefined ? (typeof validation.logical_consistency === 'number' ? (validation.logical_consistency * 100).toFixed(1) + '%' : (validation.logical_consistency ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
-              <li>Completeness: ${validation.completeness !== undefined ? (typeof validation.completeness === 'number' ? (validation.completeness * 100).toFixed(1) + '%' : (validation.completeness ? '✓ Pass' : '✗ Fail')) : (validation.completeness_score !== undefined ? (typeof validation.completeness_score === 'number' ? (validation.completeness_score * 100).toFixed(1) + '%' : (validation.completeness_score ? '✓ Pass' : '✗ Fail')) : (validation.confidence !== undefined ? (validation.confidence * 100).toFixed(1) + '%' : 'N/A'))}</li>
             </ul>
           </div>
         `;
