@@ -600,6 +600,16 @@ class AIVValidationService {
         });
         console.log(`[AIV Validation] Added sensitive_keywords validator (pass)`);
       }
+    } else {
+      // Always add the sensitive keywords validator even when there's no user query
+      validators.push({
+        name: "sensitive_keywords",
+        pass: true,
+        score: 0.95,
+        details: "No user query provided",
+        severity: "info",
+      });
+      console.log(`[AIV Validation] Added sensitive_keywords validator (pass - no query)`);
     }
 
     // Validator 4: Check for professional claims in responses
