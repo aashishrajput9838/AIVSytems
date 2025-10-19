@@ -2,15 +2,15 @@ import { initializeApp, getApps } from 'firebase/app'
 import { initializeFirestore } from 'firebase/firestore'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 
-// Hardcoded Firebase configuration - verified to match your Firebase project
+// Firebase configuration loaded from environment variables (Vite / import.meta.env)
 const firebaseConfig = {
-  apiKey: "AIzaSyAfcsU7rGHIe5F-8zFYN9iglISWUguqGek",
-  authDomain: "ai-reasoning-validation-system.firebaseapp.com",
-  projectId: "ai-reasoning-validation-system",
-  storageBucket: "ai-reasoning-validation-system.firebasestorage.app",
-  messagingSenderId: "333673007466",
-  appId: "1:333673007466:web:141fca7f82abcc89527d13",
-  measurementId: "G-Q6XH7ZNE4L",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || null,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || null,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || null,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || null,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || null,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || null,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || null,
 }
 
 // Debug Firebase configuration
@@ -24,16 +24,13 @@ console.log('Firebase Config:', {
   measurementId: firebaseConfig.measurementId ? 'Set' : 'Missing',
 })
 
-// Validate Firebase configuration
-const isFirebaseConfigValid = firebaseConfig.apiKey && 
-  firebaseConfig.authDomain && 
-  firebaseConfig.projectId && 
-  firebaseConfig.storageBucket && 
-  firebaseConfig.messagingSenderId && 
-  firebaseConfig.appId;
+// Validate Firebase configuration (basic checks)
+const requiredFirebaseKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId']
+const missingKeys = requiredFirebaseKeys.filter(k => !firebaseConfig[k])
+const isFirebaseConfigValid = missingKeys.length === 0
 
 if (!isFirebaseConfigValid) {
-  console.error('Firebase configuration is invalid:', firebaseConfig);
+  console.warn('Firebase configuration is missing the following keys:', missingKeys)
 }
 
 // Initialize app only once
@@ -46,11 +43,11 @@ try {
       getApps().forEach(app => app.delete());
     }
     
-    console.log('Initializing Firebase app with config:', firebaseConfig);
+    console.log('Initializing Firebase app')
     app = initializeApp(firebaseConfig);
     console.log('Firebase App initialized:', app ? app.name : 'Failed');
   } else {
-    console.error('Skipping Firebase initialization due to invalid configuration');
+    console.error('Skipping Firebase initialization due to invalid configuration; check your VITE_FIREBASE_* env vars')
     app = null;
   }
 } catch (error) {

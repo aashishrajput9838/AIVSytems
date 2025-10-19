@@ -1,8 +1,9 @@
 ﻿node_modules/
-dist/
 dist-ssr/
 *.local
+# keep local env files ignored but allow the example file to be tracked
 .env*
+!.env.example
 *.log
 npm-debug.log*
 yarn-error.log*

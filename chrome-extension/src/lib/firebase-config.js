@@ -3,14 +3,18 @@
 
 // Check if firebaseConfig is already defined to prevent duplicates
 if (typeof window.firebaseConfig === 'undefined') {
+  // Prefer config provided at build time via import.meta.env (Vite)
+  // For the extension runtime, allow injecting values at page load via window.__ENV__
+  const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : (window.__ENV__ || {})
+
   const firebaseConfig = {
-    apiKey: "AIzaSyAfcsU7rGHIe5F-8zFYN9iglISWUguqGek",
-    authDomain: "ai-reasoning-validation-system.firebaseapp.com",
-    projectId: "ai-reasoning-validation-system",
-    storageBucket: "ai-reasoning-validation-system.firebasestorage.app",
-    messagingSenderId: "333673007466",
-    appId: "1:333673007466:web:141fca7f82abcc89527d13",
-    measurementId: "G-Q6XH7ZNE4L"
+    apiKey: env.VITE_FIREBASE_API_KEY || null,
+    authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || null,
+    projectId: env.VITE_FIREBASE_PROJECT_ID || null,
+    storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || null,
+    messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || null,
+    appId: env.VITE_FIREBASE_APP_ID || null,
+    measurementId: env.VITE_FIREBASE_MEASUREMENT_ID || null,
   };
 
   // Function to send data to Firebase Firestore directly from the extension
@@ -21,6 +25,9 @@ if (typeof window.firebaseConfig === 'undefined') {
       
       // Firebase Firestore REST API endpoint
       const projectId = firebaseConfig.projectId;
+      if (!projectId) {
+        throw new Error('Missing Firebase projectId in extension firebaseConfig')
+      }
       const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/chrome_extension_logs`;
       
       const response = await fetch(url, {
@@ -51,6 +58,14 @@ if (typeof window.firebaseConfig === 'undefined') {
       console.error('Error sending data to Firebase:', error);
       throw error;
     }
+  }
+
+  // Basic validation and warnings
+  const missingKeys = []
+  if (!firebaseConfig.apiKey) missingKeys.push('apiKey')
+  if (!firebaseConfig.projectId) missingKeys.push('projectId')
+  if (missingKeys.length > 0) {
+    console.warn('chrome-extension: firebaseConfig missing keys:', missingKeys)
   }
 
   // Export for use in other files
