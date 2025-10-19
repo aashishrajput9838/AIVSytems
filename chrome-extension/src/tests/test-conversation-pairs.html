@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Conversation Pairs Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .conversation-test {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .assistant-message {
+            background-color: #f1f8e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Conversation Pairs Test</h1>
+    
+    <div class="test-section">
+        <h2>Simulated Chat Conversation</h2>
+        <div class="conversation-test">
+            <div class="user-message">
+                <strong>User:</strong> What is the capital of France?
+            </div>
+            <div class="assistant-message">
+                <strong>Assistant:</strong> The capital of France is Paris.
+            </div>
+            <div class="user-message">
+                <strong>User:</strong> What is the weather like in Paris?
+            </div>
+            <div class="assistant-message">
+                <strong>Assistant:</strong> Paris has a temperate oceanic climate with mild winters and warm summers. The average temperature in summer is around 20°C (68°F).
+            </div>
+            <div class="user-message">
+                <strong>User:</strong> What are some popular tourist attractions in Paris?
+            </div>
+            <div class="assistant-message">
+                <strong>Assistant:</strong> Some popular tourist attractions in Paris include the Eiffel Tower, Louvre Museum, Notre-Dame Cathedral, Arc de Triomphe, and Montmartre.
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Conversation Pair Capture</h2>
+        <button id="testCapture">Test Conversation Pair Capture</button>
+        <div id="captureResult" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('testCapture').addEventListener('click', function() {
+            const resultDiv = document.getElementById('captureResult');
+            
+            // Simulate what the content script would do
+            const conversationPairs = [
+                {
+                    question: 'What is the capital of France?',
+                    response: 'The capital of France is Paris.',
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    platform: 'test'
+                },
+                {
+                    question: 'What is the weather like in Paris?',
+                    response: 'Paris has a temperate oceanic climate with mild winters and warm summers. The average temperature in summer is around 20°C (68°F).',
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    platform: 'test'
+                },
+                {
+                    question: 'What are some popular tourist attractions in Paris?',
+                    response: 'Some popular tourist attractions in Paris include the Eiffel Tower, Louvre Museum, Notre-Dame Cathedral, Arc de Triomphe, and Montmartre.',
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    platform: 'test'
+                }
+            ];
+            
+            resultDiv.innerHTML = '<span class="success">Simulated conversation pairs captured!</span><br>' +
+                '<strong>Captured pairs:</strong><pre>' + JSON.stringify(conversationPairs, null, 2) + '</pre>';
+                
+            // Try to send to extension if available
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                resultDiv.innerHTML += '<br>Sending to extension...';
+                
+                chrome.runtime.sendMessage({
+                    action: 'testConversationPairs',
+                    data: conversationPairs
+                }, function(response) {
+                    if (chrome.runtime.lastError) {
+                        resultDiv.innerHTML += '<br><span class="error">Error sending to extension: ' + chrome.runtime.lastError.message + '</span>';
+                    } else {
+                        resultDiv.innerHTML += '<br><span class="success">Successfully sent to extension!</span>';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

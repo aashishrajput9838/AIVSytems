@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Response Display</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    
+    .response {
+      color: #4a5568;
+      background: #f7fafc;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h2>Test Response Display</h2>
+  
+  <div class="response">
+    <strong>A:</strong> Sunny Leone is an Indian actress, model, and former adult film star. She was born as **Karenjit Kaur Vohra** on **May 13, 1981**, in Canada to Indian parents.
+
+    She gained fame in India after appearing on the reality show **Bigg Boss** in 2011 and later started working in Bollywood films like:
+
+    * *Jism 2* (2012)
+    * *Ragini MMS 2* (2014)
+    * *Ek Paheli Leela* (2015)
+
+    Apart from acting, she's also an entrepreneur and has launched her own perfume and cosmetic lines. Sunny is married to **Daniel Weber**, and they have three children — a daughter (Nisha, adopted) and twin sons (Noah and Asher, born via surrogacy).
+  </div>
+  
+  <script>
+    // Test if the content is displayed correctly
+    document.addEventListener('DOMContentLoaded', function() {
+      const responseElement = document.querySelector('.response');
+      console.log('Response element:', responseElement);
+      console.log('Response text content length:', responseElement.textContent.length);
+      console.log('Response innerHTML length:', responseElement.innerHTML.length);
+    });
+  </script>
+</body>
+</html>

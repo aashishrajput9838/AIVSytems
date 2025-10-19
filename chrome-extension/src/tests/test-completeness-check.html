@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Completeness Check</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    
+    .response-container {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    
+    .incomplete {
+      color: #f00;
+      font-style: italic;
+    }
+    
+    .complete {
+      color: #090;
+      font-weight: normal;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Completeness Check</h1>
+  
+  <div class="response-container">
+    <div id="response1" class="incomplete">Ah, mathematically speaking, 2 +</div>
+  </div>
+  
+  <div class="response-container">
+    <div id="response2" class="complete">Ah, mathematically speaking, 2 + 2 = 4. While the statement "2+2 = 5" is often used to represent an obvious falsehood or a mistake, it can also be interpreted in different mathematical contexts. For example, in modular arithmetic (clock arithmetic), 2 + 2 could equal 5 in a system where numbers wrap around after reaching a certain value. However, in standard arithmetic, 2 + 2 is definitively 4.</div>
+  </div>
+  
+  <div class="response-container">
+    <div id="response3" class="incomplete">In physics, E = mc</div>
+  </div>
+  
+  <script>
+    // Simulate the isCompleteResponse function
+    function isCompleteResponse(content, element) {
+      if (!content) {
+        return false;
+      }
+      
+      // If content is very short, it's likely still streaming
+      if (content.length < 20) {
+        console.log('Content too short to be complete');
+        return false;
+      }
+      
+      // Check if the element has any loading indicators
+      if (element) {
+        // Look for common loading indicators
+        const loadingIndicators = element.querySelectorAll('.cursor, .blink');
+        if (loadingIndicators.length > 0) {
+          console.log('Found loading indicators, response still streaming');
+          return false;
+        }
+      }
+      
+      // Check if content ends with common incomplete sentence patterns
+      const trimmedContent = content.trim();
+      const lastChar = trimmedContent.charAt(trimmedContent.length - 1);
+      
+      // If it ends with a dash or incomplete punctuation, it might still be streaming
+      if (lastChar === '-' || lastChar === ',' || lastChar === ';' || 
+          (lastChar === '.' && trimmedContent.endsWith('...')) ||
+          lastChar === '+' || lastChar === '=' || lastChar === '*' || lastChar === '/') {
+        console.log('Content ends with incomplete punctuation or operator');
+        return false;
+      }
+      
+      // Check for common incomplete mathematical expressions
+      if (trimmedContent.match(/\d\s*[\+\-\*\/]$/)) {
+        console.log('Content ends with incomplete mathematical expression');
+        return false;
+      }
+      
+      console.log('Response appears to be complete');
+      return true;
+    }
+    
+    // Test the function
+    document.addEventListener('DOMContentLoaded', function() {
+      const response1 = document.getElementById('response1');
+      const response2 = document.getElementById('response2');
+      const response3 = document.getElementById('response3');
+      
+      console.log('Response 1 complete:', isCompleteResponse(response1.textContent, response1));
+      console.log('Response 2 complete:', isCompleteResponse(response2.textContent, response2));
+      console.log('Response 3 complete:', isCompleteResponse(response3.textContent, response3));
+    });
+  </script>
+</body>
+</html>

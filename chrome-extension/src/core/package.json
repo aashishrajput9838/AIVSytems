@@ -1,0 +1,26 @@
+{
+  "name": "aiv-systems-chrome-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension for real-time validation of AI chatbot responses using AIV Systems",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Building extension package\" && exit 0",
+    "dev": "echo \"Development mode\" && exit 0"
+  },
+  "keywords": [
+    "chrome-extension",
+    "ai-validation",
+    "chatgpt",
+    "gemini",
+    "claude",
+    "aiv-systems"
+  ],
+  "author": "AIV Systems",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "browserslist": [
+    "last 2 Chrome versions"
+  ]
+}
