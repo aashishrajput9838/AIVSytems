@@ -1,11 +1,14 @@
 {
-  "name": "react-app",
+  "name": "aiv-systems",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:web": "node scripts/build-web.js",
+    "build:extension": "cd chrome-extension && npm run build",
+    "build:all": "npm run build:web && npm run build:extension",
     "lint": "eslint .",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",

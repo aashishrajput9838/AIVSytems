@@ -1,34 +1,18 @@
 # AIV System
 
-AIV (AI Validation) System is a comprehensive solution for validating AI responses in real-time. This repository contains multiple components including Chrome extensions, backend services, and documentation.
+AIV (AI Validation) System is a comprehensive solution for validating AI responses in real-time. This repository contains a Chrome extension, backend services, and documentation.
 
 ## Components
 
-### 1. Chrome Extension (Full Version)
+### Chrome Extension
 - Real-time capture of AI chat interactions
 - Integration with AIV System backend for validation
 - Supports multiple AI platforms (ChatGPT, Gemini, Groq, Claude, Copilot)
-
-### 2. Chrome Extension (Local Validator) - NEW
-- Validates AI responses locally without external API calls
-- No API keys required
-- Built-in validation rules
-- Complete privacy - no data leaves your browser
-
-### 3. Backend Services
-- Firebase functions for validation
-- API endpoints for AI response validation
-- Dashboard for monitoring and analysis
+- **Improved structure with better organization and build process**
 
 ## Getting Started
 
-### For Local Validation (No External Dependencies)
-1. Install the AIV Local Validator Chrome extension
-2. Visit any supported AI platform
-3. Start chatting - validation happens automatically
-4. Click the extension icon to view results
-
-### For Full Validation (With Backend Services)
+### For Validation (With Backend Services)
 1. Set up Firebase project
 2. Deploy backend functions
 3. Install Chrome extension
@@ -36,24 +20,40 @@ AIV (AI Validation) System is a comprehensive solution for validating AI respons
 
 ## Documentation
 
-- [LOCAL_EXTENSION_INSTALLATION.md](LOCAL_EXTENSION_INSTALLATION.md) - Installation guide for local validator
-- [CHROME_EXTENSION_INSTALLATION.md](CHROME_EXTENSION_INSTALLATION.md) - Installation guide for full extension
+- [CHROME_EXTENSION_INSTALLATION.md](CHROME_EXTENSION_INSTALLATION.md) - Installation guide for Chrome extension
 - [DEPLOYMENT_FREE.md](DEPLOYMENT_FREE.md) - Free deployment options
 - [GETTING_STARTED.md](GETTING_STARTED.md) - Getting started guide
+- [docs/project/PROJECT_SUMMARY.md](docs/project/PROJECT_SUMMARY.md) - Comprehensive project overview
+- [docs/architecture/CODEBASE_STRUCTURE_INDEX.md](docs/architecture/CODEBASE_STRUCTURE_INDEX.md) - Detailed codebase structure
+- [docs/project/FINAL_IMPROVEMENTS_REPORT.md](docs/project/FINAL_IMPROVEMENTS_REPORT.md) - Summary of recent improvements
+
+## Directory Structure
+
+The project follows an organized directory structure for better maintainability:
+
+```
+AIV System/
+├── chrome-extension/             # Chrome extension source code
+├── dist/                         # Built web application files
+├── docs/                         # Project documentation
+├── functions/                    # Firebase Functions backend
+├── packages/                     # Distribution packages
+├── public/                       # Static assets for web app
+├── scripts/                      # Utility scripts
+├── src/                          # Main web application source code
+└── ...                           # Configuration files
+```
+
+For detailed information about the directory structure, see [docs/project/DIRECTORY_STRUCTURE.md](docs/project/DIRECTORY_STRUCTURE.md).
 
 ## Features
 
-### Local Validator
-- No external API calls
-- Built-in validation rules
-- Works offline
-- Complete privacy
-
-### Full Extension
+### Chrome Extension
 - Advanced validation algorithms
 - Historical data tracking
 - Dashboard visualization
 - Cross-platform support
+- **Enhanced build process and packaging**
 
 ## Supported Platforms
 
@@ -63,11 +63,35 @@ AIV (AI Validation) System is a comprehensive solution for validating AI respons
 - Claude (https://claude.ai)
 - Microsoft Copilot (https://copilot.microsoft.com)
 
+## Recent Improvements
+
+### Codebase Structure
+- Improved directory organization for better maintainability
+- Separation of source code and distribution files
+- Component-based architecture for Chrome extension
+- Centralized shared libraries and utilities
+
+### Directory Organization
+- Created organized documentation structure
+- Moved distribution files to packages directory
+- Organized scripts into appropriate categories
+- Improved overall project organization
+
+### Build Process
+- Automated build scripts for Chrome extension and web application
+- Packaging script for Chrome extension distribution
+- Comprehensive build verification
+
+### Documentation
+- Enhanced documentation structure
+- Comprehensive codebase indexing
+- Detailed improvement reports
+- Better installation and usage guides
+
 ## Privacy
 
-The AIV System is designed with privacy in mind:
-- Local Validator: No data leaves your browser
-- Full Extension: Only chat content is sent for validation
+The AIV System processes data securely:
+- Only chat content is sent for validation
 - All data is processed securely
 
 ## License
