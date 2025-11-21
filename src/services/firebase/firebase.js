@@ -24,27 +24,13 @@ console.log('Firebase Config:', {
   measurementId: firebaseConfig.measurementId ? 'Set' : 'Missing',
 })
 
-// More detailed debugging to see actual values
-console.log('Firebase Config Values:', {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-})
-
 // Validate Firebase configuration (basic checks)
 const requiredFirebaseKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId']
 const missingKeys = requiredFirebaseKeys.filter(k => !firebaseConfig[k])
 const isFirebaseConfigValid = missingKeys.length === 0
 
-// Log which specific keys are missing
 if (!isFirebaseConfigValid) {
   console.warn('Firebase configuration is missing the following keys:', missingKeys)
-  // Log the actual values for debugging
-  console.log('Firebase config object:', firebaseConfig)
 }
 
 // Initialize app only once
@@ -97,18 +83,9 @@ try {
     } else {
       console.log('Google Auth Provider not configured due to missing auth');
     }
-  } else {
-    console.log('Skipping Firestore and Auth initialization due to missing Firebase app');
   }
 } catch (error) {
   console.error('Error initializing Firebase services:', error);
 }
-
-// Export with safety checks
-console.log('Exporting Firebase services:', { 
-  db: !!db, 
-  auth: !!auth, 
-  googleProvider: !!googleProvider 
-});
 
 export { db, auth, googleProvider };
