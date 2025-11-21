@@ -10,6 +10,10 @@ import {
   browserLocalPersistence
 } from 'firebase/auth'
 
+// Debug logging to see what's being imported
+console.log('AuthProvider - Imported auth:', auth)
+console.log('AuthProvider - Imported googleProvider:', googleProvider)
+
 const AuthContext = createContext()
 
 export default function AuthProvider({ children }) {
@@ -36,6 +40,7 @@ export default function AuthProvider({ children }) {
         // Check if auth is available
         if (!auth) {
           console.error('Firebase Auth not available - configuration invalid')
+          console.log('AuthProvider - auth is null or undefined')
           setLoading(false)
           setIsInitialized(true)
           return
@@ -107,7 +112,14 @@ export default function AuthProvider({ children }) {
   const signInWithGoogle = async () => {
     try {
       // Check if auth and googleProvider are available
+      console.log('signInWithGoogle - Checking auth and googleProvider availability')
+      console.log('signInWithGoogle - auth:', auth)
+      console.log('signInWithGoogle - googleProvider:', googleProvider)
+      
       if (!auth || !googleProvider) {
+        console.error('Google authentication service not available')
+        console.log('signInWithGoogle - auth available:', !!auth)
+        console.log('signInWithGoogle - googleProvider available:', !!googleProvider)
         throw new Error('Google authentication service not available')
       }
       
