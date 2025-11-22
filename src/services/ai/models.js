@@ -1,7 +1,7 @@
 export async function askModel(question) {
   // Only use Groq API key
   const groqKey = import.meta.env.VITE_GROQ_API_KEY
-  const groqModel = import.meta.env.VITE_GROQ_MODEL || 'llama3-8b-8192'
+  const groqModel = import.meta.env.VITE_GROQ_MODEL || 'llama3-70b-8192'
 
   // Debug logging
   console.log('API Configuration:', {
