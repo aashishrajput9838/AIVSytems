@@ -200,16 +200,30 @@ export const validateResponse = async (userQuery, modelResponse) => {
     }
     
     const entityInfo = extractEntities(userQuery);
+    // Check if person is famous by seeing if we can find them on the internet
     if (entityInfo.entityType === "Person") {
-      externalVerificationRequired = true;
-      messages.push("[warn] Person entity: manual verification required");
+      // Search for the person to determine if they're famous
+      const searchResults = await searchWeb(entityInfo.query);
+      const isFamousPerson = searchResults && 
+        !searchResults.includes("No specific information found") && 
+        !searchResults.includes("Search failed") &&
+        searchResults.length > 50; // At least 50 characters of meaningful content
+      
+      if (isFamousPerson) {
+        // Famous person found on internet - no external verification needed
+        messages.push("[info] Famous person detected - no external verification required");
+      } else {
+        // Not a famous person or not found - require external verification
+        externalVerificationRequired = true;
+        messages.push("[warn] Person entity: manual verification required");
+      }
       
       const professionalKeywords = ["teacher", "professor", "doctor", "engineer", "lawyer", "manager", "director", "ceo", "president", "minister"];
       const hasProfessionalClaim = professionalKeywords.some(keyword => 
         modelResponse.toLowerCase().includes(keyword)
       );
       
-      if (hasProfessionalClaim) {
+      if (hasProfessionalClaim && !isFamousPerson) {
         messages.push("[warn] Professional claim detected - needs evidence");
       }
     }
