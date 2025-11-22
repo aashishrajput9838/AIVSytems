@@ -4,6 +4,7 @@ import DashboardLayout from './components/DashboardLayout'
 import DashboardErrorBoundary from './components/DashboardErrorBoundary'
 import useDashboard from './hooks/useDashboard'
 import { EnhancedSkeleton, CardSkeleton, TableSkeleton } from '@/shared/components/ui'
+import { useMemo } from 'react'
 
 export default function Dashboard() {
   const {
@@ -32,6 +33,19 @@ export default function Dashboard() {
     approveLog,
     rejectLog
   } = useDashboard()
+
+  // Filter logs based on search term
+  const filteredLogs = useMemo(() => {
+    if (!search || search.trim() === '') {
+      return logs
+    }
+    
+    const searchTerm = search.toLowerCase().trim()
+    return logs.filter(log => 
+      (log.user_query && log.user_query.toLowerCase().includes(searchTerm)) ||
+      (log.model_response && log.model_response.toLowerCase().includes(searchTerm))
+    )
+  }, [logs, search])
 
   // Create a wrapper function that matches the expected setNewLog signature
   const handleSetNewLog = (updatedLog) => {
@@ -79,7 +93,7 @@ export default function Dashboard() {
         )}
         
         <LogsTable
-          logs={logs}
+          logs={filteredLogs}
           onDelete={handleDeleteLog}
           onUpdate={handleUpdateLog}
           onTest={handleTestLog}
