@@ -12,8 +12,6 @@ const DashboardLayout = memo(({
   isLoading,
   showAddForm,
   setShowAddForm,
-  showChatGPTMode,
-  setShowChatGPTMode,
   showTests,
   setShowTests,
   onErrorRetry,
@@ -30,8 +28,6 @@ const DashboardLayout = memo(({
         <DashboardControls
           showAddForm={showAddForm}
           setShowAddForm={setShowAddForm}
-          showChatGPTMode={showChatGPTMode}
-          setShowChatGPTMode={setShowChatGPTMode}
           showTests={showTests}
           setShowTests={setShowTests}
         />

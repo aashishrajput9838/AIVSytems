@@ -1,5 +1,4 @@
 import TestHarness from './TestHarness'
-import ChatGPTMode from './ChatGPTMode'
 import AddLogForm from './AddLogForm'
 import LogsTable from './LogsTable'
 import DashboardLayout from './components/DashboardLayout'
@@ -24,14 +23,11 @@ export default function Dashboard() {
     clearTestResults,
     // Add missing UI state and functions
     showAddForm,
-    showChatGPTMode,
     showTests,
     newLog,
     toggleAddForm,
-    toggleChatGPTMode,
     toggleTests,
     updateNewLog,
-    resetNewLog,
     // Add missing logs management functions
     formatTimestamp,
     approveLog,
@@ -69,14 +65,9 @@ export default function Dashboard() {
         // Add missing UI state
         showAddForm={showAddForm}
         setShowAddForm={toggleAddForm}
-        showChatGPTMode={showChatGPTMode}
-        setShowChatGPTMode={toggleChatGPTMode}
         showTests={showTests}
         setShowTests={toggleTests}
       >
-        {/* Only show components when their respective modes are active */}
-        {showChatGPTMode && <ChatGPTMode />}
-        
         {showAddForm && (
           <AddLogForm 
             onSubmit={handleAddLog}

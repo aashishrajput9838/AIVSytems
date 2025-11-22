@@ -4,7 +4,6 @@ import { useReducer, useCallback } from 'react'
 const initialState = {
   search: '',
   showAddForm: false,
-  showChatGPTMode: false,
   showTests: false,
   newLog: { 
     user_query: '', 
@@ -17,7 +16,6 @@ const initialState = {
 const actionTypes = {
   SET_SEARCH: 'SET_SEARCH',
   TOGGLE_ADD_FORM: 'TOGGLE_ADD_FORM',
-  TOGGLE_CHATGPT_MODE: 'TOGGLE_CHATGPT_MODE',
   TOGGLE_TESTS: 'TOGGLE_TESTS',
   RESET_NEW_LOG: 'RESET_NEW_LOG',
   UPDATE_NEW_LOG: 'UPDATE_NEW_LOG',
@@ -35,8 +33,6 @@ function dashboardUIReducer(state, action) {
         showAddForm: !state.showAddForm,
         newLog: !state.showAddForm ? state.newLog : { user_query: '', model_response: '', status: 'pending' }
       }
-    case actionTypes.TOGGLE_CHATGPT_MODE:
-      return { ...state, showChatGPTMode: !state.showChatGPTMode }
     case actionTypes.TOGGLE_TESTS:
       return { ...state, showTests: !state.showTests }
     case actionTypes.RESET_NEW_LOG:
@@ -58,7 +54,7 @@ function dashboardUIReducer(state, action) {
 
 export default function useDashboardUI() {
   const [state, dispatch] = useReducer(dashboardUIReducer, initialState)
-  const { search, showAddForm, showChatGPTMode, showTests, newLog } = state
+  const { search, showAddForm, showTests, newLog } = state
 
   const setSearch = useCallback((searchValue) => {
     dispatch({ type: actionTypes.SET_SEARCH, payload: searchValue })
@@ -66,10 +62,6 @@ export default function useDashboardUI() {
 
   const toggleAddForm = useCallback(() => {
     dispatch({ type: actionTypes.TOGGLE_ADD_FORM })
-  }, [])
-
-  const toggleChatGPTMode = useCallback(() => {
-    dispatch({ type: actionTypes.TOGGLE_CHATGPT_MODE })
   }, [])
 
   const toggleTests = useCallback(() => {
@@ -92,14 +84,12 @@ export default function useDashboardUI() {
     // State
     search,
     showAddForm,
-    showChatGPTMode,
     showTests,
     newLog,
     
     // Functions
     setSearch,
     toggleAddForm,
-    toggleChatGPTMode,
     toggleTests,
     resetNewLog,
     updateNewLog,

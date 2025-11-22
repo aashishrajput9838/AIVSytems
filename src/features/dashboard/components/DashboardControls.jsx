@@ -1,9 +1,7 @@
 import { Button } from '@/shared/components/ui/button'
-import { MessageSquare, Plus, FileText } from 'lucide-react'
+import { Plus, FileText } from 'lucide-react'
 
 export default function DashboardControls({
-  showChatGPTMode,
-  setShowChatGPTMode,
   showAddForm,
   setShowAddForm,
   showTests,
@@ -17,21 +15,6 @@ export default function DashboardControls({
       aria-orientation="horizontal"
     >
       <div className="layout-row-md">
-        <Button 
-          onClick={() => setShowChatGPTMode(!showChatGPTMode)} 
-          variant="outline" 
-          className="border-gray-300 text-gray-700 hover:bg-amber-50 focus-ring interactive"
-          aria-label={showChatGPTMode ? 'Exit ChatGPT Mode' : 'Enter ChatGPT Mode'}
-          aria-pressed={showChatGPTMode}
-          aria-describedby="chatgpt-mode-description"
-        >
-          <MessageSquare className="h-4 w-4 mr-2" aria-hidden="true" />
-          {showChatGPTMode ? 'Exit ChatGPT Mode' : 'ChatGPT Mode'}
-        </Button>
-        <span id="chatgpt-mode-description" className="sr-only">
-          Toggle ChatGPT mode for AI-powered interactions
-        </span>
-        
         <Button 
           onClick={() => setShowAddForm(!showAddForm)} 
           className="bg-black hover:bg-amber-600 hover:text-black text-white focus-ring interactive"
