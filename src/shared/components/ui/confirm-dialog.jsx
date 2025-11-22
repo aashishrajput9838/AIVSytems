@@ -14,12 +14,13 @@ export default function ConfirmDialog({
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 100 }}>
       <div className="absolute inset-0 bg-black/40" onClick={onCancel} aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"
         className="relative bg-white rounded-xl shadow-xl w-full max-w-sm p-5"
+        style={{ zIndex: 101 }}
       >
         <h3 className="text-lg font-semibold text-black">{title}</h3>
         <p className="text-sm text-gray-600 mt-2">{description}</p>
@@ -52,6 +53,3 @@ export default function ConfirmDialog({
     </div>
   )
 }
-
-
-
