@@ -9,8 +9,8 @@ export default function DashboardHeader() {
       role="banner"
       aria-labelledby="dashboard-title"
     >
-      <div className="layout-row-lg items-center justify-between">
-        <div className="layout-stack-sm">
+      <div className="layout-row-lg items-center justify-center gap-8">
+        <div className="layout-stack-sm text-center">
           <h1 
             id="dashboard-title"
             className="text-display-3 text-black"
