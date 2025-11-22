@@ -152,49 +152,53 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
                       </span>
                     </TableCell>
                     <TableCell className="flex gap-2" role="cell">
-                      <Button 
-                        size="sm" 
-                        onClick={() => approveLog && approveLog(log.id)} 
-                        className={`${
-                          log.status === 'approved' 
-                            ? 'bg-green-600 text-white hover:bg-green-700' 
-                            : 'bg-black text-white hover:bg-amber-600 hover:text-black'
-                        }`}
-                        aria-label={`${
-                          log.status === 'approved' 
-                            ? `Log entry ${index + 1} is approved` 
-                            : `Approve log entry ${index + 1}`
-                        }`}
-                        aria-describedby="approve-help"
-                        disabled={!approveLog || log.status === 'approved'}
-                      >
-                        <Check className="h-4 w-4 mr-1" aria-hidden="true" /> 
-                        {log.status === 'approved' ? 'Approved' : 'Approve'}
-                      </Button>
+                      {log.status !== 'rejected' && (
+                        <Button 
+                          size="sm" 
+                          onClick={() => approveLog && approveLog(log.id)} 
+                          className={`${
+                            log.status === 'approved' 
+                              ? 'bg-green-600 text-white hover:bg-green-700' 
+                              : 'bg-black text-white hover:bg-amber-600 hover:text-black'
+                          }`}
+                          aria-label={`${
+                            log.status === 'approved' 
+                              ? `Log entry ${index + 1} is approved` 
+                              : `Approve log entry ${index + 1}`
+                          }`}
+                          aria-describedby="approve-help"
+                          disabled={!approveLog || log.status === 'approved'}
+                        >
+                          <Check className="h-4 w-4 mr-1" aria-hidden="true" /> 
+                          {log.status === 'approved' ? 'Approved' : 'Approve'}
+                        </Button>
+                      )}
                       <span id="approve-help" className="sr-only">
                         Approve this log entry as valid
                       </span>
                       
-                      <Button 
-                        size="sm" 
-                        variant="destructive" 
-                        onClick={() => rejectLog && rejectLog(log.id)}
-                        className={`${
-                          log.status === 'rejected' 
-                            ? 'bg-red-600 text-white hover:bg-red-700' 
-                            : 'bg-red-500 text-white hover:bg-red-600'
-                        }`}
-                        aria-label={`${
-                          log.status === 'rejected' 
-                            ? `Log entry ${index + 1} is rejected` 
-                            : `Reject log entry ${index + 1}`
-                        }`}
-                        aria-describedby="reject-help"
-                        disabled={!rejectLog || log.status === 'rejected'}
-                      >
-                        <X className="h-4 w-4 mr-1" aria-hidden="true" /> 
-                        {log.status === 'rejected' ? 'Rejected' : 'Reject'}
-                      </Button>
+                      {log.status !== 'approved' && (
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          onClick={() => rejectLog && rejectLog(log.id)}
+                          className={`${
+                            log.status === 'rejected' 
+                              ? 'bg-red-600 text-white hover:bg-red-700' 
+                              : 'bg-red-500 text-white hover:bg-red-600'
+                          }`}
+                          aria-label={`${
+                            log.status === 'rejected' 
+                              ? `Log entry ${index + 1} is rejected` 
+                              : `Reject log entry ${index + 1}`
+                          }`}
+                          aria-describedby="reject-help"
+                          disabled={!rejectLog || log.status === 'rejected'}
+                        >
+                          <X className="h-4 w-4 mr-1" aria-hidden="true" /> 
+                          {log.status === 'rejected' ? 'Rejected' : 'Reject'}
+                        </Button>
+                      )}
                       <span id="reject-help" className="sr-only">
                         Reject this log entry as invalid
                       </span>
