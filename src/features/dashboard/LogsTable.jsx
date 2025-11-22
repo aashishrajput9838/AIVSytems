@@ -74,6 +74,7 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
                   <TableHead className="text-black" scope="col">Score</TableHead>
                   <TableHead className="text-black" scope="col">Entity Type</TableHead>
                   <TableHead className="text-black" scope="col">Verification</TableHead>
+                  <TableHead className="text-black" scope="col">Status</TableHead>
                   <TableHead className="text-black" scope="col">Notes</TableHead>
                   <TableHead className="text-black" scope="col">Actions</TableHead>
                 </TableRow>
@@ -82,9 +83,9 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
                 {safeLogs.map((log, index) => (
                   <TableRow 
                     key={log.id || index} 
-                    className="border-gray-100 hover:bg-amber-50/40"
+                    className={`border-gray-100 hover:bg-amber-50/40 ${log.status === 'approved' ? 'bg-green-50' : log.status === 'rejected' ? 'bg-red-50' : ''}`}
                     role="row"
-                    aria-label={`Log entry ${index + 1} from ${safeFormatTimestamp(log.timestamp)}`}
+                    aria-label={`Log entry ${index + 1} from ${safeFormatTimestamp(log.timestamp)}${log.status === 'approved' ? ' - Approved' : log.status === 'rejected' ? ' - Rejected' : ''}`}
                   >
                     <TableCell className="text-gray-600" role="cell">
                       <time dateTime={log.timestamp} aria-label={`Timestamp: ${safeFormatTimestamp(log.timestamp)}`}>
@@ -107,16 +108,18 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
                     <TableCell role="cell">
                       <span
                         className={`px-2 py-1 rounded-full text-white text-sm ${
-                          Number(log.validation_score || 0) >= 0.7
-                            ? 'bg-green-600'
-                            : Number(log.validation_score || 0) >= 0.3
-                            ? 'bg-yellow-500'
-                            : 'bg-red-600'
+                          log.status === 'approved' ? 'bg-green-600' : 
+                          log.status === 'rejected' ? 'bg-red-600' : 
+                          Number(log.validation_score || 0) >= 0.7 ? 'bg-green-600' :
+                          Number(log.validation_score || 0) >= 0.3 ? 'bg-yellow-500' :
+                          'bg-red-600'
                         }`}
-                        aria-label={`Validation score: ${Number(log.validation_score || 0).toFixed(2)}`}
+                        aria-label={`Status: ${log.status || 'pending'} - Validation score: ${Number(log.validation_score || 0).toFixed(2)}`}
                         role="status"
                       >
-                        {Number(log.validation_score || 0).toFixed(2)}
+                        {log.status === 'approved' ? 'Approved' : 
+                         log.status === 'rejected' ? 'Rejected' : 
+                         Number(log.validation_score || 0).toFixed(2)}
                       </span>
                     </TableCell>
                     <TableCell className="text-gray-600" role="cell">
@@ -152,13 +155,21 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
                       <Button 
                         size="sm" 
                         onClick={() => approveLog && approveLog(log.id)} 
-                        className="bg-black text-white hover:bg-amber-600 hover:text-black"
-                        aria-label={`Approve log entry ${index + 1}`}
+                        className={`${
+                          log.status === 'approved' 
+                            ? 'bg-green-600 text-white hover:bg-green-700' 
+                            : 'bg-black text-white hover:bg-amber-600 hover:text-black'
+                        }`}
+                        aria-label={`${
+                          log.status === 'approved' 
+                            ? `Log entry ${index + 1} is approved` 
+                            : `Approve log entry ${index + 1}`
+                        }`}
                         aria-describedby="approve-help"
-                        disabled={!approveLog}
+                        disabled={!approveLog || log.status === 'approved'}
                       >
                         <Check className="h-4 w-4 mr-1" aria-hidden="true" /> 
-                        Approve
+                        {log.status === 'approved' ? 'Approved' : 'Approve'}
                       </Button>
                       <span id="approve-help" className="sr-only">
                         Approve this log entry as valid
@@ -168,12 +179,21 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
                         size="sm" 
                         variant="destructive" 
                         onClick={() => rejectLog && rejectLog(log.id)}
-                        aria-label={`Reject log entry ${index + 1}`}
+                        className={`${
+                          log.status === 'rejected' 
+                            ? 'bg-red-600 text-white hover:bg-red-700' 
+                            : 'bg-red-500 text-white hover:bg-red-600'
+                        }`}
+                        aria-label={`${
+                          log.status === 'rejected' 
+                            ? `Log entry ${index + 1} is rejected` 
+                            : `Reject log entry ${index + 1}`
+                        }`}
                         aria-describedby="reject-help"
-                        disabled={!rejectLog}
+                        disabled={!rejectLog || log.status === 'rejected'}
                       >
                         <X className="h-4 w-4 mr-1" aria-hidden="true" /> 
-                        Reject
+                        {log.status === 'rejected' ? 'Rejected' : 'Reject'}
                       </Button>
                       <span id="reject-help" className="sr-only">
                         Reject this log entry as invalid

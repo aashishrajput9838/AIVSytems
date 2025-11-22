@@ -23,6 +23,7 @@ export async function approveLogById(id) {
   
   const ref = doc(db, COLLECTION, id)
   await updateDoc(ref, {
+    status: 'approved',
     notes: 'Approved',
     updated_at: serverTimestamp(),
   })
@@ -36,6 +37,7 @@ export async function rejectLogById(id) {
   
   const ref = doc(db, COLLECTION, id)
   await updateDoc(ref, {
+    status: 'rejected',
     notes: 'Rejected',
     updated_at: serverTimestamp(),
   })
