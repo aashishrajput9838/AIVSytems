@@ -215,6 +215,7 @@ export default function useLogsManagement(user) {
     // Optimistic update
     dispatch({ type: actionTypes.UPDATE_LOG, payload: { 
       ...logToUpdate, 
+      status: 'approved',
       notes: (logToUpdate.notes || '') + ' | Approved' 
     }})
     
@@ -246,6 +247,7 @@ export default function useLogsManagement(user) {
     // Optimistic update
     dispatch({ type: actionTypes.UPDATE_LOG, payload: { 
       ...logToUpdate, 
+      status: 'rejected',
       notes: (logToUpdate.notes || '') + ' | Rejected' 
     }})
     
