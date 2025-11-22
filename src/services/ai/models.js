@@ -27,41 +27,37 @@ export async function askModel(question) {
   // Check if we're using OpenRouter
   if (openRouterKey) {
     console.log('Using OpenRouter API with key:', openRouterKey.substring(0, 10) + '...')
-    return await askOpenRouterModel(question, openRouterKey, model)
-  }
-
-  // Check if API key has the correct format (Gemini keys start with "AIza")
-  // Only validate if we're actually using the Gemini key
-  if (geminiKey && apiKey === geminiKey && !apiKey.startsWith('AIza')) {
-    throw new Error('Invalid Gemini API Key format. Gemini API keys should start with "AIza".')
-  }
-
-  try {
-    // Initialize the Google Generative AI client
-    const genAI = new GoogleGenerativeAI(apiKey)
-    const geminiModel = genAI.getGenerativeModel({ model: model })
-
-    // Generate content using the SDK
-    const result = await geminiModel.generateContent(question)
-    const response = await result.response
-    const text = response.text()
-    
-    return text || 'Sorry, I could not generate a response.'
-  } catch (error) {
-    console.error('Gemini API Error:', error)
-    
-    // Handle specific errors
-    if (error.message && error.message.includes('API_KEY_INVALID')) {
-      throw new Error('Invalid API Key: Please check your Gemini API key.')
+    try {
+      return await askOpenRouterModel(question, openRouterKey, model)
+    } catch (error) {
+      console.error('OpenRouter failed, falling back to other services:', error.message)
+      // If OpenRouter fails, try other services
+      if (geminiKey) {
+        console.log('Falling back to Gemini API')
+        return await askGeminiModel(question, geminiKey, model)
+      } else if (openaiKey) {
+        console.log('Falling back to OpenAI API')
+        return await askOpenAIModel(question, openaiKey, model)
+      } else {
+        // If all services fail, return a mock response
+        console.log('All AI services failed, returning mock response')
+        return `I'm a mock assistant. You asked: "${question}". (OpenRouter authentication failed: ${error.message})`
+      }
     }
-    
-    if (error.message && error.message.includes('429')) {
-      throw new Error('API quota exceeded. Please check your API plan and billing details.')
-    }
-    
-    // Handle other errors
-    throw new Error(`Model request failed: ${error.message || 'Unknown error'}`)
   }
+
+  // Use Gemini if available
+  if (geminiKey) {
+    return await askGeminiModel(question, geminiKey, model)
+  }
+
+  // Use OpenAI if available
+  if (openaiKey) {
+    return await askOpenAIModel(question, openaiKey, model)
+  }
+
+  // Fallback mock for local/dev without API key
+  return `I'm a mock assistant. You asked: "${question}".`
 }
 
 // New function to handle OpenRouter API requests
@@ -75,7 +71,7 @@ async function askOpenRouterModel(question, apiKey, model) {
     }
     
     const requestBody = {
-      model: model || 'mistralai/mistral-7b-instruct:free',
+      model: model || 'tngtech/deepseek-r1t2-chimera:free',
       messages: [
         {
           role: 'user',
@@ -136,11 +132,52 @@ async function askOpenRouterModel(question, apiKey, model) {
     }
     
     // Handle authentication errors
-    if (error.message && error.message.includes('401')) {
+    if (error.message && (error.message.includes('401') || error.message.includes('User not found'))) {
       throw new Error('OpenRouter API authentication failed. Please verify your API key is correct and active.')
     }
     
     // Handle other errors
     throw new Error(`Model request failed: ${error.message || 'Unknown error'}`)
   }
+}
+
+// Function to handle Gemini API requests
+async function askGeminiModel(question, apiKey, model) {
+  // Check if API key has the correct format (Gemini keys start with "AIza")
+  if (!apiKey.startsWith('AIza')) {
+    throw new Error('Invalid Gemini API Key format. Gemini API keys should start with "AIza".')
+  }
+
+  try {
+    // Initialize the Google Generative AI client
+    const genAI = new GoogleGenerativeAI(apiKey)
+    const geminiModel = genAI.getGenerativeModel({ model: model })
+
+    // Generate content using the SDK
+    const result = await geminiModel.generateContent(question)
+    const response = await result.response
+    const text = response.text()
+    
+    return text || 'Sorry, I could not generate a response.'
+  } catch (error) {
+    console.error('Gemini API Error:', error)
+    
+    // Handle specific errors
+    if (error.message && error.message.includes('API_KEY_INVALID')) {
+      throw new Error('Invalid API Key: Please check your Gemini API key.')
+    }
+    
+    if (error.message && error.message.includes('429')) {
+      throw new Error('API quota exceeded. Please check your API plan and billing details.')
+    }
+    
+    // Handle other errors
+    throw new Error(`Model request failed: ${error.message || 'Unknown error'}`)
+  }
+}
+
+// Function to handle OpenAI API requests (placeholder for now)
+async function askOpenAIModel(question, apiKey, model) {
+  // For now, we'll just return a placeholder since we don't have OpenAI implementation yet
+  return `I'm a mock assistant. You asked: "${question}". (OpenAI implementation not yet available)`
 }
