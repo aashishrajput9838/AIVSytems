@@ -56,11 +56,16 @@ export default function useDashboard() {
       }
       
       try {
-        await logsManagement.addLog(entry)
-        ui.resetNewLog()
-        ui.toggleAddForm()
+        // Call the correct function name from logsManagement
+        const success = await logsManagement.handleAddLog(user_query, response)
+        if (success) {
+          ui.resetNewLog()
+          ui.toggleAddForm()
+        }
+        return success
       } catch (error) {
         console.error('Add log error:', error)
+        return false
       }
     }
   }
