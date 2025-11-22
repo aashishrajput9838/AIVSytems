@@ -16,6 +16,7 @@ export default function useDashboard() {
   return {
     // Logs Management
     ...logsManagement,
+    handleDeleteLog: logsManagement.deleteLog, // Add alias for consistency
     
     // Test Management
     ...testManagement,
