@@ -19,7 +19,6 @@ const SkipLink = memo(() => (
 const Navigation = memo(() => {
   const navItems = useMemo(() => [
     { to: '/dashboard', label: 'DASHBOARD' },
-    { to: '/demo', label: 'DEMO' },
     { to: '/about', label: 'ABOUT' },
     { to: '/capabilities', label: 'CAPABILITIES' },
     { to: '/insights', label: 'INSIGHTS' },
@@ -204,14 +203,13 @@ export default function Home() {
       <div className="relative z-10 mx-auto mt-4 sm:mt-8 mb-4 sm:mb-8 w-[95%] max-w-6xl bg-white rounded-lg shadow-2xl">
         {/* Header/Navigation */}
         <header 
-          className="flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 lg:p-8 border-b border-gray-100 space-y-4 sm:space-y-0"
+          className="flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 lg:p-8 border-b border-gray-100"
           role="banner"
         >
           <div className="text-sm font-medium text-black">
             <span className="sr-only">AIV Systems</span>
             aivsystems
           </div>
-          <Navigation />
         </header>
 
         {/* Main Content */}

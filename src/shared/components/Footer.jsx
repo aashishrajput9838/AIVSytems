@@ -11,7 +11,7 @@ export default function Footer() {
 
       <div className="relative z-10 mx-auto w-[95%] max-w-6xl px-4 py-16">
         {/* Columns */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-10 text-sm">
           {/* Menu */}
           <div>
             <div className="mb-4 text-xs uppercase text-gray-400">Menu</div>
@@ -35,15 +35,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Extras */}
-          <div>
-            <div className="mb-4 text-xs uppercase text-gray-400">Extras</div>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Brandcheck sichern ↗</a></li>
-              <li><a href="#" className="hover:underline">Webdesign Pakete ↗</a></li>
-            </ul>
-          </div>
-
           {/* Socials */}
           <div>
             <div className="mb-4 text-xs uppercase text-gray-400">Socials</div>
@@ -59,8 +50,8 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-gray-400 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <a href="#" className="hover:text-white">Impressum</a>
-            <a href="#" className="hover:text-white">Datenschutz</a>
+            {/* Removed Impressum link as requested */}
+            {/* Removed Datenschutz link as requested */}
             <a href="#" className="hover:text-white">Cookies</a>
           </div>
           <div>©{year}</div>
