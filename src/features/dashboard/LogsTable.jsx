@@ -57,171 +57,174 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
             <TableSkeleton rows={5} columns={8} />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table 
-              aria-labelledby="logs-table-title"
-              aria-describedby="logs-table-description"
-              role="table"
-            >
-              <caption id="logs-table-description" className="sr-only">
-                Table displaying validation logs with user queries, AI responses, validation scores, and actions
-              </caption>
-              <TableHeader>
-                <TableRow className="border-gray-200" role="row">
-                  <TableHead className="text-black" scope="col">Timestamp</TableHead>
-                  <TableHead className="text-black" scope="col">User Query</TableHead>
-                  <TableHead className="text-black" scope="col">Model Response</TableHead>
-                  <TableHead className="text-black" scope="col">Score</TableHead>
-                  <TableHead className="text-black" scope="col">Entity Type</TableHead>
-                  <TableHead className="text-black" scope="col">Verification</TableHead>
-                  <TableHead className="text-black" scope="col">Status</TableHead>
-                  <TableHead className="text-black" scope="col">Notes</TableHead>
-                  <TableHead className="text-black" scope="col">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {safeLogs.map((log, index) => (
-                  <TableRow 
-                    key={log.id || index} 
-                    className={`border-gray-100 hover:bg-amber-50/40 ${log.status === 'approved' ? 'bg-green-50' : log.status === 'rejected' ? 'bg-red-50' : ''}`}
-                    role="row"
-                    aria-label={`Log entry ${index + 1} from ${safeFormatTimestamp(log.timestamp)}${log.status === 'approved' ? ' - Approved' : log.status === 'rejected' ? ' - Rejected' : ''}`}
-                  >
-                    <TableCell className="text-gray-600" role="cell">
-                      <time dateTime={log.timestamp} aria-label={`Timestamp: ${safeFormatTimestamp(log.timestamp)}`}>
-                        {safeFormatTimestamp(log.timestamp)}
-                      </time>
-                    </TableCell>
-                    <TableCell className="text-black" role="cell">
-                      <span aria-label={`User query: ${log.user_query}`}>
-                        {log.user_query}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-black max-w-xs" role="cell">
-                      <span 
-                        aria-label={`AI model response: ${log.model_response}`}
-                        className="block max-h-32 overflow-y-auto whitespace-pre-wrap break-words"
-                      >
-                        {log.model_response}
-                      </span>
-                    </TableCell>
-                    <TableCell role="cell">
-                      <span
-                        className={`px-2 py-1 rounded-full text-white text-sm ${
-                          log.status === 'approved' ? 'bg-green-600' : 
-                          log.status === 'rejected' ? 'bg-red-600' : 
-                          Number(log.validation_score || 0) >= 0.7 ? 'bg-green-600' :
-                          Number(log.validation_score || 0) >= 0.3 ? 'bg-yellow-500' :
-                          'bg-red-600'
-                        }`}
-                        aria-label={`Status: ${log.status || 'pending'} - Validation score: ${Number(log.validation_score || 0).toFixed(2)}`}
-                        role="status"
-                      >
-                        {log.status === 'approved' ? 'Approved' : 
-                         log.status === 'rejected' ? 'Rejected' : 
-                         Number(log.validation_score || 0).toFixed(2)}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-gray-600" role="cell">
-                      <span aria-label={`Entity type: ${log.entity_info?.entityType || 'Not available'}`}>
-                        {log.entity_info?.entityType || 'N/A'}
-                      </span>
-                    </TableCell>
-                    <TableCell role="cell">
-                      {log.external_verification_required ? (
-                        <span 
-                          className="text-red-600 font-semibold"
-                          aria-label="External verification required"
-                          role="status"
-                        >
-                          Required
-                        </span>
-                      ) : (
-                        <span 
-                          className="text-green-700 font-semibold"
-                          aria-label="External verification not needed"
-                          role="status"
-                        >
-                          Not Needed
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-gray-600" role="cell">
-                      <span aria-label={`Notes: ${log.notes || 'No notes'}`}>
-                        {log.notes}
-                      </span>
-                    </TableCell>
-                    <TableCell className="flex gap-2" role="cell">
-                      {log.status !== 'rejected' && (
-                        <Button 
-                          size="sm" 
-                          onClick={() => approveLog && approveLog(log.id)} 
-                          className={`${
-                            log.status === 'approved' 
-                              ? 'bg-green-600 text-white hover:bg-green-700' 
-                              : 'bg-black text-white hover:bg-amber-600 hover:text-black'
-                          }`}
-                          aria-label={`${
-                            log.status === 'approved' 
-                              ? `Log entry ${index + 1} is approved` 
-                              : `Approve log entry ${index + 1}`
-                          }`}
-                          aria-describedby="approve-help"
-                          disabled={!approveLog || log.status === 'approved'}
-                        >
-                          <Check className="h-4 w-4 mr-1" aria-hidden="true" /> 
-                          {log.status === 'approved' ? 'Approved' : 'Approve'}
-                        </Button>
-                      )}
-                      <span id="approve-help" className="sr-only">
-                        Approve this log entry as valid
-                      </span>
-                      
-                      {log.status !== 'approved' && (
-                        <Button 
-                          size="sm" 
-                          variant="destructive" 
-                          onClick={() => rejectLog && rejectLog(log.id)}
-                          className={`${
-                            log.status === 'rejected' 
-                              ? 'bg-red-600 text-white hover:bg-red-700' 
-                              : 'bg-red-500 text-white hover:bg-red-600'
-                          }`}
-                          aria-label={`${
-                            log.status === 'rejected' 
-                              ? `Log entry ${index + 1} is rejected` 
-                              : `Reject log entry ${index + 1}`
-                          }`}
-                          aria-describedby="reject-help"
-                          disabled={!rejectLog || log.status === 'rejected'}
-                        >
-                          <X className="h-4 w-4 mr-1" aria-hidden="true" /> 
-                          {log.status === 'rejected' ? 'Rejected' : 'Reject'}
-                        </Button>
-                      )}
-                      <span id="reject-help" className="sr-only">
-                        Reject this log entry as invalid
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => onDelete && setDialogState({ open: true, targetId: log.id })}
-                        aria-label={`Delete log entry ${index + 1}`}
-                        aria-describedby="delete-help"
-                        disabled={!onDelete}
-                        className="border-gray-300 text-gray-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4 mr-1" aria-hidden="true" />
-                        Delete
-                      </Button>
-                      <span id="delete-help" className="sr-only">
-                        Permanently delete this log entry
-                      </span>
-                    </TableCell>
+          // Added max-height and scrolling container
+          <div className="max-h-[500px] overflow-y-auto rounded-lg border border-gray-200">
+            <div className="overflow-x-auto">
+              <Table 
+                aria-labelledby="logs-table-title"
+                aria-describedby="logs-table-description"
+                role="table"
+              >
+                <caption id="logs-table-description" className="sr-only">
+                  Table displaying validation logs with user queries, AI responses, validation scores, and actions
+                </caption>
+                <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
+                  <TableRow className="border-gray-200" role="row">
+                    <TableHead className="text-black" scope="col">Timestamp</TableHead>
+                    <TableHead className="text-black" scope="col">User Query</TableHead>
+                    <TableHead className="text-black" scope="col">Model Response</TableHead>
+                    <TableHead className="text-black" scope="col">Score</TableHead>
+                    <TableHead className="text-black" scope="col">Entity Type</TableHead>
+                    <TableHead className="text-black" scope="col">Verification</TableHead>
+                    <TableHead className="text-black" scope="col">Status</TableHead>
+                    <TableHead className="text-black" scope="col">Notes</TableHead>
+                    <TableHead className="text-black" scope="col">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {safeLogs.map((log, index) => (
+                    <TableRow 
+                      key={log.id || index} 
+                      className={`border-gray-100 hover:bg-amber-50/40 ${log.status === 'approved' ? 'bg-green-50' : log.status === 'rejected' ? 'bg-red-50' : ''}`}
+                      role="row"
+                      aria-label={`Log entry ${index + 1} from ${safeFormatTimestamp(log.timestamp)}${log.status === 'approved' ? ' - Approved' : log.status === 'rejected' ? ' - Rejected' : ''}`}
+                    >
+                      <TableCell className="text-gray-600" role="cell">
+                        <time dateTime={log.timestamp} aria-label={`Timestamp: ${safeFormatTimestamp(log.timestamp)}`}>
+                          {safeFormatTimestamp(log.timestamp)}
+                        </time>
+                      </TableCell>
+                      <TableCell className="text-black" role="cell">
+                        <span aria-label={`User query: ${log.user_query}`}>
+                          {log.user_query}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-black max-w-xs" role="cell">
+                        <span 
+                          aria-label={`AI model response: ${log.model_response}`}
+                          className="block max-h-32 overflow-y-auto whitespace-pre-wrap break-words"
+                        >
+                          {log.model_response}
+                        </span>
+                      </TableCell>
+                      <TableCell role="cell">
+                        <span
+                          className={`px-2 py-1 rounded-full text-white text-sm ${
+                            log.status === 'approved' ? 'bg-green-600' : 
+                            log.status === 'rejected' ? 'bg-red-600' : 
+                            Number(log.validation_score || 0) >= 0.7 ? 'bg-green-600' :
+                            Number(log.validation_score || 0) >= 0.3 ? 'bg-yellow-500' :
+                            'bg-red-600'
+                          }`}
+                          aria-label={`Status: ${log.status || 'pending'} - Validation score: ${Number(log.validation_score || 0).toFixed(2)}`}
+                          role="status"
+                        >
+                          {log.status === 'approved' ? 'Approved' : 
+                           log.status === 'rejected' ? 'Rejected' : 
+                           Number(log.validation_score || 0).toFixed(2)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-gray-600" role="cell">
+                        <span aria-label={`Entity type: ${log.entity_info?.entityType || 'Not available'}`}>
+                          {log.entity_info?.entityType || 'N/A'}
+                        </span>
+                      </TableCell>
+                      <TableCell role="cell">
+                        {log.external_verification_required ? (
+                          <span 
+                            className="text-red-600 font-semibold"
+                            aria-label="External verification required"
+                            role="status"
+                          >
+                            Required
+                          </span>
+                        ) : (
+                          <span 
+                            className="text-green-700 font-semibold"
+                            aria-label="External verification not needed"
+                            role="status"
+                          >
+                            Not Needed
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-gray-600" role="cell">
+                        <span aria-label={`Notes: ${log.notes || 'No notes'}`}>
+                          {log.notes}
+                        </span>
+                      </TableCell>
+                      <TableCell className="flex gap-2" role="cell">
+                        {log.status !== 'rejected' && (
+                          <Button 
+                            size="sm" 
+                            onClick={() => approveLog && approveLog(log.id)} 
+                            className={`${
+                              log.status === 'approved' 
+                                ? 'bg-green-600 text-white hover:bg-green-700' 
+                                : 'bg-black text-white hover:bg-amber-600 hover:text-black'
+                            }`}
+                            aria-label={`${
+                              log.status === 'approved' 
+                                ? `Log entry ${index + 1} is approved` 
+                                : `Approve log entry ${index + 1}`
+                            }`}
+                            aria-describedby="approve-help"
+                            disabled={!approveLog || log.status === 'approved'}
+                          >
+                            <Check className="h-4 w-4 mr-1" aria-hidden="true" /> 
+                            {log.status === 'approved' ? 'Approved' : 'Approve'}
+                          </Button>
+                        )}
+                        <span id="approve-help" className="sr-only">
+                          Approve this log entry as valid
+                        </span>
+                        
+                        {log.status !== 'approved' && (
+                          <Button 
+                            size="sm" 
+                            variant="destructive" 
+                            onClick={() => rejectLog && rejectLog(log.id)}
+                            className={`${
+                              log.status === 'rejected' 
+                                ? 'bg-red-600 text-white hover:bg-red-700' 
+                                : 'bg-red-500 text-white hover:bg-red-600'
+                            }`}
+                            aria-label={`${
+                              log.status === 'rejected' 
+                                ? `Log entry ${index + 1} is rejected` 
+                                : `Reject log entry ${index + 1}`
+                            }`}
+                            aria-describedby="reject-help"
+                            disabled={!rejectLog || log.status === 'rejected'}
+                          >
+                            <X className="h-4 w-4 mr-1" aria-hidden="true" /> 
+                            {log.status === 'rejected' ? 'Rejected' : 'Reject'}
+                          </Button>
+                        )}
+                        <span id="reject-help" className="sr-only">
+                          Reject this log entry as invalid
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onDelete && setDialogState({ open: true, targetId: log.id })}
+                          aria-label={`Delete log entry ${index + 1}`}
+                          aria-describedby="delete-help"
+                          disabled={!onDelete}
+                          className="border-gray-300 text-gray-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" aria-hidden="true" />
+                          Delete
+                        </Button>
+                        <span id="delete-help" className="sr-only">
+                          Permanently delete this log entry
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         )}
       </CardContent>
@@ -242,7 +245,3 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
     </Card>
   )
 }
-
-
-
-
