@@ -74,7 +74,8 @@ export default function AddLogForm({ isLoading, isFormLoading, newLog, setNewLog
                     Enter the question or prompt that the user asked the AI model
                   </div>
                 </div>
-                <div className="layout-stack-sm">
+                {/* Hidden Model Response field as it's not being used directly */}
+                <div className="layout-stack-sm hidden">
                   <label 
                     htmlFor="model-response-input"
                     className="text-body font-medium text-black"
