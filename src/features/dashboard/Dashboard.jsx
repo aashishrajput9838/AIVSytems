@@ -1,4 +1,3 @@
-import TestHarness from './TestHarness'
 import AddLogForm from './AddLogForm'
 import LogsTable from './LogsTable'
 import DashboardLayout from './components/DashboardLayout'
@@ -76,17 +75,6 @@ export default function Dashboard() {
             onCancel={toggleAddForm}
             isFormLoading={isLoading}
             isLoading={isLoading}
-          />
-        )}
-        
-        {showTests && (
-          <TestHarness
-            logs={logs}
-            onTest={handleTestLog}
-            isTestMode={isTestMode}
-            setIsTestMode={setIsTestMode}
-            testResults={testResults}
-            clearTestResults={clearTestResults}
           />
         )}
         
