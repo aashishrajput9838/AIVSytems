@@ -52,7 +52,7 @@ export default function AddLogForm({ isLoading, isFormLoading, newLog, setNewLog
               aria-labelledby="form-title"
               noValidate
             >
-              <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+              <div className="grid gap-4 grid-cols-1 lg:grid-cols-1">
                 <div className="layout-stack-sm">
                   <label 
                     htmlFor="user-query-input"
@@ -72,28 +72,6 @@ export default function AddLogForm({ isLoading, isFormLoading, newLog, setNewLog
                   />
                   <div id="user-query-help" className="sr-only">
                     Enter the question or prompt that the user asked the AI model
-                  </div>
-                </div>
-                {/* Hidden Model Response field as it's not being used directly */}
-                <div className="layout-stack-sm hidden">
-                  <label 
-                    htmlFor="model-response-input"
-                    className="text-body font-medium text-black"
-                  >
-                    Model Response
-                  </label>
-                  <Input
-                    id="model-response-input"
-                    placeholder="Enter the AI model's response..."
-                    value={newLog.model_response}
-                    onChange={(e) => setNewLog({...newLog, model_response: e.target.value})}
-                    // make optional; we now auto-generate if empty
-                    className="bg-white border border-gray-200 focus-ring"
-                    aria-required="true"
-                    aria-describedby="model-response-help"
-                  />
-                  <div id="model-response-help" className="sr-only">
-                    Enter the response that the AI model provided to the user
                   </div>
                 </div>
               </div>
