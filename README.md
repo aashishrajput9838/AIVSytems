@@ -40,18 +40,18 @@ AIV (AI Validation) System is a comprehensive solution for validating AI respons
 4. Configure API keys in `.env` file for web dashboard
 5. Run web dashboard with `npm run dev`
 
-### Environment variables
+### Environment Variables
 
-Create a `.env` file in the project root (copy `.env.example`) and fill in the values. Do NOT commit your `.env` file.
+The application requires several environment variables to function properly. Create a `.env` file in the root directory with the following variables:
 
-Required variables (examples in `.env.example`):
 - VITE_FIREBASE_API_KEY
 - VITE_FIREBASE_AUTH_DOMAIN
 - VITE_FIREBASE_PROJECT_ID
 - VITE_FIREBASE_STORAGE_BUCKET
 - VITE_FIREBASE_MESSAGING_SENDER_ID
 - VITE_FIREBASE_APP_ID
-- VITE_GEMINI_API_KEY / VITE_OPENAI_API_KEY
+- VITE_GROQ_API_KEY
+- VITE_OPENAI_API_KEY
 - VITE_EMAILJS_SERVICE_ID
 - VITE_EMAILJS_TEMPLATE_ID
 - VITE_EMAILJS_PUBLIC_KEY
