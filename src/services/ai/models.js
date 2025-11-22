@@ -6,20 +6,23 @@ export async function askModel(question) {
   const geminiKey = import.meta.env.VITE_GEMINI_API_KEY
   const openaiKey = import.meta.env.VITE_OPENAI_API_KEY
   
-  const apiKey = openRouterKey || geminiKey || openaiKey
-  const model = import.meta.env.VITE_OPENROUTER_MODEL || import.meta.env.VITE_OPENAI_MODEL || 'gemini-1.5-flash-002'
+  // Use the appropriate model for each service
+  const openRouterModel = import.meta.env.VITE_OPENROUTER_MODEL || 'tngtech/deepseek-r1t2-chimera:free'
+  const geminiModel = import.meta.env.VITE_GEMINI_MODEL || 'gemini-1.5-flash-002'
+  const openaiModel = import.meta.env.VITE_OPENAI_MODEL || 'gpt-3.5-turbo'
 
   // Debug logging
   console.log('API Configuration:', {
-    apiKey: apiKey ? `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 5)}` : 'NOT SET',
-    model,
     hasOpenRouterKey: !!openRouterKey,
     hasGeminiKey: !!geminiKey,
-    hasOpenAIKey: !!openaiKey
+    hasOpenAIKey: !!openaiKey,
+    openRouterModel,
+    geminiModel,
+    openaiModel
   })
 
   // Validate API key
-  if (!apiKey) {
+  if (!openRouterKey && !geminiKey && !openaiKey) {
     // Fallback mock for local/dev without API key
     return `I'm a mock assistant. You asked: "${question}".`
   }
@@ -28,16 +31,16 @@ export async function askModel(question) {
   if (openRouterKey) {
     console.log('Using OpenRouter API with key:', openRouterKey.substring(0, 10) + '...')
     try {
-      return await askOpenRouterModel(question, openRouterKey, model)
+      return await askOpenRouterModel(question, openRouterKey, openRouterModel)
     } catch (error) {
       console.error('OpenRouter failed, falling back to other services:', error.message)
       // If OpenRouter fails, try other services
       if (geminiKey) {
         console.log('Falling back to Gemini API')
-        return await askGeminiModel(question, geminiKey, model)
+        return await askGeminiModel(question, geminiKey, geminiModel)
       } else if (openaiKey) {
         console.log('Falling back to OpenAI API')
-        return await askOpenAIModel(question, openaiKey, model)
+        return await askOpenAIModel(question, openaiKey, openaiModel)
       } else {
         // If all services fail, return a mock response
         console.log('All AI services failed, returning mock response')
@@ -48,12 +51,14 @@ export async function askModel(question) {
 
   // Use Gemini if available
   if (geminiKey) {
-    return await askGeminiModel(question, geminiKey, model)
+    console.log('Using Gemini API with key:', geminiKey.substring(0, 10) + '...')
+    return await askGeminiModel(question, geminiKey, geminiModel)
   }
 
   // Use OpenAI if available
   if (openaiKey) {
-    return await askOpenAIModel(question, openaiKey, model)
+    console.log('Using OpenAI API with key:', openaiKey.substring(0, 10) + '...')
+    return await askOpenAIModel(question, openaiKey, openaiModel)
   }
 
   // Fallback mock for local/dev without API key
@@ -71,7 +76,7 @@ async function askOpenRouterModel(question, apiKey, model) {
     }
     
     const requestBody = {
-      model: model || 'tngtech/deepseek-r1t2-chimera:free',
+      model: model,
       messages: [
         {
           role: 'user',
@@ -149,6 +154,8 @@ async function askGeminiModel(question, apiKey, model) {
   }
 
   try {
+    console.log('Making request to Gemini API with model:', model)
+    
     // Initialize the Google Generative AI client
     const genAI = new GoogleGenerativeAI(apiKey)
     const geminiModel = genAI.getGenerativeModel({ model: model })
