@@ -68,6 +68,26 @@ export async function askModel(question) {
 async function askOpenRouterModel(question, apiKey, model) {
   try {
     console.log('Making request to OpenRouter API with model:', model)
+    
+    // Check if API key starts with "sk-or-v1-" as expected for OpenRouter
+    if (!apiKey.startsWith('sk-or-v1-')) {
+      throw new Error('Invalid OpenRouter API Key format. OpenRouter API keys should start with "sk-or-v1-".')
+    }
+    
+    const requestBody = {
+      model: model || 'mistralai/mistral-7b-instruct:free',
+      messages: [
+        {
+          role: 'user',
+          content: question
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 500
+    };
+    
+    console.log('OpenRouter API request body:', JSON.stringify(requestBody, null, 2));
+    
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -76,25 +96,30 @@ async function askOpenRouterModel(question, apiKey, model) {
         'HTTP-Referer': window.location.origin, // Optional, for including your app on openrouter.ai rankings
         'X-Title': 'AIV Systems' // Optional, for including your app on openrouter.ai rankings
       },
-      body: JSON.stringify({
-        model: model || 'mistralai/mistral-7b-instruct:free',
-        messages: [
-          {
-            role: 'user',
-            content: question
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 500
-      })
+      body: JSON.stringify(requestBody)
     })
 
     console.log('OpenRouter API response status:', response.status)
+    console.log('OpenRouter API response headers:', [...response.headers.entries()])
     
     if (!response.ok) {
-      const errorData = await response.json()
-      console.error('OpenRouter API error response:', errorData)
-      throw new Error(`OpenRouter API error: ${errorData.error?.message || response.statusText}`)
+      let errorMessage = `OpenRouter API error: ${response.status} ${response.statusText}`
+      
+      try {
+        const errorData = await response.json()
+        console.error('OpenRouter API error response:', errorData)
+        errorMessage = `OpenRouter API error: ${errorData.error?.message || response.statusText}`
+      } catch (parseError) {
+        // If we can't parse the error response, use the status text
+        console.error('Could not parse error response:', parseError)
+      }
+      
+      // If it's a 401 error, provide more specific guidance
+      if (response.status === 401) {
+        throw new Error(`OpenRouter API authentication failed. Please check your API key. Error: ${errorMessage}`)
+      }
+      
+      throw new Error(errorMessage)
     }
 
     const data = await response.json()
@@ -108,6 +133,11 @@ async function askOpenRouterModel(question, apiKey, model) {
     // Handle specific errors
     if (error.message && error.message.includes('429')) {
       throw new Error('API quota exceeded. Please check your API plan and billing details.')
+    }
+    
+    // Handle authentication errors
+    if (error.message && error.message.includes('401')) {
+      throw new Error('OpenRouter API authentication failed. Please verify your API key is correct and active.')
     }
     
     // Handle other errors
