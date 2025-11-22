@@ -1,11 +1,9 @@
 import { Button } from '@/shared/components/ui/button'
-import { Plus, FileText } from 'lucide-react'
+import { Plus } from 'lucide-react'
 
 export default function DashboardControls({
   showAddForm,
-  setShowAddForm,
-  showTests,
-  setShowTests
+  setShowAddForm
 }) {
   return (
     <section 
@@ -27,21 +25,6 @@ export default function DashboardControls({
         </Button>
         <span id="add-log-description" className="sr-only">
           {showAddForm ? 'Cancel the form for adding a new log entry' : 'Open form to add a new log entry'}
-        </span>
-        
-        <Button 
-          onClick={() => setShowTests(!showTests)} 
-          variant="outline" 
-          className="border-gray-300 text-gray-700 hover:bg-amber-50 focus-ring interactive"
-          aria-label={showTests ? 'Hide test harness' : 'Show test harness'}
-          aria-pressed={showTests}
-          aria-describedby="test-harness-description"
-        >
-          <FileText className="h-4 w-4 mr-2" aria-hidden="true" />
-          {showTests ? 'Hide Tests' : 'Test Harness'}
-        </Button>
-        <span id="test-harness-description" className="sr-only">
-          Toggle the test harness for running validation tests
         </span>
       </div>
     </section>

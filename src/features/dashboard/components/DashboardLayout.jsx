@@ -12,8 +12,6 @@ const DashboardLayout = memo(({
   isLoading,
   showAddForm,
   setShowAddForm,
-  showTests,
-  setShowTests,
   onErrorRetry,
   onErrorDismiss,
   progress = 0,
@@ -28,8 +26,6 @@ const DashboardLayout = memo(({
         <DashboardControls
           showAddForm={showAddForm}
           setShowAddForm={setShowAddForm}
-          showTests={showTests}
-          setShowTests={setShowTests}
         />
         
         <div className="mt-6">
