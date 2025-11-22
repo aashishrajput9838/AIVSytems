@@ -39,10 +39,10 @@ export default function Footer() {
           <div>
             <div className="mb-4 text-xs uppercase text-gray-400">Socials</div>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:underline">Instagram</a></li>
-              <li><a href="#" className="hover:underline">LinkedIn</a></li>
-              <li><a href="#" className="hover:underline">Facebook</a></li>
-              <li><a href="#" className="hover:underline">TwitterX</a></li>
+              <li><a href="https://www.instagram.com/aspirinexar/" className="hover:underline">Instagram</a></li>
+              <li><a href="https://www.linkedin.com/in/aashishrajput9838/" className="hover:underline">LinkedIn</a></li>
+              <li><a href="https://www.facebook.com/aashishrajput9838" className="hover:underline">Facebook</a></li>
+              <li><a href="https://x.com/aashish9838" className="hover:underline">TwitterX</a></li>
             </ul>
           </div>
         </div>
