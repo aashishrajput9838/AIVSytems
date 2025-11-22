@@ -96,8 +96,11 @@ export default function LogsTable({ logs = [], formatTimestamp, approveLog, reje
                         {log.user_query}
                       </span>
                     </TableCell>
-                    <TableCell className="text-black" role="cell">
-                      <span aria-label={`AI model response: ${log.model_response}`}>
+                    <TableCell className="text-black max-w-xs" role="cell">
+                      <span 
+                        aria-label={`AI model response: ${log.model_response}`}
+                        className="block max-h-32 overflow-y-auto whitespace-pre-wrap break-words"
+                      >
                         {log.model_response}
                       </span>
                     </TableCell>
