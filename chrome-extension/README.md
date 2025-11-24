@@ -3,6 +3,9 @@
 ## Overview
 The AIV Systems Chrome Extension provides real-time validation of AI chatbot responses across multiple platforms including ChatGPT, Gemini, Groq, Claude, and Copilot.
 
+## Extension Preview
+![AIV Systems Chrome Extension](../image.png)
+
 ## Features
 - Real-time monitoring of AI responses
 - Validation of response accuracy
